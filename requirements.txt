@@ -1,0 +1,8 @@
+aiofiles==0.6.0
+fastapi==0.63.0
+numpy==1.20.1
+pandas==1.2.2
+pyarrow==3.0.0
+pydantic==1.7.3
+starlette==0.13.6
+uvicorn==0.13.4
