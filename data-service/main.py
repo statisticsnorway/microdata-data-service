@@ -59,7 +59,7 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Parquet metadata of result set: ' + str(pq.read_metadata(result_filename)))
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': 'http://localhost:8000/file/' + result_filename}
+            'dataUrl': 'http://localhost:8000/retrieveResultSet?file_name=' + result_filename}
 
 
 if __name__ == "__main__":
