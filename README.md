@@ -16,3 +16,9 @@ API documentation:
 http://127.0.0.1:8000/docs
 http://127.0.0.1:8000/redoc
 ````
+
+## Docker image
+````
+docker build --tag data-service .
+docker run --publish 8000:8000 data-service
+````
