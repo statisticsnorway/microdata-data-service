@@ -61,6 +61,14 @@ def create_result_set_event_data(input_query: InputQuery):
     return {'name': input_query.dataStructureName,
             'dataUrl': 'http://localhost:8000/retrieveResultSet?file_name=' + result_filename}
 
+@data_service_app.get('/health/alive')
+def alive():
+    return "I'm alive!"
+
+@data_service_app.get('/health/ready')
+def ready():
+    return "I'm ready!"
+
 
 if __name__ == "__main__":
     uvicorn.run(data_service_app, host="0.0.0.0", port=8000)
