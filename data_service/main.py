@@ -2,6 +2,7 @@ import uuid
 from datetime import date
 from typing import Optional
 
+import google
 import pyarrow.parquet as pq
 import uvicorn
 from fastapi import FastAPI
@@ -48,6 +49,9 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Stop date: ' + str(stop))
 
     filename_from_query = input_query.dataStructureName  # + '__1_0.parquet'
+    #requests library
+    #simple_download()
+    #chunked_download()
     downloaded_filename = download_file_from_storage(filename_from_query)
 
     print('Parquet metadata: ' + str(pq.read_metadata(downloaded_filename)))
@@ -73,6 +77,37 @@ def alive():
 def ready():
     return "I'm ready!"
 
+
+def chunked_download():
+    pass
+    # TODO https://googleapis.dev/python/google-resumable-media/latest/resumable_media/requests.html#chunked-downloads
+    # chunk_size = 50 * 1024 * 1024  # 50MB
+    # stream: io.BytesIO = io.BytesIO()
+    # media_url =
+    # download = ChunkedDownload(media_url, chunk_size, stream)
+
+
+def simple_download():
+    ro_scope = u'https://www.googleapis.com/auth/devstorage.read_only'
+    credentials, _ = google.auth.default(scopes=(ro_scope,))
+    transport = tr_requests.AuthorizedSession(credentials)
+
+    bucket = 'data-service-bucket-microdata-poc'
+    blob_name = 'TEST_PERSON_INCOME__1_0.parquet'
+    url_template = (
+        u'https://www.googleapis.com/download/storage/v1/b/'
+        u'{bucket}/o/{blob_name}?alt=media')
+    media_url = url_template.format(bucket=bucket, blob_name=blob_name)
+
+    #My change here
+    #media_url = 'https://storage.cloud.google.com/data-service-bucket-microdata-poc/TEST_PERSON_INCOME__1_0.parquet'
+
+    download = Download(media_url)
+    response = download.consume(transport)
+    print(download.finished)
+    print(response)
+    # print(response.headers[u'Content-Length']) # no such key error
+    print(len(response.content))
 
 def download_file_from_storage(filename_from_query: str) -> str:
     bucket_name = 'data-service-bucket-microdata-poc'
