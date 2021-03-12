@@ -6,6 +6,7 @@ import pyarrow.parquet as pq
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+from google.cloud import storage
 from pydantic import BaseModel
 
 
@@ -17,7 +18,6 @@ class InputQuery(BaseModel):
     values: Optional[list]
     population: Optional[dict]
     interval_filter: Optional[str]
-    # credentials: Credentials <-TODO
     include_attributes: Optional[bool] = False
 
 
@@ -47,11 +47,13 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Start date: ' + str(start))
     print('Stop date: ' + str(stop))
 
-    filename = input_query.dataStructureName + '__1_0.parquet'
-    print('Parquet metadata: ' + str(pq.read_metadata(filename)))
-    print('Parquet schema: ' + pq.read_schema(filename).to_string())
+    filename_from_query = input_query.dataStructureName  # + '__1_0.parquet'
+    downloaded_filename = download_file_from_storage(filename_from_query)
 
-    data = pq.read_table(source=filename, filters=[('start', '>=', start), ('stop', '<=', stop)])
+    print('Parquet metadata: ' + str(pq.read_metadata(downloaded_filename)))
+    print('Parquet schema: ' + pq.read_schema(downloaded_filename).to_string())
+
+    data = pq.read_table(source=downloaded_filename, filters=[('start', '>=', start), ('stop', '<=', stop)])
 
     result_filename = str(uuid.uuid4()) + '.parquet'
     # print('Resultset: ' + str(data.to_pandas().head(50)))
@@ -59,15 +61,28 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Parquet metadata of result set: ' + str(pq.read_metadata(result_filename)))
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': 'http://localhost:8000/retrieveResultSet?file_name=' + result_filename}
+            'dataUrl': 'https://data-service.staging-bip-app.ssb.no/retrieveResultSet?file_name=' + result_filename}
+
 
 @data_service_app.get('/health/alive')
 def alive():
     return "I'm alive!"
 
+
 @data_service_app.get('/health/ready')
 def ready():
     return "I'm ready!"
+
+
+def download_file_from_storage(filename_from_query: str) -> str:
+    bucket_name = 'data-service-bucket-microdata-poc'
+    destination_file_name = filename_from_query
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.get_blob(filename_from_query)
+    blob.download_to_filename(destination_file_name)
+    print("Blob {} from bucket {} downloaded to {}.".format(filename_from_query, bucket_name, destination_file_name))
+    return destination_file_name
 
 
 if __name__ == "__main__":
