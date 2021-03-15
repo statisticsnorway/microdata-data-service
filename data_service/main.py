@@ -1,3 +1,4 @@
+import os
 import uuid
 from datetime import date
 from typing import Optional
@@ -61,7 +62,7 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Parquet metadata of result set: ' + str(pq.read_metadata(result_filename)))
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': 'https://data-service.staging-bip-app.ssb.no/retrieveResultSet?file_name=' + result_filename}
+            'dataUrl': getenv('DATA_SERVICE_URL') + '/retrieveResultSet?file_name=' + result_filename}
 
 
 @data_service_app.get('/health/alive')
@@ -75,7 +76,7 @@ def ready():
 
 
 def download_file_from_storage(filename_from_query: str) -> str:
-    bucket_name = 'data-service-bucket-microdata-poc'
+    bucket_name = getenv('BUCKET_NAME')
     destination_file_name = filename_from_query
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
@@ -83,6 +84,10 @@ def download_file_from_storage(filename_from_query: str) -> str:
     blob.download_to_filename(destination_file_name)
     print("Blob {} from bucket {} downloaded to {}.".format(filename_from_query, bucket_name, destination_file_name))
     return destination_file_name
+
+
+def getenv(key: str) -> str:
+    return os.getenv(key, key + ' does not exist')
 
 
 if __name__ == "__main__":
