@@ -47,7 +47,7 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Start date: ' + str(start))
     print('Stop date: ' + str(stop))
 
-    filename_from_query = input_query.dataStructureName  # + '__1_0.parquet'
+    filename_from_query = input_query.dataStructureName + '__1_0.parquet'
     downloaded_filename = download_file_from_storage(filename_from_query)
 
     print('Parquet metadata: ' + str(pq.read_metadata(downloaded_filename)))
