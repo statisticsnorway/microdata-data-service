@@ -14,6 +14,7 @@ pool:
 variables:
   imageName: 'eu.gcr.io/prod-bip/ssb/microdata/data-service'
   repoName: 'prod-bip/ssb/microdata/data-service'
+  fullSha: '$(Build.SourceVersion)'
   isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 steps:
@@ -36,7 +37,7 @@ steps:
     command: 'build'
     Dockerfile: 'Dockerfile'
     tags: |
-      $(Build.BuildId)
+      $(Build.SourceBranchName)-$(fullSha)
 
 # Authenticate Docker to GCR using predefined service connection
 - task: Docker@2
@@ -56,4 +57,4 @@ steps:
     repository: $(repoName)
     command: 'push'
     tags: |
-      $(Build.BuildId)
+      $(Build.SourceBranchName)-$(fullSha)
