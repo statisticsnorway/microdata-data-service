@@ -6,9 +6,9 @@ Receives GET request for downloading binary file.
 To start the service:
 ```
 % pwd
-/microdata-data-service/data-service
+/microdata-data-service
 
-% uvicorn main:data_service_app --reload
+% ./start_local.sh 
 ```
 
 API documentation:
