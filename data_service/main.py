@@ -4,6 +4,7 @@ from datetime import date
 from typing import Optional
 
 import pyarrow.parquet as pq
+import sys
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
@@ -55,6 +56,8 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Parquet schema: ' + pq.read_schema(downloaded_filename).to_string())
 
     data = pq.read_table(source=downloaded_filename, filters=[('start', '>=', start), ('stop', '<=', stop)])
+    size = sys.getsizeof(data)
+    print('Size of filtered pyarrow table: ' + str(size) + ' bytes (' + str(size/1000000) + ' MB)')
 
     result_filename = str(uuid.uuid4()) + '.parquet'
     # print('Resultset: ' + str(data.to_pandas().head(50)))
