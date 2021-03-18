@@ -63,6 +63,7 @@ def create_result_set_event_data(input_query: InputQuery):
     # print('Resultset: ' + str(data.to_pandas().head(50)))
     pq.write_table(data, result_filename)
     print('Parquet metadata of result set: ' + str(pq.read_metadata(result_filename)))
+    print('Size of file with result set: ' + str(os.path.getsize(result_filename)/1000000) + ' MB')
 
     return {'name': input_query.dataStructureName,
             'dataUrl': getenv('DATA_SERVICE_URL') + '/retrieveResultSet?file_name=' + result_filename}
