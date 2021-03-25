@@ -49,8 +49,7 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Start date: ' + str(start))
     print('Stop date: ' + str(stop))
 
-    filename_from_query = input_query.dataStructureName + '__1_0.parquet'
-    downloaded_filename = download_file_from_storage(filename_from_query)
+    downloaded_filename = download_file_from_storage(input_query.dataStructureName)
 
     print('Parquet metadata: ' + str(pq.read_metadata(downloaded_filename)))
     print('Parquet schema: ' + pq.read_schema(downloaded_filename).to_string())
@@ -78,21 +77,24 @@ def alive():
 def ready():
     return "I'm ready!"
 
-
-def download_file_from_storage(filename_from_query: str) -> str:
+def download_file_from_storage(datastucture_name: str) -> str:
+    download_filename = datastucture_name + '__1_0.parquet'
     bucket_name = getenv('BUCKET_NAME')
-    destination_file_name = filename_from_query
+    blob_download_path = create_download_path(datastucture_name)
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    blob = bucket.get_blob(filename_from_query)
-    blob.download_to_filename(destination_file_name)
-    print("Blob {} from bucket {} downloaded to {}.".format(filename_from_query, bucket_name, destination_file_name))
-    return destination_file_name
+    blob = bucket.get_blob(blob_download_path)
+    blob.download_to_filename(download_filename)
+    print("Downloaded blob {} to {} from bucket {}.".format(blob_download_path, download_filename, bucket_name))
+    return download_filename
 
+def create_download_path(datastucture_name: str) -> str:
+    path = getenv('DATASTORE_ROOT') + '/dataset/' + datastucture_name + '/' + datastucture_name + '__1_0.parquet'
+    print (path)
+    return path
 
 def getenv(key: str) -> str:
     return os.getenv(key, key + ' does not exist')
-
 
 if __name__ == "__main__":
     uvicorn.run(data_service_app, host="0.0.0.0", port=8000)
