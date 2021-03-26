@@ -90,7 +90,7 @@ def download_file_from_storage(datastucture_name: str) -> str:
 
 def create_download_path(datastucture_name: str) -> str:
     path = getenv('DATASTORE_ROOT') + '/dataset/' + datastucture_name + '/' + datastucture_name + '__1_0.parquet'
-    print (path)
+    print ("Trying to download blob {}".format(path))
     return path
 
 def getenv(key: str) -> str:
