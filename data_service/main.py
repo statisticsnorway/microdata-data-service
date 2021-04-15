@@ -1,100 +1,13 @@
-import os
-import uuid
-from datetime import date
-from typing import Optional
-
-import pyarrow.parquet as pq
-import sys
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
-from google.cloud import storage
-from pydantic import BaseModel
 
-
-class InputQuery(BaseModel):
-    dataStructureName: str
-    version: str
-    startDate: str
-    stopDate: str
-    values: Optional[list]
-    population: Optional[dict]
-    interval_filter: Optional[str]
-    include_attributes: Optional[bool] = False
-
+from data_service.api.data import data_router
+from data_service.api.observability import observability_router
 
 data_service_app = FastAPI()
 
-
-@data_service_app.get("/retrieveResultSet")
-def retrieve_result_set(file_name: str):
-    # TODO OAuth2
-    """
-    Retrieve a result set:
-
-    - **file_name**: UUID of the file generated
-    """
-    return FileResponse(path=file_name, filename=file_name, media_type='application/octet-stream')
-
-
-@data_service_app.post("/data/event")
-def create_result_set_event_data(input_query: InputQuery):
-    """
-     Create result set of data with temporality type event.
-
-     - **input_query**: InputQuery as JSON
-     """
-    start = date.fromtimestamp(int(input_query.startDate) * 3600 * 24)
-    stop = date.fromtimestamp(int(input_query.stopDate) * 3600 * 24)
-    print('Start date: ' + str(start))
-    print('Stop date: ' + str(stop))
-
-    downloaded_filename = download_file_from_storage(input_query.dataStructureName)
-
-    print('Parquet metadata: ' + str(pq.read_metadata(downloaded_filename)))
-    print('Parquet schema: ' + pq.read_schema(downloaded_filename).to_string())
-
-    data = pq.read_table(source=downloaded_filename, filters=[('start', '>=', start), ('stop', '<=', stop)])
-    size = sys.getsizeof(data)
-    print('Size of filtered pyarrow table: ' + str(size) + ' bytes (' + str(size/1000000) + ' MB)')
-
-    result_filename = str(uuid.uuid4()) + '.parquet'
-    # print('Resultset: ' + str(data.to_pandas().head(50)))
-    pq.write_table(data, result_filename)
-    print('Parquet metadata of result set: ' + str(pq.read_metadata(result_filename)))
-    print('Size of file with result set: ' + str(os.path.getsize(result_filename)/1000000) + ' MB')
-
-    return {'name': input_query.dataStructureName,
-            'dataUrl': getenv('DATA_SERVICE_URL') + '/retrieveResultSet?file_name=' + result_filename}
-
-
-@data_service_app.get('/health/alive')
-def alive():
-    return "I'm alive!"
-
-
-@data_service_app.get('/health/ready')
-def ready():
-    return "I'm ready!"
-
-def download_file_from_storage(datastucture_name: str) -> str:
-    download_filename = datastucture_name + '__1_0.parquet'
-    bucket_name = getenv('BUCKET_NAME')
-    blob_download_path = create_download_path(datastucture_name)
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.get_blob(blob_download_path)
-    blob.download_to_filename(download_filename)
-    print("Downloaded blob {} to {} from bucket {}.".format(blob_download_path, download_filename, bucket_name))
-    return download_filename
-
-def create_download_path(datastucture_name: str) -> str:
-    path = getenv('DATASTORE_ROOT') + '/dataset/' + datastucture_name + '/' + datastucture_name + '__1_0.parquet'
-    print ("Trying to download blob {}".format(path))
-    return path
-
-def getenv(key: str) -> str:
-    return os.getenv(key, key + ' does not exist')
+data_service_app.include_router(data_router)
+data_service_app.include_router(observability_router)
 
 if __name__ == "__main__":
     uvicorn.run(data_service_app, host="0.0.0.0", port=8000)
