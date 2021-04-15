@@ -37,8 +37,8 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Stop date: ' + str(stop))
 
     # TODO config like Spring profiles (dev, prod)
-    # parquet_file = download_file_from_storage(input_query.dataStructureName)
-    parquet_file = input_query.dataStructureName + '__1_0.parquet'
+    parquet_file = download_file_from_storage(input_query.dataStructureName)
+    # parquet_file = input_query.dataStructureName + '__1_0.parquet'
 
     print('Parquet metadata: ' + str(pq.read_metadata(parquet_file)))
     print('Parquet schema: ' + pq.read_schema(parquet_file).to_string())
