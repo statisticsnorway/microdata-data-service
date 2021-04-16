@@ -1,7 +1,7 @@
 from google.cloud import storage
 
-from data_service import getenv
 from data_service.service.service import FileService
+from data_service.util.util import getenv
 
 
 class GcsFileService(FileService):

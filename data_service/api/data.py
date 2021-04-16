@@ -7,11 +7,11 @@ import sys
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from data_service import getenv
 from data_service.api.models import InputQuery
 from data_service.service.gcs_service import GcsFileService
 from data_service.service.local_file_service import LocalFileService
 from data_service.service.service import FileService
+from data_service.util.util import getenv
 
 data_router = APIRouter()
 
@@ -40,8 +40,8 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Stop date: ' + str(stop))
 
     # TODO config like Spring profiles (dev, prod)
-    file_service: FileService = GcsFileService()
-    # file_service: FileService = LocalFileService()
+    # file_service: FileService = GcsFileService()
+    file_service: FileService = LocalFileService()
     parquet_file = file_service.get_file(path=input_query.dataStructureName)
 
     print('Parquet metadata: ' + str(pq.read_metadata(parquet_file)))
