@@ -4,14 +4,15 @@ from datetime import date
 
 import pyarrow.parquet as pq
 import sys
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
 
 from data_service.api.models import InputQuery
+from data_service.config import config
+from data_service.config.config import get_settings
 from data_service.service.gcs_service import GcsFileService
 from data_service.service.local_file_service import LocalFileService
 from data_service.service.service import FileService
-from data_service.util.util import getenv
 
 data_router = APIRouter()
 
@@ -28,7 +29,7 @@ def retrieve_result_set(file_name: str):
 
 
 @data_router.post("/data/event")
-def create_result_set_event_data(input_query: InputQuery):
+def create_result_set_event_data(input_query: InputQuery, settings: config.Settings = Depends(get_settings)):
     """
      Create result set of data with temporality type event.
 
@@ -41,7 +42,7 @@ def create_result_set_event_data(input_query: InputQuery):
 
     # TODO config like Spring profiles (dev, prod)
     # file_service: FileService = GcsFileService()
-    file_service: FileService = LocalFileService()
+    file_service: FileService = LocalFileService(settings)
     parquet_file = file_service.get_file(path=input_query.dataStructureName)
 
     print('Parquet metadata: ' + str(pq.read_metadata(parquet_file)))
@@ -58,4 +59,4 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Size of file with result set: ' + str(os.path.getsize(result_filename)/1000000) + ' MB')
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': getenv('DATA_SERVICE_URL') + '/retrieveResultSet?file_name=' + result_filename}
+            'dataUrl': settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename}

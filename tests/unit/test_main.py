@@ -4,12 +4,20 @@ import unittest
 from fastapi.testclient import TestClient
 
 from data_service import data_service_app
+from data_service.config import config
 
 client = TestClient(data_service_app)
 
-os.environ['BUCKET_NAME'] = 'fake_bucket_name'
-os.environ['DATASTORE_ROOT'] = 'tests/resources/unit/datastore_root'
-os.environ['DATA_SERVICE_URL'] = 'http://fake-data-service-url'
+
+def get_settings_override():
+    return config.Settings(
+        DATASTORE_ROOT='tests/resources/unit/datastore_root',
+        BUCKET_NAME='fake_bucket_name',
+        DATA_SERVICE_URL='http://fake-data-service-url'
+    )
+
+
+data_service_app.dependency_overrides[config.get_settings] = get_settings_override
 
 
 class TestDataService(unittest.TestCase):
