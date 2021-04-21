@@ -14,4 +14,5 @@ class LocalFileService(FileService):
         return self.__create_download_path(path)
 
     def __create_download_path(self, path: str) -> str:
-        return self.settings.DATASTORE_ROOT + '/dataset/' + path + '/' + path + '__1_0.parquet'
+        return self.settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX + '/' + self.settings.DATASTORE_ROOT \
+               + '/dataset/' + path + '/' + path + '__1_0.parquet'

@@ -11,9 +11,10 @@ client = TestClient(data_service_app)
 
 def get_settings_override():
     return config.Settings(
-        DATASTORE_ROOT='tests/resources/unit/datastore_root',
+        DATASTORE_ROOT='no_ssb_test',
         BUCKET_NAME='fake_bucket_name',
-        DATA_SERVICE_URL='http://fake-data-service-url'
+        DATA_SERVICE_URL='http://fake-data-service-url',
+        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources/unit'
     )
 
 
