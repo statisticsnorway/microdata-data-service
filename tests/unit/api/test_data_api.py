@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from application import data_service_app
 from data_service.config import config
+from tests.util import util
 
 client = TestClient(data_service_app)
 
@@ -33,3 +34,10 @@ class TestDataService(unittest.TestCase):
         assert response.status_code == 200
         assert 'dataUrl' in response.json()
         assert 'http://fake-data-service-url/retrieveResultSet?file_name=' in response.json()['dataUrl']
+
+    def test_util_could_be_run_from_test_module(self):
+        util.convert_csv_to_parquet(
+            csv_file="../../resources/no_ssb_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0.csv",
+            parquet_partition_name="../../resources/no_ssb_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0"
+        )
+        assert 1 == 1
