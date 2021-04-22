@@ -3,7 +3,7 @@ import unittest
 
 from fastapi.testclient import TestClient
 
-from data_service import data_service_app
+from application import data_service_app
 from data_service.config import config
 
 client = TestClient(data_service_app)
