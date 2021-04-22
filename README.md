@@ -22,3 +22,12 @@ http://127.0.0.1:8000/redoc
 docker build --tag data-service .
 docker run --publish 8000:8000 data-service
 ````
+
+## Running tests
+Open terminal and go to root directory of the project and run:
+````
+pytest
+````
+
+## Running/debugging tests in IntelliJ IDEA
+Go to Edit configurations... -> Add New Configuration -> Python tests -> pytest.

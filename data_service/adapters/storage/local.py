@@ -2,10 +2,10 @@ from fastapi import Depends
 
 from data_service.config import config
 from data_service.config.config import get_settings
-from data_service.service.service import FileService
+from data_service.core.file_adapter import FileAdapter
 
 
-class LocalFileService(FileService):
+class LocalFileAdapter(FileAdapter):
     def __init__(self, settings: config.Settings = Depends(get_settings)):
         super().__init__()
         self.settings = settings
