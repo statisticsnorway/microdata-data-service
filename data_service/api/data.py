@@ -62,6 +62,6 @@ def create_result_set_event_data(input_query: InputQuery, settings: config.Setti
 
 def get_storage(settings: config.Settings):
     if settings.STORAGE_ADAPTER == 'GCS':
-        return GcsFileService()
+        return GcsFileService(settings)
     else:
-        return LocalFileService()
+        return LocalFileService(settings)
