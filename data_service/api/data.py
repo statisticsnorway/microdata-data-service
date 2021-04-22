@@ -4,11 +4,15 @@ from datetime import date
 
 import pyarrow.parquet as pq
 import sys
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
-from google.cloud import storage
 
 from data_service.api.models import InputQuery
+from data_service.config import config
+from data_service.config.config import get_settings
+from data_service.service.gcs_service import GcsFileService
+from data_service.service.local_file_service import LocalFileService
+from data_service.service.service import FileService
 
 data_router = APIRouter()
 
@@ -25,7 +29,7 @@ def retrieve_result_set(file_name: str):
 
 
 @data_router.post("/data/event")
-def create_result_set_event_data(input_query: InputQuery):
+def create_result_set_event_data(input_query: InputQuery, settings: config.Settings = Depends(get_settings)):
     """
      Create result set of data with temporality type event.
 
@@ -37,8 +41,9 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Stop date: ' + str(stop))
 
     # TODO config like Spring profiles (dev, prod)
-    parquet_file = download_file_from_storage(input_query.dataStructureName)
-    # parquet_file = input_query.dataStructureName + '__1_0.parquet'
+    # file_service: FileService = GcsFileService()
+    file_service: FileService = LocalFileService(settings)
+    parquet_file = file_service.get_file(path=input_query.dataStructureName)
 
     print('Parquet metadata: ' + str(pq.read_metadata(parquet_file)))
     print('Parquet schema: ' + pq.read_schema(parquet_file).to_string())
@@ -54,26 +59,4 @@ def create_result_set_event_data(input_query: InputQuery):
     print('Size of file with result set: ' + str(os.path.getsize(result_filename)/1000000) + ' MB')
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': getenv('DATA_SERVICE_URL') + '/retrieveResultSet?file_name=' + result_filename}
-
-
-def download_file_from_storage(datastucture_name: str) -> str:
-    download_filename = datastucture_name + '__1_0.parquet'
-    bucket_name = getenv('BUCKET_NAME')
-    blob_download_path = create_download_path(datastucture_name)
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.get_blob(blob_download_path)
-    blob.download_to_filename(download_filename)
-    print("Downloaded blob {} to {} from bucket {}.".format(blob_download_path, download_filename, bucket_name))
-    return download_filename
-
-
-def create_download_path(datastructure_name: str) -> str:
-    path = getenv('DATASTORE_ROOT') + '/dataset/' + datastructure_name + '/' + datastructure_name + '__1_0.parquet'
-    print ("Trying to download blob {}".format(path))
-    return path
-
-
-def getenv(key: str) -> str:
-    return os.getenv(key, key + ' does not exist')
+            'dataUrl': settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename}
