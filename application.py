@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 
-from data_service.api.data import data_router
-from data_service.api.observability import observability_router
+from data_service.api.data_api import data_router
+from data_service.api.observability_api import observability_router
 
 data_service_app = FastAPI()
 
