@@ -9,6 +9,6 @@ export DATASTORE_ROOT="no_ssb_test"
 
 export GOOGLE_APPLICATION_CREDENTIALS=/hers/goes/your/KEYFILE.json
 
-export READ_FROM_BUCKET = 'true'
+export STORAGE_ADAPTER = 'LOCAL'
 
 uvicorn main:data_service_app --reload

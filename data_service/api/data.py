@@ -40,9 +40,7 @@ def create_result_set_event_data(input_query: InputQuery, settings: config.Setti
     print('Start date: ' + str(start))
     print('Stop date: ' + str(stop))
 
-    # TODO config like Spring profiles (dev, prod)
-    # file_service: FileService = GcsFileService()
-    file_service: FileService = LocalFileService(settings)
+    file_service: FileService = get_storage(settings)
     parquet_file = file_service.get_file(path=input_query.dataStructureName)
 
     print('Parquet metadata: ' + str(pq.read_metadata(parquet_file)))
@@ -60,3 +58,10 @@ def create_result_set_event_data(input_query: InputQuery, settings: config.Setti
 
     return {'name': input_query.dataStructureName,
             'dataUrl': settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename}
+
+
+def get_storage(settings: config.Settings):
+    if settings.STORAGE_ADAPTER == 'GCS':
+        return GcsFileService()
+    else:
+        return LocalFileService()

@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     BUCKET_NAME: str
     DATA_SERVICE_URL: str
     FILE_SERVICE_DATASTORE_ROOT_PREFIX: str
+    STORAGE_ADAPTER: str
 
     class Config:
         env_file = ".env"
