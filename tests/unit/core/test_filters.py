@@ -46,12 +46,12 @@ class TestFilters(unittest.TestCase):
     def test_filter_by_time_period(self):
         # ../../tests/resources/unit_test_data/TEST_BOSTED__3_2.csv
         # Dette på grunn av OSError: [Errno 30] Read-only file system: '/resources'
-        csv_file = 'TEST_BOSTED__3_2.csv'
-        parquet_path = 'TEST_BOSTED__3_2'
+        csv_file = 'EXPERIMENTAL__3_2.csv'
+        parquet_path = 'EXPERIMENTAL__3_2'
 
 
         convert_csv_to_parquet(csv_file, parquet_path, False)
-        parquet_file = glob.glob("TEST_BOSTED__3_2/*.parquet")[0]
+        parquet_file = glob.glob("EXPERIMENTAL__3_2/*.parquet")[0]
 
         # parquet_file = 'TEST_BOSTED__3_2/1a5324c3d6844e1788f6719b934dc069.parquet'
         print(parquet_file)

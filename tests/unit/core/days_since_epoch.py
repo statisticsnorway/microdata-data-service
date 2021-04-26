@@ -7,8 +7,8 @@ def to_days_since_epoch(date: str):
     # date_obj = datetime.strptime(date, '%Y-%m-%d')
     return ((date_obj - epoch).days)
 
-print(to_days_since_epoch("19790101"))
-print(to_days_since_epoch("19910210"))
+print(to_days_since_epoch("19910101"))
+print(to_days_since_epoch("19911231"))
 
 # print(to_days_since_epoch("2000-01-01"))
 # print(to_days_since_epoch("2000-12-31"))
