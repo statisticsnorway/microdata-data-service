@@ -1,5 +1,6 @@
 import shutil
 
+import os
 import pandas
 import pyarrow as pa
 import pyarrow.csv as pv
@@ -12,6 +13,8 @@ from pathlib import Path
 def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     print("Start ", datetime.now())
 
+    print("Abs path of csv file: " + os.path.abspath(csv_file))
+
     #Remove old file
     if Path(parquet_partition_name).is_dir():
         shutil.rmtree(parquet_partition_name)
@@ -20,7 +23,7 @@ def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     csv_read_options = pv.ReadOptions(
         skip_rows=0,
         encoding="utf8",
-        column_names=["unit_id", "value", "start", "stop", "start_year", "start_unix_days", "stop_unix_days"])
+        column_names=["unit_id", "value", "start", "stop", "start_year", "start_epoch_days", "start_epoch_days"])
 
     # ParseOptions: https://arrow.apache.org/docs/python/generated/pyarrow.csv.ParseOptions.html#pyarrow.csv.ParseOptions
     csv_parse_options = pv.ParseOptions(delimiter=';')
