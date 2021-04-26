@@ -37,7 +37,7 @@ class TestDataService(unittest.TestCase):
 
     def test_util_could_be_run_from_test_module(self):
         util.convert_csv_to_parquet(
-            csv_file="../../resources/no_ssb_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0.csv",
-            parquet_partition_name="../../resources/no_ssb_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0"
+            csv_file="tests/resources/no_ssb_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0.csv",
+            parquet_partition_name="tests/resources/no_ssb_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0"
         )
         assert 1 == 1
