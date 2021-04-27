@@ -41,3 +41,8 @@ def filter_by_time(parquet_partition_name, date: int):
     except:
         print('Empty resultset')
     return table
+
+
+def filter_by_fixed():
+    raise Exception('No filtering of fixed datasets! '
+                    'A fixed dataset query returns the whole dataset without filtering')
