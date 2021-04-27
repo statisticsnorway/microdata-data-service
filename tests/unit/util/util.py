@@ -1,5 +1,6 @@
 import shutil
 
+import os
 import pandas
 import pyarrow as pa
 import pyarrow.csv as pv
@@ -9,12 +10,17 @@ from datetime import datetime
 from pathlib import Path
 
 
-def convert_csv_to_parquet(csv_file: str, parquet_path: str, partitioned: bool):
+def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     print("Start ", datetime.now())
 
+    print(csv_file)
+    print(parquet_partition_name)
+
+    print("Abs path of csv file: " + os.path.abspath(csv_file))
+
     #Remove old file
-    if Path(parquet_path).is_dir():
-        shutil.rmtree(parquet_path)
+    if Path(parquet_partition_name).is_dir():
+        shutil.rmtree(parquet_partition_name)
 
     # ReadOptions: https://arrow.apache.org/docs/python/generated/pyarrow.csv.ReadOptions.html#pyarrow.csv.ReadOptions
     csv_read_options = pv.ReadOptions(
@@ -28,7 +34,7 @@ def convert_csv_to_parquet(csv_file: str, parquet_path: str, partitioned: bool):
     # Types: https://arrow.apache.org/docs/python/api/datatypes.html
     # TODO nullable parameter does not work as expected!
     data_schema = pa.schema([
-#        pa.field(name='start_year', type=pa.string(), nullable=True),
+        pa.field(name='start_year', type=pa.string(), nullable=True),
         pa.field(name='unit_id', type=pa.uint64(), nullable=False),
         pa.field(name='value', type=pa.string(), nullable=False),
         pa.field(name='start_epoch_days', type=pa.int16(), nullable=True),
@@ -36,9 +42,11 @@ def convert_csv_to_parquet(csv_file: str, parquet_path: str, partitioned: bool):
     ])
 
     # ConvertOptions: https://arrow.apache.org/docs/python/generated/pyarrow.csv.ConvertOptions.html#pyarrow.csv.ConvertOptions
+    csv_convert_options = pv.ConvertOptions(column_types=data_schema,
+                                    include_columns=["start_year", "unit_id", "value", "start_epoch_days", "stop_epoch_days"])
 
-    include_columns=["unit_id", "value", "start_epoch_days", "stop_epoch_days"]
-    csv_convert_options = pv.ConvertOptions(column_types=data_schema, include_columns=include_columns)
+    # csv_convert_options = pv.ConvertOptions(column_types=data_schema)
+
 
     # read_csv: https://arrow.apache.org/docs/python/generated/pyarrow.csv.read_csv.html#pyarrow.csv.read_csv
     table = pv.read_csv(input_file=csv_file, read_options=csv_read_options, parse_options=csv_parse_options,
@@ -46,16 +54,14 @@ def convert_csv_to_parquet(csv_file: str, parquet_path: str, partitioned: bool):
 
     print('Bytes: ' + str(table.nbytes))
     print('Rows: ' + str(table.num_rows))
-    print(str(table.schema))
+    print('Schema: ' + str(table.schema))
     print('Column names: ' + str(table.column_names))
     pandas.set_option('max_columns', None)  # print all columns
     print(table.to_pandas().head(10))
 
-    if partitioned:
-        print('Partisjonert på start_year')
-        pq.write_to_dataset(table, parquet_path='',  root_path=parquet_path, partition_cols=['start_year'])
-    else:
-        print('Ikke partisjonert')
-        pq.write_to_dataset(table, root_path=parquet_path)
+    # write with partitions
+    pq.write_to_dataset(table,
+                        root_path=parquet_partition_name,
+                        partition_cols=['start_year'])
 
     print("End ", datetime.now())
