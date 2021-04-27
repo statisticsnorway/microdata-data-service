@@ -42,22 +42,19 @@ def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     ])
 
     # ConvertOptions: https://arrow.apache.org/docs/python/generated/pyarrow.csv.ConvertOptions.html#pyarrow.csv.ConvertOptions
-    csv_convert_options = pv.ConvertOptions(column_types=data_schema,
-                                    include_columns=["start_year", "unit_id", "value", "start_epoch_days", "stop_epoch_days"])
-
-    # csv_convert_options = pv.ConvertOptions(column_types=data_schema)
-
+    csv_convert_options = pv.ConvertOptions(column_types=data_schema)
+                                    #include_columns=["start_year", "unit_id", "value", "start_epoch_days", "stop_epoch_days"])
 
     # read_csv: https://arrow.apache.org/docs/python/generated/pyarrow.csv.read_csv.html#pyarrow.csv.read_csv
     table = pv.read_csv(input_file=csv_file, read_options=csv_read_options, parse_options=csv_parse_options,
                         convert_options=csv_convert_options)
 
-    print('Bytes: ' + str(table.nbytes))
-    print('Rows: ' + str(table.num_rows))
-    print('Schema: ' + str(table.schema))
-    print('Column names: ' + str(table.column_names))
-    pandas.set_option('max_columns', None)  # print all columns
-    print(table.to_pandas().head(10))
+    # print('Bytes: ' + str(table.nbytes))
+    # print('Rows: ' + str(table.num_rows))
+    # print('Schema: ' + str(table.schema))
+    # print('Column names: ' + str(table.column_names))
+    # pandas.set_option('max_columns', None)  # print all columns
+    # print(table.to_pandas().head(10))
 
     # write with partitions
     pq.write_to_dataset(table,
