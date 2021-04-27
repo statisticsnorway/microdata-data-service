@@ -25,7 +25,7 @@ def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     csv_read_options = pv.ReadOptions(
         skip_rows=0,
         encoding="utf8",
-        column_names=["unit_id", "value", "start", "stop", "start_year", "start_epoch_days", "start_epoch_days"])
+        column_names=["unit_id", "value", "start", "stop", "start_year", "start_epoch_days", "stop_epoch_days"])
 
     # ParseOptions: https://arrow.apache.org/docs/python/generated/pyarrow.csv.ParseOptions.html#pyarrow.csv.ParseOptions
     csv_parse_options = pv.ParseOptions(delimiter=';')
