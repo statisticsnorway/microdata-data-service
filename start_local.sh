@@ -5,4 +5,6 @@ export GOOGLE_APPLICATION_CREDENTIALS=/here/goes/your/KEYFILE.json
 
 export STORAGE_ADAPTER='LOCAL'
 
+export PYTHONUNBUFFERED=1
+
 uvicorn application:data_service_app --reload
