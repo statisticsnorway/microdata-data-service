@@ -4,10 +4,7 @@ from fastapi.testclient import TestClient
 
 from application import data_service_app
 from data_service.config import config
-from data_service.config.logging import get_logger
 from tests.util import util
-
-log = get_logger(__name__)
 
 client = TestClient(data_service_app)
 
