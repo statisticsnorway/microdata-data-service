@@ -7,4 +7,4 @@ export STORAGE_ADAPTER='LOCAL'
 
 export PYTHONUNBUFFERED=1
 
-uvicorn application:data_service_app --reload
+uvicorn --log-config data_service/config/logging.yaml application:data_service_app --reload
