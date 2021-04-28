@@ -36,6 +36,8 @@ def process(input_query: InputQuery, settings: config.Settings) -> str:
 
 def get_storage(settings: config.Settings):
     if settings.STORAGE_ADAPTER == 'GCS':
+        log.info('Using GcsBucketAdapter')
         return GcsBucketAdapter(settings)
     else:
+        log.info('Using LocalFiledapter')
         return LocalFileAdapter(settings)

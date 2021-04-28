@@ -1,7 +1,4 @@
-import os
 import unittest
-
-os.environ['UNIT_TESTING'] = 'true'
 
 from fastapi.testclient import TestClient
 

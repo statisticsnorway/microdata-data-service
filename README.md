@@ -29,5 +29,12 @@ Open terminal and go to root directory of the project and run:
 pytest
 ````
 
+## Running/debugging application in IntelliJ IDEA
+Go to Edit configurations... -> Add New Configuration -> Python.
+
+Set "Script path" to `[your-path]/application.py`
+
+Set "Working directory" to `[your-path]/microdata-data-service`
+
 ## Running/debugging tests in IntelliJ IDEA
 Go to Edit configurations... -> Add New Configuration -> Python tests -> pytest.
