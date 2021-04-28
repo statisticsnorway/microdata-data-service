@@ -38,7 +38,7 @@ class TestFilters(unittest.TestCase):
         print('======== EXPECTED ==================')
         print(expected.to_pandas())
 
-        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8034, True)
+        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8034, None, True)
 
         print('======== ACTUAL ==================')
         print(actual.to_pandas())
@@ -78,7 +78,29 @@ class TestFilters(unittest.TestCase):
         print('======== EXPECTED ==================')
         print(expected.to_pandas())
 
-        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, True)
+        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, None, True)
+
+        print('======== ACTUAL ==================')
+        print(actual.to_pandas())
+
+        assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
+
+    def test_filter_by_time_period_from_7670_to_8400_and_population_filter(self):
+        print('TEST : test_filter_by_time_period_from_7670_to_8400_and_population_filter')
+
+        expected_data = {
+            'unit_id': [1000000002, 1000000003, 1000000003, 1000000003, 1000000002],
+            'value': ["8", "12", "2", "12", "8"],
+            'start_epoch_days': [1461, 4018, 7701, 7957, 8066],
+            'stop_epoch_days': [8065, 7700, 7956, np.nan, np.nan]}
+
+        expected = Table.from_pydict(expected_data)
+        population_filter = [1000000002, 1000000003]
+
+        print('======== EXPECTED ==================')
+        print(expected.to_pandas())
+
+        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, population_filter, True)
 
         print('======== ACTUAL ==================')
         print(actual.to_pandas())
@@ -98,7 +120,7 @@ class TestFilters(unittest.TestCase):
         print('======== EXPECTED ==================')
         print(expected.to_pandas())
 
-        actual = filter_by_time(self.parquet_partition_name, 7669, True)
+        actual = filter_by_time(self.parquet_partition_name, 7669, None, True)
 
         print('======== ACTUAL ==================')
         print(actual.to_pandas())
@@ -117,6 +139,28 @@ class TestFilters(unittest.TestCase):
         print(expected.to_pandas())
 
         actual = filter_by_time(self.parquet_partition_name, 7669)
+
+        print('======== ACTUAL ==================')
+        print(actual.to_pandas())
+
+        assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
+
+    def test_filter_by_time_and_population_filter(self):
+        print('TEST : test_filter_by_time_and_population_filter')
+
+        expected_data = {
+            'unit_id': [1000000002, 1000000003],
+            'value': ["8", "12"],
+            'start_epoch_days': [1461, 7957],
+            'stop_epoch_days': [8065, np.nan]}
+
+        expected = Table.from_pydict(expected_data)
+        population_filter = [1000000002, 1000000003]
+
+        print('======== EXPECTED ==================')
+        print(expected.to_pandas())
+
+        actual = filter_by_time(self.parquet_partition_name, 8034, population_filter, True)
 
         print('======== ACTUAL ==================')
         print(actual.to_pandas())
