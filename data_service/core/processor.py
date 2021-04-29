@@ -1,19 +1,19 @@
+import logging
 import os
+import uuid
+
 import pyarrow.parquet as pq
 import sys
-import uuid
 
 from data_service.adapters.storage.gcs import GcsBucketAdapter
 from data_service.adapters.storage.local import LocalFileAdapter
 from data_service.api.query_models import InputQuery
 from data_service.config import config
-from data_service.config.logging import get_logger
 from data_service.core.file_adapter import FileAdapter
-
-log = get_logger(__name__)
 
 
 def process(input_query: InputQuery, settings: config.Settings) -> str:
+    log = logging.getLogger(__name__)
     file_service: FileAdapter = get_storage(settings)
     parquet_file = file_service.get_file(path=input_query.dataStructureName)
 
@@ -35,6 +35,8 @@ def process(input_query: InputQuery, settings: config.Settings) -> str:
 
 
 def get_storage(settings: config.Settings):
+    log = logging.getLogger(__name__)
+
     if settings.STORAGE_ADAPTER == 'GCS':
         log.info('Using GcsBucketAdapter')
         return GcsBucketAdapter(settings)

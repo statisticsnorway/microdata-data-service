@@ -1,10 +1,9 @@
+import logging
 from functools import lru_cache
 
 from pydantic import BaseSettings, ValidationError
 
-from data_service.config.logging import get_logger
-
-log = get_logger(__name__)
+module_logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -23,4 +22,4 @@ def get_settings():
     try:
         return Settings()
     except ValidationError as e:
-        log.exception(e)
+        module_logger.exception(e)
