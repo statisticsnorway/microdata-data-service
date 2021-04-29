@@ -17,35 +17,30 @@ def filter_by_time_period(parquet_partition_name: str, start: int, stop: int, po
     stop_epoch_ge_start: Expression = ds.field('stop_epoch_days') >= start
     stop_epoch_le_stop: Expression = ds.field('stop_epoch_days') <= stop
 
+    find_by_time_period_filter = (start_epoch_le_start & stop_missing) | \
+                                 (start_epoch_le_start & stop_epoch_ge_start) | \
+                                 (start_epoch_ge_start & start_epoch_le_stop) | \
+                                 (start_epoch_g_start & stop_epoch_le_stop)
+
     if population_filter:
         population: Expression = ds.field("unit_id").isin(population_filter)
-        find_by_time_period_filter = population & ((start_epoch_le_start & stop_missing) | \
-                                     (start_epoch_le_start & stop_epoch_ge_start) | \
-                                     (start_epoch_ge_start & start_epoch_le_stop) | \
-                                     (start_epoch_g_start & stop_epoch_le_stop))
-    else:
-        find_by_time_period_filter = (start_epoch_le_start & stop_missing) | \
-                                     (start_epoch_le_start & stop_epoch_ge_start) | \
-                                     (start_epoch_ge_start & start_epoch_le_stop) | \
-                                     (start_epoch_g_start & stop_epoch_le_stop)
+        find_by_time_period_filter = population & find_by_time_period_filter
 
     table = do_filter(find_by_time_period_filter, incl_attributes, parquet_partition_name)
     return table
 
 
 def filter_by_time(parquet_partition_name: str, date: int, population_filter: list = None, incl_attributes=False):
-
     stop_missing: Expression = ~ds.field("stop_epoch_days").is_valid()
     start_epoch_le_date: Expression = ds.field('start_epoch_days') <= date
     stop_epoch_ge_date: Expression = ds.field('stop_epoch_days') >= date
 
+    find_by_time_filter = (start_epoch_le_date & stop_missing) | \
+                          (start_epoch_le_date & stop_epoch_ge_date)
+
     if population_filter:
         population: Expression = ds.field("unit_id").isin(population_filter)
-        find_by_time_filter = population & ((start_epoch_le_date & stop_missing) | \
-                                            (start_epoch_le_date & stop_epoch_ge_date))
-    else:
-        find_by_time_filter = (start_epoch_le_date & stop_missing) | \
-                              (start_epoch_le_date & stop_epoch_ge_date)
+        find_by_time_filter = population & find_by_time_filter
 
     table = do_filter(find_by_time_filter, incl_attributes, parquet_partition_name)
     return table
