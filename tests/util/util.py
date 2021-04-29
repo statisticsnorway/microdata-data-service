@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -7,12 +8,9 @@ import pyarrow as pa
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
 
-from data_service.config.logging import get_logger
-
-log = get_logger(__name__)
-
 
 def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
+    log = logging.getLogger(__name__)
     log.info('Start convert csv to parquet')
 
     log.info(f'Abs path of csv file: {os.path.abspath(csv_file)}')

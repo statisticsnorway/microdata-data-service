@@ -4,7 +4,6 @@ from fastapi.testclient import TestClient
 
 from application import data_service_app
 from data_service.config import config
-from tests.util import util
 
 client = TestClient(data_service_app)
 

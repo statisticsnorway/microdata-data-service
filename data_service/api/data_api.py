@@ -1,13 +1,13 @@
+import logging
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
 
 from data_service.api.query_models import InputQuery
 from data_service.config import config
 from data_service.config.config import get_settings
-from data_service.config.logging import get_logger
 from data_service.core import processor
 
-log = get_logger(__name__)
 data_router = APIRouter()
 
 
@@ -30,7 +30,7 @@ def create_result_set_event_data(input_query: InputQuery, settings: config.Setti
      - **input_query**: InputQuery as JSON
      - **settings**: config.Settings object
      """
-
+    log = logging.getLogger(__name__)
     result_filename = processor.process(input_query, settings)
     log.info(f'Filename with the result set: {result_filename}')
 
