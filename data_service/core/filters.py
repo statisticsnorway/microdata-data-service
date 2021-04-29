@@ -46,6 +46,15 @@ def filter_by_time(parquet_partition_name: str, date: int, population_filter: li
     return table
 
 
+def filter_by_fixed(parquet_partition_name: str, population_filter: list = None, incl_attributes=False):
+    if population_filter:
+        fixed_filter: Expression = ds.field("unit_id").isin(population_filter)
+        table = do_filter(fixed_filter, incl_attributes, parquet_partition_name)
+    else:
+        table = do_filter(None, incl_attributes, parquet_partition_name)
+    return table
+
+
 def do_filter(filter: Expression, incl_attributes: bool, parquet_partition_name: str):
     table = None
     try:
@@ -58,8 +67,3 @@ def do_filter(filter: Expression, incl_attributes: bool, parquet_partition_name:
     except:
         print('Empty resultset')
     return table
-
-
-def filter_by_fixed():
-    raise Exception('No filtering of fixed datasets! '
-                    'A fixed dataset query returns the whole dataset without filtering')
