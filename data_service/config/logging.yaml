@@ -3,7 +3,7 @@ formatters:
   simple:
     format: '%(asctime)s - %(threadName)s - %(name)s - %(levelname)s - %(message)s'
   json:
-    format: "{'@timestamp':'%(asctime)s', 'thread_name':'%(threadName)s', 'logger_name':'%(name)s', 'level':'%(levelname)s', 'message':'%(message)s'}"
+    format: '{"@timestamp":"%(asctime)s", "thread_name":"%(threadName)s", "logger_name":"%(name)s", "level":"%(levelname)s", "message":"%(message)s"}'
 handlers:
   console:
     class: logging.StreamHandler
