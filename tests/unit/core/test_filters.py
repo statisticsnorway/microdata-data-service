@@ -34,14 +34,10 @@ class TestFilters(unittest.TestCase):
             'stop_epoch_days': [8065, 7710, 7700, 7850, 8125, 7956, np.nan]}
 
         expected = Table.from_pydict(expected_data)
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time_period(self.parquet_partition_name, 7670, 8034, None, True)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
@@ -52,14 +48,10 @@ class TestFilters(unittest.TestCase):
             'value': ["8", "2", "12", "3", "16", "2", "12"]}
 
         expected = Table.from_pydict(expected_data)
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time_period(self.parquet_partition_name, 7670, 8034)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
@@ -74,19 +66,17 @@ class TestFilters(unittest.TestCase):
             'stop_epoch_days': [8065, 7710, 7700, 7850, 8125, 7956, np.nan, np.nan, np.nan]}
 
         expected = Table.from_pydict(expected_data)
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, None, True)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
     def test_filter_by_time_period_from_7670_to_8400_and_population_filter(self):
         print('TEST : test_filter_by_time_period_from_7670_to_8400_and_population_filter')
+
+        population_filter = [1000000002, 1000000003]
 
         expected_data = {
             'unit_id': [1000000002, 1000000003, 1000000003, 1000000003, 1000000002],
@@ -95,15 +85,10 @@ class TestFilters(unittest.TestCase):
             'stop_epoch_days': [8065, 7700, 7956, np.nan, np.nan]}
 
         expected = Table.from_pydict(expected_data)
-        population_filter = [1000000002, 1000000003]
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, population_filter, True)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
@@ -116,14 +101,10 @@ class TestFilters(unittest.TestCase):
             'stop_epoch_days': [8065, 7710, 7700, 7850]}
 
         expected = Table.from_pydict(expected_data)
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time(self.parquet_partition_name, 7669, None, True)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
@@ -134,19 +115,17 @@ class TestFilters(unittest.TestCase):
             'value': ["8", "2", "12", "3"]}
 
         expected = Table.from_pydict(expected_data)
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time(self.parquet_partition_name, 7669)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
     def test_filter_by_time_and_population_filter(self):
         print('TEST : test_filter_by_time_and_population_filter')
+
+        population_filter = [1000000002, 1000000003]
 
         expected_data = {
             'unit_id': [1000000002, 1000000003],
@@ -155,15 +134,10 @@ class TestFilters(unittest.TestCase):
             'stop_epoch_days': [8065, np.nan]}
 
         expected = Table.from_pydict(expected_data)
-        population_filter = [1000000002, 1000000003]
-
-        print('======== EXPECTED ==================')
-        print(expected.to_pandas())
+        self.print_expected(expected)
 
         actual = filter_by_time(self.parquet_partition_name, 8034, population_filter, True)
-
-        print('======== ACTUAL ==================')
-        print(actual.to_pandas())
+        self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
@@ -189,3 +163,11 @@ class TestFilters(unittest.TestCase):
             assert True
         else:
             self.fail('Exception not raised')
+
+    def print_expected(self, expected: Table):
+        print('==================== EXPECTED ========================')
+        print(expected.to_pandas())
+
+    def print_actual(self, actual: Table):
+        print('==================== ACTUAL ==========================')
+        print(actual.to_pandas())
