@@ -25,7 +25,7 @@ class TestFilters(unittest.TestCase):
     def tearDownClass(cls):
         shutil.rmtree(cls.parquet_partition_name)
 
-    def test_filter_by_time_period_from_7670_to_8034(self):
+    def test_by_time_period_from_7670_to_8034(self):
         print('TEST : test_filter_by_time_period_from_7670_to_8034')
         expected_data = {
             'unit_id': [1000000002, 1000000004, 1000000003, 1000000001, 1000000001, 1000000003, 1000000003],
@@ -41,7 +41,7 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time_period_from_7670_to_8034_excluding_attributes(self):
+    def test_by_time_period_from_7670_to_8034_excluding_attributes(self):
         print('TEST : test_filter_by_time_period_from_7670_to_8034_excluding_attributes')
         expected_data = {
             'unit_id': [1000000002, 1000000004, 1000000003, 1000000001, 1000000001, 1000000003, 1000000003],
@@ -55,7 +55,7 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time_period_from_7670_to_8400(self):
+    def test_by_time_period_from_7670_to_8400(self):
         print('TEST : test_filter_by_time_period_from_7670_to_8400')
 
         expected_data = {
@@ -73,8 +73,8 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time_period_from_7670_to_8400_and_population_filter(self):
-        print('TEST : test_filter_by_time_period_from_7670_to_8400_and_population_filter')
+    def test_by_time_period_from_7670_to_8400_including_attributes_and_population_filter(self):
+        print('TEST : test_filter_by_time_period_from_7670_to_8400_including_attributes_and_population_filter')
 
         population_filter = [1000000002, 1000000003]
 
@@ -92,7 +92,7 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time(self):
+    def test_by_time(self):
         print('TEST : test_filter_by_time')
         expected_data = {
             'unit_id': [1000000002, 1000000004, 1000000003, 1000000001],
@@ -108,7 +108,7 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time_excluding_attributes(self):
+    def test_by_time_excluding_attributes(self):
         print('TEST : test_filter_by_time_excluding_attributes')
         expected_data = {
             'unit_id': [1000000002, 1000000004, 1000000003, 1000000001],
@@ -122,7 +122,7 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time_and_population_filter(self):
+    def test_by_time_including_attributes_and_population_filter(self):
         print('TEST : test_filter_by_time_and_population_filter')
 
         population_filter = [1000000002, 1000000003]
@@ -141,28 +141,72 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
-    def test_filter_by_time_period_non_existing_partition(self):
+    def test_by_fixed(self):
+        print('TEST : test_filter_by_fixed')
+
+        expected_data = {
+            'unit_id': [1000000002, 1000000004, 1000000003, 1000000001, 1000000001, 1000000003, 1000000003,
+                        1000000001, 1000000002],
+            'value': ["8", "2", "12", "3", "16", "2", "12", "3", "8"],
+            'start_epoch_days': [1461, 3287, 4018, 5479, 7851, 7701, 7957, 8126, 8066],
+            'stop_epoch_days': [8065, 7710, 7700, 7850, 8125, 7956, np.nan, np.nan, np.nan]}
+
+        expected = Table.from_pydict(expected_data)
+        self.print_expected(expected)
+
+        actual = filter_by_fixed(self.parquet_partition_name, None, True)
+        self.print_actual(actual)
+
+        assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
+
+    def test_by_fixed_excluding_attributes(self):
+        print('TEST : test_filter_by_fixed_excluding_attributes')
+
+        expected_data = {
+            'unit_id': [1000000002, 1000000004, 1000000003, 1000000001, 1000000001, 1000000003, 1000000003,
+                        1000000001, 1000000002],
+            'value': ["8", "2", "12", "3", "16", "2", "12", "3", "8"]}
+
+        expected = Table.from_pydict(expected_data)
+        self.print_expected(expected)
+
+        actual = filter_by_fixed(self.parquet_partition_name)
+        self.print_actual(actual)
+
+        assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
+
+    def test_by_fixed_including_attributes_and_population_filter(self):
+        print('TEST : test_filter_by_fixed_including_attributes_and_population_filter')
+
+        population_filter = [1000000002, 1000000003]
+
+        expected_data = {
+            'unit_id': [1000000002, 1000000003, 1000000003, 1000000003, 1000000002],
+            'value': ["8", "12", "2", "12", "8"],
+            'start_epoch_days': [1461, 4018, 7701, 7957, 8066],
+            'stop_epoch_days': [8065, 7700, 7956, np.nan, np.nan]}
+
+        expected = Table.from_pydict(expected_data)
+        self.print_expected(expected)
+
+        actual = filter_by_fixed(self.parquet_partition_name, population_filter, True)
+        self.print_actual(actual)
+
+        assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
+
+    def test_by_time_period_non_existing_partition(self):
         print('TEST : test_filter_by_time_period_non_existing_partition')
         parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
 
         actual = filter_by_time_period(parquet_partition_name, 7670, 8034, None, True)
         assert actual is None
 
-    def test_filter_by_time_non_existing_partition(self):
+    def test_by_time_non_existing_partition(self):
         print('TEST : test_filter_by_time_non_existing_partition')
         parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
 
         actual = filter_by_time(parquet_partition_name, 7669, None, True)
         assert actual is None
-
-    def test_filter_by_fixed(self):
-        print('TEST : test_filter_by_fixed')
-        try:
-            filter_by_fixed()
-        except Exception:
-            assert True
-        else:
-            self.fail('Exception not raised')
 
     def print_expected(self, expected: Table):
         print('==================== EXPECTED ========================')
