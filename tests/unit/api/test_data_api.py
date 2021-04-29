@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from fastapi.testclient import TestClient

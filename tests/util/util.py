@@ -1,19 +1,21 @@
-import shutil
-
 import os
+import shutil
+from pathlib import Path
+
 import pandas
 import pyarrow as pa
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
-from datetime import datetime
 
-from pathlib import Path
+from data_service.config.logging import get_logger
+
+log = get_logger(__name__)
 
 
 def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
-    print("Start ", datetime.now())
+    log.info('Start convert csv to parquet')
 
-    print("Abs path of csv file: " + os.path.abspath(csv_file))
+    log.info(f'Abs path of csv file: {os.path.abspath(csv_file)}')
 
     #Remove old file
     if Path(parquet_partition_name).is_dir():
@@ -46,16 +48,16 @@ def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     table = pv.read_csv(input_file=csv_file, read_options=csv_read_options, parse_options=csv_parse_options,
                         convert_options=csv_convert_options)
 
-    print('Bytes: ' + str(table.nbytes))
-    print('Rows: ' + str(table.num_rows))
-    print('Schema: ' + str(table.schema))
-    print('Column names: ' + str(table.column_names))
+    log.info(f'Bytes: {table.nbytes}')
+    log.info(f'Rows: {table.num_rows}')
+    log.info(f'Schema: {table.schema}')
+    log.info(f'Column names: {table.column_names}')
     pandas.set_option('max_columns', None)  # print all columns
-    print(table.to_pandas().head(10))
+    log.info(table.to_pandas().head(10))
 
     # write with partitions
     pq.write_to_dataset(table,
                         root_path=parquet_partition_name,
                         partition_cols=['start_year'])
 
-    print("End ", datetime.now())
+    log.info('End convert csv to parquet')

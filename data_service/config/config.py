@@ -1,6 +1,10 @@
 from functools import lru_cache
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, ValidationError
+
+from data_service.config.logging import get_logger
+
+log = get_logger(__name__)
 
 
 class Settings(BaseSettings):
@@ -11,9 +15,12 @@ class Settings(BaseSettings):
     STORAGE_ADAPTER: str
 
     class Config:
-        env_file = ".env"
+        env_file = "data_service/config/.env"
 
 
 @lru_cache()
 def get_settings():
-    return Settings()
+    try:
+        return Settings()
+    except ValidationError as e:
+        log.exception(e)

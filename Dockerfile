@@ -8,5 +8,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-CMD [ "uvicorn", "--host=0.0.0.0",  "data_service.main:data_service_app"]
+#the output is sent straight to terminal without being first buffered
+ENV PYTHONUNBUFFERED 1
+
+CMD [ "uvicorn", "--log-config", "data_service/config/logging.yaml",  "--host=0.0.0.0",  "application:data_service_app"]
 
