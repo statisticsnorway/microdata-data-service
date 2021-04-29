@@ -167,6 +167,20 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
+    def test_filter_by_time_period_non_existing_partition(self):
+        print('TEST : test_filter_by_time_period_non_existing_partition')
+        parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
+
+        actual = filter_by_time_period(parquet_partition_name, 7670, 8034, None, True)
+        assert actual is None
+
+    def test_filter_by_time_non_existing_partition(self):
+        print('TEST : test_filter_by_time_non_existing_partition')
+        parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
+
+        actual = filter_by_time(parquet_partition_name, 7669, None, True)
+        assert actual is None
+
     def test_filter_by_fixed(self):
         print('TEST : test_filter_by_fixed')
         try:
