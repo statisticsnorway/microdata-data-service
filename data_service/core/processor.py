@@ -7,12 +7,12 @@ import sys
 
 from data_service.adapters.storage.gcs import GcsBucketAdapter
 from data_service.adapters.storage.local import LocalFileAdapter
-from data_service.api.query_models import InputQuery
+from data_service.api.query_models import InputTimePeriodQuery
 from data_service.config import config
 from data_service.core.file_adapter import FileAdapter
 
 
-def process(input_query: InputQuery, settings: config.Settings) -> str:
+def process(input_query: InputTimePeriodQuery, settings: config.Settings) -> str:
     log = logging.getLogger(__name__)
     file_service: FileAdapter = get_storage(settings)
     parquet_file = file_service.get_file(path=input_query.dataStructureName)

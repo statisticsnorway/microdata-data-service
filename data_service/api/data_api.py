@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
 
-from data_service.api.query_models import InputQuery
+from data_service.api.query_models import InputTimePeriodQuery, QueryValidator
 from data_service.config import config
 from data_service.config.config import get_settings
 from data_service.core import processor
@@ -23,7 +23,7 @@ def retrieve_result_set(file_name: str):
 
 
 @data_router.post("/data/event")
-def create_result_set_event_data(input_query: InputQuery, settings: config.Settings = Depends(get_settings)):
+def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: config.Settings = Depends(get_settings)):
     """
      Create result set of data with temporality type event.
 
@@ -32,6 +32,8 @@ def create_result_set_event_data(input_query: InputQuery, settings: config.Setti
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
+    QueryValidator.validate(input_query)
+
     result_filename = processor.process(input_query, settings)
     log.info(f'Filename with the result set: {result_filename}')
 
