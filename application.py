@@ -1,5 +1,6 @@
 import logging
 
+import json_logging
 import uvicorn
 from fastapi import FastAPI
 from starlette.responses import PlainTextResponse
@@ -21,10 +22,16 @@ async def validation_exception_handler(request, exc):
 
 
 @data_service_app.on_event("startup")
-async def startup_event():
+def startup_event():
+    json_logging.init_fastapi(enable_json=True)
+    json_logging.init_request_instrument(data_service_app)
+
+    logging.basicConfig(level=logging.INFO)
+    json_logging.config_root_logger()
+
     log = logging.getLogger(__name__)
     log.info('Started data-service')
 
 
 if __name__ == "__main__":
-    uvicorn.run(data_service_app, host="0.0.0.0", log_config='data_service/config/logging.yaml', port=8000)
+    uvicorn.run(data_service_app, host="0.0.0.0", port=8000)
