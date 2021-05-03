@@ -15,7 +15,7 @@ from data_service.core.file_adapter import FileAdapter
 
 def process_event_request(input_query: InputTimePeriodQuery, settings: config.Settings) -> str:
     log = logging.getLogger(__name__)
-    parquet_file = get_parquet(input_query, settings)
+    parquet_file = get_parquet_file_path(input_query, settings)
 
     log_parquet_info(log, parquet_file)
 
@@ -33,7 +33,7 @@ def process_event_request(input_query: InputTimePeriodQuery, settings: config.Se
 
 def process_status_request(input_query: InputTimeQuery, settings: config.Settings) -> str:
     log = logging.getLogger(__name__)
-    parquet_file = get_parquet(input_query, settings)
+    parquet_file = get_parquet_file_path(input_query, settings)
 
     log_parquet_info(log, parquet_file)
 
@@ -51,7 +51,7 @@ def process_status_request(input_query: InputTimeQuery, settings: config.Setting
 
 def process_fixed_request(input_query: InputFixedQuery, settings: config.Settings) -> str:
     log = logging.getLogger(__name__)
-    parquet_file = get_parquet(input_query, settings)
+    parquet_file = get_parquet_file_path(input_query, settings)
 
     log_parquet_info(log, parquet_file)
 
@@ -78,7 +78,7 @@ def log_result_info(data, log, result_filename):
     log.info(f'Size of file with result set: {os.path.getsize(result_filename) / 1000000} MB')
 
 
-def get_parquet(input_query, settings):
+def get_parquet_file_path(input_query, settings):
     file_service: FileAdapter = get_storage(settings)
     parquet_file = file_service.get_file(path=input_query.dataStructureName)
     return parquet_file
