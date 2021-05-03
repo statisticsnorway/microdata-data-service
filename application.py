@@ -14,6 +14,23 @@ data_service_app.include_router(data_router)
 data_service_app.include_router(observability_router)
 
 
+class CustomJSONLog(json_logging.JSONLogFormatter):
+    """
+    Customized logger
+    """
+
+    def _format_log_object(self, record, request_util):
+        json_log_object = super(CustomJSONLog, self)._format_log_object(record, request_util)
+
+        json_log_object.update({
+            "message": record.getMessage()
+        })
+
+        del json_log_object['msg']
+
+        return json_log_object
+
+
 @data_service_app.exception_handler(Exception)
 async def validation_exception_handler(request, exc):
     log = logging.getLogger(__name__)
@@ -23,7 +40,7 @@ async def validation_exception_handler(request, exc):
 
 @data_service_app.on_event("startup")
 def startup_event():
-    json_logging.init_fastapi(enable_json=True)
+    json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
     json_logging.init_request_instrument(data_service_app)
 
     logging.basicConfig(level=logging.INFO)
