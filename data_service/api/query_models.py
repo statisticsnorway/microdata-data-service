@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 
-from pydantic.main import BaseModel
+from pydantic import BaseModel, validator
 
 
 class InputTimePeriodQuery(BaseModel):
@@ -12,6 +12,11 @@ class InputTimePeriodQuery(BaseModel):
     population: Optional[list]
     include_attributes: Optional[bool] = False
 
+    @validator('version')
+    def check_for_sem_ver(cls, v):
+        if not validate(v):
+            raise ValueError("==> version {} is not a valid semantic version.".format(v))
+
 
 class InputTimeQuery(BaseModel):
     dataStructureName: str
@@ -20,6 +25,11 @@ class InputTimeQuery(BaseModel):
     population: Optional[list]
     include_attributes: Optional[bool] = False
 
+    @validator('version')
+    def check_for_sem_ver(cls, v):
+        if not validate(v):
+            raise ValueError("==> version {} is not a valid semantic version.".format(v))
+
 
 class InputFixedQuery(BaseModel):
     dataStructureName: str
@@ -27,9 +37,13 @@ class InputFixedQuery(BaseModel):
     population: Optional[list]
     include_attributes: Optional[bool] = False
 
+    @validator('version')
+    def check_for_sem_ver(cls, v):
+        if not validate(v):
+            raise ValueError("==> version {} is not a valid semantic version.".format(v))
 
-class QueryValidator:
-    def validate(query: BaseModel):
-        pattern = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$")
-        if not pattern.match(query.version):
-            raise Exception("==> version {} is not a valid semantic version.".format(query.version))
+
+def validate(version: str = False):
+    pattern = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$")
+    if pattern.match(version):
+        return True
