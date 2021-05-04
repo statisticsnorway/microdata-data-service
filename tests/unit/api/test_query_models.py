@@ -1,21 +1,22 @@
 import unittest
+from typing import List
 
-from data_service.api.query_models import InputTimeQuery, QueryValidator, InputTimePeriodQuery, InputFixedQuery
+from data_service.api.query_models import InputTimeQuery, InputTimePeriodQuery, InputFixedQuery
 
 
 class TestQueryModels(unittest.TestCase):
 
     def test_create_and_validate_minimal_input_time_period_query(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0",
             "startDate": 1964,
             "stopDate": 2056
         }
-        QueryValidator.validate(InputTimePeriodQuery.parse_obj(input))
+        InputTimePeriodQuery.parse_obj(data)
 
     def test_create_and_validate_full_input_time_period_query(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0",
             "startDate": 1964,
@@ -23,76 +24,71 @@ class TestQueryModels(unittest.TestCase):
             "population": [1, 2, 3],
             "include_attributes": True
         }
-        QueryValidator.validate(InputTimePeriodQuery.parse_obj(input))
+        actual = InputTimePeriodQuery.parse_obj(data)
+        assert "DATASET_NAME" == actual.dataStructureName
+        assert "1.0.0.0" == actual.version
+        assert 1964 == actual.startDate
+        assert 2056 == actual.stopDate
+        assert isinstance(actual.population, List)
+        assert [1, 2, 3] == actual.population
+        assert True is actual.include_attributes
 
     def test_create_and_validate_input_time_period_query_with_error(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0",
             "startDate": 1964
         }
-        try:
-            QueryValidator.validate(InputTimePeriodQuery.parse_obj(input))
-        except Exception:
-            assert True
-        else:
-            assert False
+        with self.assertRaises(ValueError):
+            InputTimePeriodQuery.parse_obj(data)
 
     def test_create_and_validate_minimal_input_time_query(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0",
             "date": 1964
         }
-        QueryValidator.validate(InputTimeQuery.parse_obj(input))
+        InputTimeQuery.parse_obj(data)
 
     def test_create_and_validate_full_input_time_query(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0",
             "date": 1964,
             "population": [1, 2, 3],
             "include_attributes": True
         }
-        QueryValidator.validate(InputTimeQuery.parse_obj(input))
+        InputTimeQuery.parse_obj(data)
 
     def test_create_and_validate_input_time_query_with_error(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.X",
             "date": 1964
         }
-        try:
-            QueryValidator.validate(InputTimeQuery.parse_obj(input))
-        except Exception:
-            assert True
-        else:
-            assert False
+        with self.assertRaises(ValueError):
+            InputTimeQuery.parse_obj(data)
 
     def test_create_and_validate_minimal_input_fixed_query(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0"
         }
-        QueryValidator.validate(InputFixedQuery.parse_obj(input))
+        InputFixedQuery.parse_obj(data)
 
     def test_create_and_validate_full_input_fixed_query(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.0",
             "population": [1, 2, 3],
             "include_attributes": True
         }
-        QueryValidator.validate(InputFixedQuery.parse_obj(input))
+        InputFixedQuery.parse_obj(data)
 
     def test_create_and_validate_input_fixed_query_with_error(self):
-        input = {
+        data = {
             "dataStructureName": "DATASET_NAME",
             "version": "1.0.0.X"
         }
-        try:
-            QueryValidator.validate(InputFixedQuery.parse_obj(input))
-        except Exception:
-            assert True
-        else:
-            assert False
+        with self.assertRaises(ValueError):
+            InputFixedQuery.parse_obj(data)
