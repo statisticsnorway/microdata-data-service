@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
 
-from data_service.api.query_models import InputTimePeriodQuery, QueryValidator, InputTimeQuery, InputFixedQuery
+from data_service.api.query_models import InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
 from data_service.config import config
 from data_service.config.config import get_settings
 from data_service.core import processor
@@ -32,7 +32,6 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: co
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
-    QueryValidator.validate(input_query)
 
     result_filename = processor.process_event_request(input_query, settings)
     log.info(f'Filename with event result set: {result_filename}')
@@ -51,7 +50,6 @@ def create_result_set_status_data(input_query: InputTimeQuery, settings: config.
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/status with input query: {input_query}')
-    QueryValidator.validate(input_query)
 
     result_filename = processor.process_status_request(input_query, settings)
     log.info(f'Filename with status result set: {result_filename}')
@@ -70,7 +68,6 @@ def create_result_set_fixed_data(input_query: InputFixedQuery, settings: config.
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/fixed with input query: {input_query}')
-    QueryValidator.validate(input_query)
 
     result_filename = processor.process_fixed_request(input_query,settings)
     log.info(f'Filename with fixed result set: {result_filename}')
