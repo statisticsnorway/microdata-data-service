@@ -8,6 +8,8 @@ from starlette.responses import PlainTextResponse
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
 
+from data_service.config import config
+
 data_service_app = FastAPI()
 
 data_service_app.include_router(data_router)
@@ -47,6 +49,8 @@ def startup_event():
     json_logging.config_root_logger()
 
     log = logging.getLogger(__name__)
+
+    log.info(config.to_string())
     log.info('Started data-service')
 
 

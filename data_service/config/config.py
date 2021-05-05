@@ -23,3 +23,8 @@ def get_settings():
         return Settings()
     except ValidationError as e:
         module_logger.exception(e)
+
+
+def to_string():
+    return "Settings: FILE_SERVICE_DATASTORE_ROOT_PREFIX: {}, DATASTORE_ROOT: {}, "\
+                .format(get_settings().FILE_SERVICE_DATASTORE_ROOT_PREFIX, get_settings().DATASTORE_ROOT)
