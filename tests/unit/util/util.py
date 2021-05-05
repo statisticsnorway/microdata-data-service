@@ -62,3 +62,39 @@ def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
                         partition_cols=['start_year'])
 
     print("End ", datetime.now())
+
+
+def convert_csv_to_single_parquet_file(csv_file: str, parquet_dir: str):
+    print("Start ", datetime.now())
+
+    print(csv_file)
+    print(parquet_dir)
+
+    print("Abs path of csv file: " + os.path.abspath(csv_file))
+
+    #Remove old file
+    # if Path(parquet_partition_name).is_dir():
+    #     shutil.rmtree(parquet_partition_name)
+
+    csv_read_options = pv.ReadOptions(
+        skip_rows=0,
+        encoding="utf8",
+        column_names=["unit_id", "value", "start", "stop", "start_year", "start_epoch_days", "stop_epoch_days"])
+
+    csv_parse_options = pv.ParseOptions(delimiter=';')
+
+    data_schema = pa.schema([
+        pa.field(name='start_year', type=pa.string(), nullable=True),
+        pa.field(name='unit_id', type=pa.uint64(), nullable=False),
+        pa.field(name='value', type=pa.string(), nullable=False),
+        pa.field(name='start_epoch_days', type=pa.int16(), nullable=True),
+        pa.field(name='stop_epoch_days', type=pa.int16(), nullable=True),
+    ])
+
+    csv_convert_options = pv.ConvertOptions(column_types=data_schema)
+    table = pv.read_csv(input_file=csv_file, read_options=csv_read_options, parse_options=csv_parse_options,
+                        convert_options=csv_convert_options)
+
+    pq.write_to_dataset(table, root_path=parquet_dir)
+
+    print("End ", datetime.now())
