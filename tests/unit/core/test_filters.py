@@ -17,8 +17,8 @@ class TestFilters(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.csv_file = 'tests/resources/unit_test_data/TEST_BOSTED__3_2.csv'
-        cls.parquet_partition_name = 'tests/resources/unit_test_data/TEST_BOSTED__3_2'
+        cls.csv_file = 'tests/resources/datastore_unit_test/dataset/TEST_BOSTED/TEST_BOSTED__3_2.csv'
+        cls.parquet_partition_name = 'tests/resources/datastore_unit_test/dataset/TEST_BOSTED//TEST_BOSTED__3_2'
         convert_csv_to_parquet(cls.csv_file, cls.parquet_partition_name)
 
     @classmethod
