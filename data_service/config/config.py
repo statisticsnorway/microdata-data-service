@@ -26,5 +26,10 @@ def get_settings():
 
 
 def to_string():
-    return "Settings: FILE_SERVICE_DATASTORE_ROOT_PREFIX: {}, DATASTORE_ROOT: {}, "\
-                .format(get_settings().FILE_SERVICE_DATASTORE_ROOT_PREFIX, get_settings().DATASTORE_ROOT)
+    storage_adapter = "STORAGE_ADAPTER: {}, "\
+        .format(get_settings().STORAGE_ADAPTER)
+
+    file_service_datastore_root_prefix = "FILE_SERVICE_DATASTORE_ROOT_PREFIX: {}, " \
+        .format(get_settings().FILE_SERVICE_DATASTORE_ROOT_PREFIX)
+
+    return storage_adapter + file_service_datastore_root_prefix
