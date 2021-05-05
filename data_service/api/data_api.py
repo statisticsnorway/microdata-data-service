@@ -11,6 +11,10 @@ from data_service.core import processor
 data_router = APIRouter()
 
 
+def processor_process_event_request(input_query: InputTimePeriodQuery, settings: config.Settings):
+    return processor.process_event_request(input_query, settings)
+
+
 @data_router.get("/retrieveResultSet")
 def retrieve_result_set(file_name: str):
     # TODO OAuth2
@@ -23,7 +27,8 @@ def retrieve_result_set(file_name: str):
 
 
 @data_router.post("/data/event")
-def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: config.Settings = Depends(get_settings)):
+def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: config.Settings = Depends(get_settings),
+                                 processor_output: str = Depends(processor_process_event_request)):
     """
      Create result set of data with temporality type event.
 
@@ -33,7 +38,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: co
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
 
-    result_filename = processor.process_event_request(input_query, settings)
+    result_filename = processor_output
     log.info(f'Filename with event result set: {result_filename}')
 
     return {'name': input_query.dataStructureName,
