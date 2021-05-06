@@ -24,7 +24,8 @@ def retrieve_result_set(file_name: str):
 
 
 @data_router.post("/data/event")
-def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: config.Settings = Depends(get_settings),
+def create_result_set_event_data(input_query: InputTimePeriodQuery,
+                                 settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type event.
@@ -43,7 +44,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery, settings: co
 
 
 @data_router.post("/data/status")
-def create_result_set_status_data(input_query: InputTimeQuery, settings: config.Settings = Depends(get_settings),
+def create_result_set_status_data(input_query: InputTimeQuery, settings: config.BaseSettings = Depends(get_settings),
                                   processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type status.
@@ -62,7 +63,7 @@ def create_result_set_status_data(input_query: InputTimeQuery, settings: config.
 
 
 @data_router.post("/data/fixed")
-def create_result_set_fixed_data(input_query: InputFixedQuery, settings: config.Settings = Depends(get_settings),
+def create_result_set_fixed_data(input_query: InputFixedQuery, settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type fixed.

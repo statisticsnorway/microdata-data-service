@@ -9,7 +9,7 @@ from data_service.core.file_adapter import FileAdapter
 
 
 class GcsBucketAdapter(FileAdapter):
-    def __init__(self, settings: config.Settings = Depends(get_settings)):
+    def __init__(self, settings: config.GoogleCloudSettings = Depends(get_settings)):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.GcsBucketAdapter')
         self.settings = settings

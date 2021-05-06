@@ -1,7 +1,7 @@
 # export DATA_SERVICE_URL="https://data-service.staging-bip-app.ssb.no"
 export DATA_SERVICE_URL="http://127.0.0.1:8000"
 
-export GOOGLE_APPLICATION_CREDENTIALS=/Users/vak/projects/github/M.2.0/microdata-data-service/DATA_SERVICE_KEY_FILE.json
+#export GOOGLE_APPLICATION_CREDENTIALS=path/to/DATA_SERVICE_KEY_FILE.json
 
 export STORAGE_ADAPTER='LOCAL'
 export FILE_SERVICE_DATASTORE_ROOT_PREFIX="tests/resources"

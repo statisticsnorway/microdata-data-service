@@ -8,7 +8,7 @@ from data_service.core.file_adapter import FileAdapter
 
 
 class LocalFileAdapter(FileAdapter):
-    def __init__(self, settings: config.Settings = Depends(get_settings)):
+    def __init__(self, settings: config.LocalFileSettings = Depends(get_settings)):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.LocalFileAdapter')
         self.settings = settings
