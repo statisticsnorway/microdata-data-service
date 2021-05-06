@@ -15,12 +15,10 @@ FAKE_RESULT_FILE_NAME: Final = "fake_result_file_name"
 
 
 def get_settings_override():
-    return config.Settings(
+    return config.LocalFileSettings(
         DATASTORE_ROOT='datastore_unit_test',
-        BUCKET_NAME='fake_bucket_name',
-        DATA_SERVICE_URL='http://fake-data-service-url',
-        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources',
-        STORAGE_ADAPTER="LOCAL"
+        DATA_SERVICE_URL='https://fake-data-service-url',
+        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources'
     )
 
 

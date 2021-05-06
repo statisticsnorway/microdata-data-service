@@ -20,7 +20,7 @@ from data_service.core.file_adapter import FileAdapter
 class Processor:
     EMPTY_RESULT_TEXT: Final[str] = "empty_result"
 
-    def __init__(self, settings: config.Settings = Depends(get_settings)):
+    def __init__(self, settings: config.BaseSettings = Depends(get_settings)):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.Processor')
         self.settings = settings
@@ -82,7 +82,7 @@ class Processor:
         return parquet_file
 
     def __get_storage__(self):
-        if self.settings.STORAGE_ADAPTER == 'GCS':
+        if isinstance(self.settings, config.GoogleCloudSettings):
             self.log.info('Using GcsBucketAdapter')
             return GcsBucketAdapter(self.settings)
         else:
