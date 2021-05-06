@@ -18,8 +18,7 @@ def get_settings_override():
     return config.LocalFileSettings(
         DATASTORE_ROOT='datastore_unit_test',
         DATA_SERVICE_URL='https://fake-data-service-url',
-        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources',
-        STORAGE_ADAPTER="LOCAL"
+        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources'
     )
 
 
