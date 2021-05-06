@@ -50,7 +50,7 @@ def startup_event():
 
     log = logging.getLogger(__name__)
 
-    log.info(config.to_string())
+    log.info(config.get_settings())
     log.info('Started data-service')
 
 
