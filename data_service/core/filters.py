@@ -1,3 +1,5 @@
+import logging
+
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
 from pyarrow.dataset import Expression
@@ -5,6 +7,8 @@ from pyarrow.dataset import Expression
 columns_including_attributes = ["unit_id", "value", "start_epoch_days", "stop_epoch_days"]
 
 columns_excluding_attributes = ["unit_id", "value"]
+
+module_logger = logging.getLogger(__name__)
 
 
 def filter_by_time_period(parquet_partition_name: str, start: int, stop: int, population_filter: list = None,
@@ -56,14 +60,11 @@ def filter_by_fixed(parquet_partition_name: str, population_filter: list = None,
 
 
 def do_filter(filter: Expression, incl_attributes: bool, parquet_partition_name: str):
-    table = None
-    try:
-        if incl_attributes:
-            table = pq.read_table(source=parquet_partition_name, filters=filter,
-                                  columns=columns_including_attributes)
-        else:
-            table = pq.read_table(source=parquet_partition_name, filters=filter,
-                                  columns=columns_excluding_attributes)
-    except:
-        print('Empty resultset')
+
+    if incl_attributes:
+        table = pq.read_table(source=parquet_partition_name, filters=filter,
+                              columns=columns_including_attributes)
+    else:
+        table = pq.read_table(source=parquet_partition_name, filters=filter,
+                              columns=columns_excluding_attributes)
     return table

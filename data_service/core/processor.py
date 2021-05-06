@@ -33,11 +33,7 @@ class Processor:
         data = filters.filter_by_time_period(parquet_file, input_query.startDate, input_query.stopDate,
                                              input_query.population, input_query.include_attributes)
 
-        result_filename = self.EMPTY_RESULT_TEXT
-        if data is not None:
-            result_filename = self.__write_table__(data)
-
-        return result_filename
+        return self.__write_table__(data)
 
     def process_status_request(self, input_query: InputTimeQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
@@ -47,11 +43,7 @@ class Processor:
         data = filters.filter_by_time(parquet_file, input_query.date, input_query.population,
                                       input_query.include_attributes)
 
-        result_filename = self.EMPTY_RESULT_TEXT
-        if data is not None:
-            result_filename = self.__write_table__(data)
-
-        return result_filename
+        return self.__write_table__(data)
 
     def process_fixed_request(self, input_query: InputFixedQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
@@ -60,11 +52,7 @@ class Processor:
 
         data = filters.filter_by_fixed(parquet_file, input_query.population, input_query.include_attributes)
 
-        result_filename = self.EMPTY_RESULT_TEXT
-        if data is not None:
-            result_filename = self.__write_table__(data)
-
-        return result_filename
+        return self.__write_table__(data)
 
     def log_parquet_info(self, parquet_file):
         self.log.info(f'Parquet metadata: {pq.read_metadata(parquet_file)}')
@@ -90,7 +78,10 @@ class Processor:
             return LocalFileAdapter(self.settings)
 
     def __write_table__(self, data):
-        result_filename = str(uuid.uuid4()) + '.parquet'
-        pq.write_table(data, result_filename)
-        self.log_result_info(data, result_filename)
-        return result_filename
+        if data and data.num_rows > 0:
+            result_filename = str(uuid.uuid4()) + '.parquet'
+            pq.write_table(data, result_filename)
+            self.log_result_info(data, result_filename)
+            return result_filename
+        else:
+            return self.EMPTY_RESULT_TEXT
