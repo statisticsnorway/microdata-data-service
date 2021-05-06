@@ -40,8 +40,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     log.info(f'Filename with event result set: {result_filename}')
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename}
-
+            'dataUrl': create_data_url(result_filename, settings)}
 
 @data_router.post("/data/status")
 def create_result_set_status_data(input_query: InputTimeQuery, settings: config.BaseSettings = Depends(get_settings),
@@ -59,7 +58,7 @@ def create_result_set_status_data(input_query: InputTimeQuery, settings: config.
     log.info(f'Filename with status result set: {result_filename}')
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename}
+            'dataUrl': create_data_url(result_filename, settings)}
 
 
 @data_router.post("/data/fixed")
@@ -78,4 +77,11 @@ def create_result_set_fixed_data(input_query: InputFixedQuery, settings: config.
     log.info(f'Filename with fixed result set: {result_filename}')
 
     return {'name': input_query.dataStructureName,
-            'dataUrl': settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename}
+            'dataUrl': create_data_url(result_filename, settings)}
+
+
+def create_data_url(result_filename, settings):
+    if result_filename == Processor.EMPTY_RESULT_TEXT:
+        return result_filename
+    else:
+        return settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename
