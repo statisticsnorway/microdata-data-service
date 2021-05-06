@@ -9,9 +9,16 @@ module_logger = logging.getLogger(__name__)
 
 class GoogleCloudSettings(BaseSettings):
     DATASTORE_ROOT: str
-    BUCKET_NAME: str
     DATA_SERVICE_URL: str
+    BUCKET_NAME: str
     STORAGE_ADAPTER: str
+
+    def print(self):
+        return f'Settings: ' \
+               f'DATASTORE_ROOT: {self.DATASTORE_ROOT}, ' \
+               f'DATA_SERVICE_URL: {self.DATA_SERVICE_URL}, ' \
+               f'BUCKET_NAME: {self.BUCKET_NAME}, ' \
+               f'STORAGE_ADAPTER: {self.STORAGE_ADAPTER}'
 
     class Config:
         env_file = "data_service/config/.env.gcs"
@@ -23,9 +30,10 @@ class LocalFileSettings(BaseSettings):
     FILE_SERVICE_DATASTORE_ROOT_PREFIX: str
     STORAGE_ADAPTER: str
 
-    def __str__(self):
-        return f'DATASTORE_ROOT: {self.DATASTORE_ROOT}, ' \
-               f'DATA_STORAGE_ADAPTER: {self.STORAGE_ADAPTER}, ' \
+    def print(self):
+        return f'Settings: ' \
+               f'DATASTORE_ROOT: {self.DATASTORE_ROOT}, ' \
+               f'DATA_SERVICE_URL: {self.DATA_SERVICE_URL}, ' \
                f'STORAGE_ADAPTER: {self.STORAGE_ADAPTER}, ' \
                f'FILE_SERVICE_DATASTORE_ROOT_PREFIX: {self.FILE_SERVICE_DATASTORE_ROOT_PREFIX}'
 
