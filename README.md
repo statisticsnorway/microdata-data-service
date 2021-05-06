@@ -24,8 +24,10 @@ pytest
 
 ## Configuration
 
-The properties in data_service/config/.env are meant for Bucket configuration 
-and are applicable when the service is deployed within a Docker container.
+There are currently two configuration profiles: LOCAL and GCS. You need to set environment variable CONFIG_PROFILE to 
+one of the values. In case of GCS you need to have GOOGLE_APPLICATION_CREDENTIALS in environment pointing to JSON key file. 
+
+The configuration files are ```data_service/config/.env.gcs``` and ```data_service/config/.env.local_file```.
 
 ## Running application from command line
 ```
@@ -43,9 +45,7 @@ Set "Script path" to `[your-path]/application.py`
 
 Set "Working directory" to `[your-path]/microdata-data-service`
 
-Set environment variables as in start_local.sh
-
-If STORAGE_ADAPTER='GCS' then you must provide a key file for authentication on GCS.
+Check [Configuration](#Configuration) for key file.
 
 ## Running/debugging tests in IntelliJ IDEA
 Go to Edit configurations... -> Add New Configuration -> Python tests -> pytest.
