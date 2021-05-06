@@ -198,15 +198,15 @@ class TestFilters(unittest.TestCase):
         print('TEST : test_filter_by_time_period_non_existing_partition')
         parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
 
-        actual = filter_by_time_period(parquet_partition_name, 7670, 8034, None, True)
-        assert actual is None
+        with self.assertRaises(Exception):
+            filter_by_time_period(parquet_partition_name, 7670, 8034, None, True)
 
     def test_by_time_non_existing_partition(self):
         print('TEST : test_filter_by_time_non_existing_partition')
         parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
 
-        actual = filter_by_time(parquet_partition_name, 7669, None, True)
-        assert actual is None
+        with self.assertRaises(Exception):
+            filter_by_time(parquet_partition_name, 7669, None, True)
 
     def print_expected(self, expected: Table):
         print('==================== EXPECTED ========================')
