@@ -13,17 +13,17 @@ from tests.unit.util.util import convert_csv_to_parquet
 
 class TestFilters(unittest.TestCase):
     csv_file = None
-    parquet_partition_name = None
+    parquet_dir = None
 
     @classmethod
     def setUpClass(cls):
         cls.csv_file = 'tests/resources/datastore_unit_test/dataset/TEST_BOSTED/TEST_BOSTED__3_2.csv'
-        cls.parquet_partition_name = 'tests/resources/datastore_unit_test/dataset/TEST_BOSTED//TEST_BOSTED__3_2'
-        convert_csv_to_parquet(cls.csv_file, cls.parquet_partition_name)
+        cls.parquet_dir = 'tests/resources/datastore_unit_test/dataset/TEST_BOSTED/TEST_BOSTED__3_2'
+        convert_csv_to_parquet(cls.csv_file, cls.parquet_dir, True)
 
     @classmethod
     def tearDownClass(cls):
-        shutil.rmtree(cls.parquet_partition_name)
+        shutil.rmtree(cls.parquet_dir)
 
     def test_by_time_period_from_7670_to_8034(self):
         print('TEST : test_filter_by_time_period_from_7670_to_8034')
@@ -36,7 +36,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8034, None, True)
+        actual = filter_by_time_period(self.parquet_dir, 7670, 8034, None, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -50,7 +50,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8034)
+        actual = filter_by_time_period(self.parquet_dir, 7670, 8034)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -68,7 +68,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, None, True)
+        actual = filter_by_time_period(self.parquet_dir, 7670, 8400, None, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -87,7 +87,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time_period(self.parquet_partition_name, 7670, 8400, population_filter, True)
+        actual = filter_by_time_period(self.parquet_dir, 7670, 8400, population_filter, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -103,7 +103,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time(self.parquet_partition_name, 7669, None, True)
+        actual = filter_by_time(self.parquet_dir, 7669, None, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -117,7 +117,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time(self.parquet_partition_name, 7669)
+        actual = filter_by_time(self.parquet_dir, 7669)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -136,7 +136,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_time(self.parquet_partition_name, 8034, population_filter, True)
+        actual = filter_by_time(self.parquet_dir, 8034, population_filter, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -154,7 +154,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_fixed(self.parquet_partition_name, None, True)
+        actual = filter_by_fixed(self.parquet_dir, None, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -170,7 +170,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_fixed(self.parquet_partition_name)
+        actual = filter_by_fixed(self.parquet_dir)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
@@ -189,7 +189,7 @@ class TestFilters(unittest.TestCase):
         expected = Table.from_pydict(expected_data)
         self.print_expected(expected)
 
-        actual = filter_by_fixed(self.parquet_partition_name, population_filter, True)
+        actual = filter_by_fixed(self.parquet_dir, population_filter, True)
         self.print_actual(actual)
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
