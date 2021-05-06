@@ -1,26 +1,25 @@
-import shutil
-
 import os
-import pandas
+import shutil
+from datetime import datetime
+from pathlib import Path
+
 import pyarrow as pa
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
-from datetime import datetime
-
-from pathlib import Path
 
 
-def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
+def convert_csv_to_parquet(csv_file: str, parquet_dir: str, partitioned: bool):
     print("Start ", datetime.now())
 
     print(csv_file)
-    print(parquet_partition_name)
+    print(parquet_dir)
 
     print("Abs path of csv file: " + os.path.abspath(csv_file))
 
-    #Remove old file
-    if Path(parquet_partition_name).is_dir():
-        shutil.rmtree(parquet_partition_name)
+    #Remove old partitions
+    if partitioned:
+        if Path(parquet_dir).is_dir():
+            shutil.rmtree(parquet_dir)
 
     # ReadOptions: https://arrow.apache.org/docs/python/generated/pyarrow.csv.ReadOptions.html#pyarrow.csv.ReadOptions
     csv_read_options = pv.ReadOptions(
@@ -57,8 +56,10 @@ def convert_csv_to_parquet(csv_file: str, parquet_partition_name: str):
     # print(table.to_pandas().head(10))
 
     # write with partitions
-    pq.write_to_dataset(table,
-                        root_path=parquet_partition_name,
-                        partition_cols=['start_year'])
+
+    if partitioned:
+        pq.write_to_dataset(table, root_path=parquet_dir, partition_cols=['start_year'])
+    else:
+        pq.write_to_dataset(table, root_path=parquet_dir)
 
     print("End ", datetime.now())

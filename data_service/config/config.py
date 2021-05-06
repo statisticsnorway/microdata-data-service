@@ -13,6 +13,13 @@ class Settings(BaseSettings):
     FILE_SERVICE_DATASTORE_ROOT_PREFIX: str
     STORAGE_ADAPTER: str
 
+    def __str__(self):
+        storage_adapter = f'STORAGE_ADAPTER: {get_settings().STORAGE_ADAPTER}, '
+        file_service_datastore_root_prefix = \
+            f'FILE_SERVICE_DATASTORE_ROOT_PREFIX: {get_settings().FILE_SERVICE_DATASTORE_ROOT_PREFIX}, '
+        datastore_root = f'DATASTORE_ROOT: {get_settings().DATASTORE_ROOT}'
+        return storage_adapter + file_service_datastore_root_prefix + datastore_root
+
     class Config:
         env_file = "data_service/config/.env"
 
