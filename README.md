@@ -13,7 +13,12 @@ http://127.0.0.1:8000/redoc
 ## Docker image
 ````
 docker build --tag data-service .
-docker run --publish 8000:8000 --env STORAGE_ADAPTER=LOCAL data-service
+````
+To run the application with Docker and datastore that is under /path/datastore/<DATASTORE_ROOT>.
+
+Replace /path/datastore with absolute path to parent of DATASTORE_ROOT.
+````
+docker run --publish 8000:8000 --env CONFIG_PROFILE=LOCAL --env FILE_SERVICE_DATASTORE_ROOT_PREFIX=/datastore_path -v /path/datastore:/datastore_path data-service
 ````
 
 ## Running tests
