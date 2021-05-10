@@ -11,12 +11,14 @@ class GoogleCloudSettings(BaseSettings):
     DATASTORE_ROOT: str
     DATA_SERVICE_URL: str
     BUCKET_NAME: str
+    BLOB_DOWNLOAD_ROOT: str
 
     def print(self):
         return f'Using GoogleCloudSettings: ' \
                f'DATASTORE_ROOT: {self.DATASTORE_ROOT}, ' \
                f'DATA_SERVICE_URL: {self.DATA_SERVICE_URL}, ' \
-               f'BUCKET_NAME: {self.BUCKET_NAME}'
+               f'BUCKET_NAME: {self.BUCKET_NAME}, ' \
+               f'BLOB_DOWNLOAD_ROOT: {self.BLOB_DOWNLOAD_ROOT}'
 
     class Config:
         env_file = "data_service/config/.env.gcs"
