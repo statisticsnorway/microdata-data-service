@@ -194,6 +194,27 @@ class TestFilters(unittest.TestCase):
 
         assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
 
+    def test_by_fixed_including_population_filter_on_single_parquet(self):
+        print('TEST : test_by_fixed_including_population_filter_on_single_parquet')
+
+        parquet_file = 'tests/resources/datastore_unit_test/dataset/TEST_PERSON_INCOME/TEST_PERSON_INCOME__1_0.parquet'
+        population_filter = [11111113785911, 11111111190644]
+
+        expected_data = {
+            'unit_id': [11111113785911, 11111111190644],
+            'value': ["16354872", "11331198"],
+            'start_epoch_days': [13879, 6209],
+            'stop_epoch_days': [14244, 6573]}
+
+        expected = Table.from_pydict(expected_data)
+        self.print_expected(expected)
+
+        actual = filter_by_fixed(parquet_file, population_filter, True)
+        if actual:
+            self.print_actual(actual)
+
+        assert_frame_equal(expected.to_pandas(), actual.to_pandas(), check_dtype=False)
+
     def test_by_time_period_non_existing_partition(self):
         print('TEST : test_filter_by_time_period_non_existing_partition')
         parquet_partition_name = 'tests/resources/unit_test_data/NO_PARTITION'
