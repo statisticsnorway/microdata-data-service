@@ -27,6 +27,8 @@ class Processor:
 
     def process_event_request(self, input_query: InputTimePeriodQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
+        if parquet_file is None:
+            return f'dataset_{input_query.dataStructureName}_not_found'
 
         self.log_parquet_info(parquet_file)
 
@@ -37,6 +39,8 @@ class Processor:
 
     def process_status_request(self, input_query: InputTimeQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
+        if parquet_file is None:
+            return f'dataset_{input_query.dataStructureName}_not_found'
 
         self.log_parquet_info(parquet_file)
 
@@ -47,6 +51,8 @@ class Processor:
 
     def process_fixed_request(self, input_query: InputFixedQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
+        if parquet_file is None:
+            return f'dataset_{input_query.dataStructureName}_not_found'
 
         self.log_parquet_info(parquet_file)
 
