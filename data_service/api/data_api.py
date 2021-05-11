@@ -81,7 +81,7 @@ def create_result_set_fixed_data(input_query: InputFixedQuery, settings: config.
 
 
 def create_data_url(result_filename, settings):
-    if result_filename == Processor.EMPTY_RESULT_TEXT:
+    if (result_filename == Processor.EMPTY_RESULT_TEXT) or ('_not_found' in result_filename):
         return result_filename
     else:
         return settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename

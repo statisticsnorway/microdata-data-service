@@ -55,8 +55,22 @@ class Processor:
         return self.__write_table__(data)
 
     def log_parquet_info(self, parquet_file):
-        self.log.info(f'Parquet metadata: {pq.read_metadata(parquet_file)}')
-        self.log.info(f'Parquet schema: {pq.read_schema(parquet_file).to_string()}')
+        if os.path.isdir(parquet_file):
+            self.__log_info_partitioned_parquet__(parquet_file)
+        else:
+            self.__log_parquet_details__(parquet_file)
+
+    def __log_info_partitioned_parquet__(self, parquet_file):
+        for subdir, dirs, files in os.walk(parquet_file):
+            for filename in files:
+                filepath = subdir + os.sep + filename
+                if filepath.endswith(".parquet"):
+                    self.__log_parquet_details__(filepath)
+
+    def __log_parquet_details__(self, parquet_file):
+        self.log.info(f'Parquet file: {parquet_file} '
+                      f'Parquet metadata: {pq.read_metadata(parquet_file)} '
+                      f'Parquet schema: {pq.read_schema(parquet_file).to_string()}')
 
     def log_result_info(self, data, result_filename):
         size = sys.getsizeof(data)

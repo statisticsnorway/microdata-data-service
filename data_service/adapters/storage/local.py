@@ -1,4 +1,5 @@
 import logging
+import os
 
 from fastapi import Depends
 
@@ -18,6 +19,11 @@ class LocalFileAdapter(FileAdapter):
 
     def __create_download_path(self, dataStructureName: str) -> str:
         path = self.settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX + '/' + self.settings.DATASTORE_ROOT \
-                            + '/dataset/' + dataStructureName + '/' + dataStructureName + '__1_0.parquet'
+               + '/dataset/' + dataStructureName + '/' + dataStructureName
+        if os.path.isdir(path):
+            pass
+        else:
+            path = path + '__1_0.parquet'
+
         self.log.info(f'Download path: {path}')
         return path
