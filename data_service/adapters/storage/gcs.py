@@ -17,8 +17,27 @@ class GcsBucketAdapter(FileAdapter):
         self.settings = settings
 
     def get_file(self, path: str) -> str:
-        return self.__download_file_from_storage(path)
-        # return self.__download_partitioned_file_from_storage(path)
+        result = self.__download_file_from_storage(path)
+        if result is None:
+            result = self.__download_partitioned_file_from_storage(path)
+        return result
+
+    def __download_file_from_storage(self, path: str) -> str:
+        destination_uri = path + '__1_0.parquet'
+        bucket_name = self.settings.BUCKET_NAME
+        blob_download_path = self.__create_download_path(path)
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.get_blob(blob_download_path)
+
+        if blob is None:
+            return None
+
+        self.log.info(f'Trying to download blob {blob_download_path}')
+        blob.download_to_filename(destination_uri)
+
+        self.log.info(f'Downloaded blob {blob_download_path} to {destination_uri} from bucket {bucket_name}')
+        return destination_uri
 
     def __download_partitioned_file_from_storage(self, path: str) -> str:
         bucket_name = self.settings.BUCKET_NAME
@@ -47,21 +66,10 @@ class GcsBucketAdapter(FileAdapter):
             blob.download_to_filename(destination_uri)
             self.log.info(f'Downloaded blob {blob_download_path} to {destination_uri} from bucket {bucket_name}')
 
+        if blobs.num_results == 0:
+            return None
+
         return blob_download_path
-
-    def __download_file_from_storage(self, path: str) -> str:
-        destination_uri = path + '__1_0.parquet'
-        bucket_name = self.settings.BUCKET_NAME
-        blob_download_path = self.__create_download_path(path)
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.get_blob(blob_download_path)
-
-        self.log.info(f'Trying to download blob {blob_download_path}')
-        blob.download_to_filename(destination_uri)
-
-        self.log.info(f'Downloaded blob {blob_download_path} to {destination_uri} from bucket {bucket_name}')
-        return destination_uri
 
     def __create_download_path(self, path: str) -> str:
         return self.settings.DATASTORE_ROOT + '/dataset/' + path + '/' + path + '__1_0.parquet'
