@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "microdata-data-service"
+name = "data-service"
 version = "0.1.0"
 description = "Backend service for serving datafiles over http"
 authors = ["Team Microdata"]
