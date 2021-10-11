@@ -68,14 +68,14 @@ stages:
 
       steps:
       # Build Docker image
-      - task: Docker@2
-        displayName: 'Docker build'
-        inputs:
-          repository: $(imageName)
-          command: 'build'
-          Dockerfile: 'Dockerfile'
-          tags: |
-            $(Build.SourceBranchName)-$(fullSha)
+        - task: Docker@2
+          displayName: 'Docker build'
+          inputs:
+            repository: $(imageName)
+            command: 'build'
+            Dockerfile: 'Dockerfile'
+            tags: |
+              $(Build.SourceBranchName)-$(fullSha)
         # Authenticate Docker to GCR using predefined service connection
         - task: Docker@2
           displayName: 'Login to GCR'
