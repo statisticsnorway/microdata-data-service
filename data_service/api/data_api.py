@@ -1,26 +1,39 @@
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 from fastapi.responses import FileResponse
+from fastapi.responses import JSONResponse
+from typing import Optional
 
-from data_service.api.query_models import InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
+from data_service.api.query_models import (
+    InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
+)
 from data_service.config import config
 from data_service.config.config import get_settings
 from data_service.config.dependencies import get_processor
 from data_service.core.processor import Processor
+from data_service.api.auth import authorize_user
 
 data_router = APIRouter()
 
 
 @data_router.get("/retrieveResultSet")
-def retrieve_result_set(file_name: str):
-    # TODO OAuth2
+def retrieve_result_set(file_name: str, authorization: Optional[str] = Header(None)):
     """
     Retrieve a result set:
 
     - **file_name**: UUID of the file generated
+    - **authorization**: JWT token authorization header
     """
-    return FileResponse(path=file_name, filename=file_name, media_type='application/octet-stream')
+    log = logging.getLogger(__name__)
+    log.info(f"Entering /retrieveResultSet with request for file name: {file_name}")
+    
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
+    
+    return FileResponse(
+        path=file_name, filename=file_name, media_type='application/octet-stream'
+    )
 
 
 @data_router.post("/data/event")
@@ -42,8 +55,10 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     return {'name': input_query.dataStructureName,
             'dataUrl': create_data_url(result_filename, settings)}
 
+
 @data_router.post("/data/status")
-def create_result_set_status_data(input_query: InputTimeQuery, settings: config.BaseSettings = Depends(get_settings),
+def create_result_set_status_data(input_query: InputTimeQuery,
+                                  settings: config.BaseSettings = Depends(get_settings),
                                   processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type status.
@@ -62,7 +77,8 @@ def create_result_set_status_data(input_query: InputTimeQuery, settings: config.
 
 
 @data_router.post("/data/fixed")
-def create_result_set_fixed_data(input_query: InputFixedQuery, settings: config.BaseSettings = Depends(get_settings),
+def create_result_set_fixed_data(input_query: InputFixedQuery, 
+                                 settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type fixed.
