@@ -16,10 +16,10 @@ http://127.0.0.1:8000/redoc
 To work on this repository you need to install [poetry](https://python-poetry.org/docs/):
 ```
 # macOS / linux / BashOnWindows
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 -
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 
 # Windows powershell
-(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python -
+(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
 ```
 Then install the virtual environment from the root directory:
 ```
