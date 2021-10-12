@@ -41,7 +41,6 @@ class LocalFileSettings(BaseSettings):
 @lru_cache()
 def get_settings():
     try:
-        print("MOOOOO")
         if os.getenv('CONFIG_PROFILE') == 'GCS':
             return GoogleCloudSettings()
         else:
