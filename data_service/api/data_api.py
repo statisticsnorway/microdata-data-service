@@ -1,8 +1,9 @@
 import logging
+import os
 
 from fastapi import APIRouter, Depends, Header
 from fastapi.responses import FileResponse
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException, status
 from typing import Optional
 
 from data_service.api.query_models import (
@@ -18,7 +19,9 @@ data_router = APIRouter()
 
 
 @data_router.get("/retrieveResultSet")
-def retrieve_result_set(file_name: str, authorization: Optional[str] = Header(None)):
+def retrieve_result_set(file_name: str,
+                        authorization: Optional[str] = Header(None),
+                        settings: config.BaseSettings = Depends(get_settings)):
     """
     Retrieve a result set:
 
@@ -31,9 +34,16 @@ def retrieve_result_set(file_name: str, authorization: Optional[str] = Header(No
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
     
-    return FileResponse(
-        path=file_name, filename=file_name, media_type='application/octet-stream'
-    )
+    file_path = f"{settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/resultset/{file_name}"
+    if not os.path.isfile(file_path):
+         raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Result set not found'
+         )
+    else:
+        return FileResponse(
+            file_path, media_type='application/octet-stream'
+        )
 
 
 @data_router.post("/data/event")
