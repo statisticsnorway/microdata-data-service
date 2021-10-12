@@ -14,6 +14,7 @@ def authorize_user(authorization_header):
     try:
         JWT_token = authorization_header.removeprefix('Bearer ')
         public_key = os.environ.get('JWT_PUBLIC_KEY')
+        print(public_key)
         decoded_jwt = jwt.decode(
             JWT_token, public_key, algorithms=["RS256"], audience="datastore"
         )
@@ -24,14 +25,15 @@ def authorize_user(authorization_header):
 
     except (InvalidSignatureError, ExpiredSignatureError, InvalidAudienceError,
             NoUserError, DecodeError, ValueError) as e:
-        log.info(f"{e.value()}")
+        log.info(f"{e}")
+        print(str(e))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized"
         )
 
     except Exception as e:
-        log.error(f"Internal Server Error: {e.value()}")
+        log.error(f"Internal Server Error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
