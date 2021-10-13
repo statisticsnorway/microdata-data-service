@@ -26,6 +26,7 @@ def retrieve_result_set(file_name: str,
     Retrieve a result set:
 
     - **file_name**: UUID of the file generated
+    - **settings**: config.Settings object
     - **authorization**: JWT token authorization header
     """
     log = logging.getLogger(__name__)
@@ -56,6 +57,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
 
      - **input_query**: InputTimePeriodQuery as JSON
      - **settings**: config.Settings object
+     - **authorization**: JWT token authorization header
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
@@ -80,6 +82,7 @@ def create_result_set_status_data(input_query: InputTimeQuery,
 
      - **input_query**: InputTimeQuery as JSON
      - **settings**: config.Settings object
+     - **authorization**: JWT token authorization header
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/status with input query: {input_query}')
@@ -104,6 +107,7 @@ def create_result_set_fixed_data(input_query: InputFixedQuery,
 
      - **input_query**: InputFixedQuery as JSON
      - **settings**: config.Settings object
+     - **authorization**: JWT token authorization header
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/fixed with input query: {input_query}')
