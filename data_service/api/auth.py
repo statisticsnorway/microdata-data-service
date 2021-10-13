@@ -25,7 +25,7 @@ def authorize_user(authorization_header):
 
     except (InvalidSignatureError, ExpiredSignatureError, InvalidAudienceError,
             NoUserError, DecodeError, ValueError, AttributeError) as e:
-        log.info(f"{e}")
+        log.warn(f"{e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized"

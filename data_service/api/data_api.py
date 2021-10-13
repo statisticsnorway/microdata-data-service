@@ -20,7 +20,7 @@ data_router = APIRouter()
 
 @data_router.get("/data/resultSet")
 def retrieve_result_set(file_name: str,
-                        authorization: Optional[str] = Header(None),
+                        authorization: str = Header(None),
                         settings: config.BaseSettings = Depends(get_settings)):
     """
     Retrieve a result set:
@@ -30,17 +30,18 @@ def retrieve_result_set(file_name: str,
     - **authorization**: JWT token authorization header
     """
     log = logging.getLogger(__name__)
-    log.info(f"Entering /retrieveResultSet with request for file name: {file_name}")
+    log.info(f"Entering /data/resultSet with request for file name: {file_name}")
     
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
     file_path = f"{settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/resultset/{file_name}"
     if not os.path.isfile(file_path):
-         raise HTTPException(
+        log.warn(f"No file found for path: {file_path}")
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Result set not found'
-         )
+        )
     else:
         return FileResponse(
             file_path, media_type='application/octet-stream'
@@ -49,7 +50,7 @@ def retrieve_result_set(file_name: str,
 
 @data_router.post("/data/event")
 def create_result_set_event_data(input_query: InputTimePeriodQuery,
-                                 authorization: Optional[str] = Header(None),
+                                 authorization: str = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """
@@ -74,7 +75,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
 
 @data_router.post("/data/status")
 def create_result_set_status_data(input_query: InputTimeQuery,
-                                  authorization: Optional[str] = Header(None),
+                                  authorization: str = Header(None),
                                   settings: config.BaseSettings = Depends(get_settings),
                                   processor: Processor = Depends(get_processor)):
     """
@@ -99,7 +100,7 @@ def create_result_set_status_data(input_query: InputTimeQuery,
 
 @data_router.post("/data/fixed")
 def create_result_set_fixed_data(input_query: InputFixedQuery, 
-                                 authorization: Optional[str] = Header(None),
+                                 authorization: str = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """

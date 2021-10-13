@@ -61,9 +61,6 @@ def test_get_result_set_not_found_dataset():
             "/data/resultSet?file_name=does-not-exist.parquet",
             headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
-    expected_response = open(
-        'tests/resources/datastore_unit_test/resultset/1234-1234-1234-1234.parquet', 'rb'
-    ).read()
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Result set not found"}
