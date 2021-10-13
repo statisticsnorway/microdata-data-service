@@ -15,6 +15,7 @@ def setup(monkeypatch):
         'JWT_PUBLIC_KEY', JWT_PUBLIC_KEY.decode('utf-8')
     )
 
+
 def test_auth_valid_token():
     token = encode_jwt_payload(test_data.valid_jwt_payload, JWT_PRIVATE_KEY)
     user_id = authorize_user(f'Bearer {token}')
@@ -27,6 +28,7 @@ def test_auth_wrong_audience():
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
     assert e.value.detail == "Unauthorized"
+
 
 def test_auth_expired_token():
     with pytest.raises(HTTPException) as e:

@@ -13,7 +13,7 @@ def authorize_user(authorization_header):
     log = logging.getLogger(__name__)
     try:
         JWT_token = authorization_header.removeprefix('Bearer ')
-        public_key = os.environ.get('JWT_PUBLIC_KEY')
+        public_key = os.environ['JWT_PUBLIC_KEY']
 
         decoded_jwt = jwt.decode(
             JWT_token, public_key, algorithms=["RS256"], audience="datastore"
@@ -31,7 +31,7 @@ def authorize_user(authorization_header):
             detail="Unauthorized"
         )
 
-    except Exception as e:
+    except (KeyError, Exception) as e:
         log.error(f"Internal Server Error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

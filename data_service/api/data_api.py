@@ -18,7 +18,7 @@ from data_service.api.auth import authorize_user
 data_router = APIRouter()
 
 
-@data_router.get("/retrieveResultSet")
+@data_router.get("/data/resultSet")
 def retrieve_result_set(file_name: str,
                         authorization: Optional[str] = Header(None),
                         settings: config.BaseSettings = Depends(get_settings)):
@@ -33,7 +33,7 @@ def retrieve_result_set(file_name: str,
     
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
-    
+
     file_path = f"{settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/resultset/{file_name}"
     if not os.path.isfile(file_path):
          raise HTTPException(
@@ -48,6 +48,7 @@ def retrieve_result_set(file_name: str,
 
 @data_router.post("/data/event")
 def create_result_set_event_data(input_query: InputTimePeriodQuery,
+                                 authorization: Optional[str] = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """
@@ -59,6 +60,9 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
 
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
+
     result_filename = processor.process_event_request(input_query)
     log.info(f'Filename with event result set: {result_filename}')
 
@@ -68,6 +72,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
 
 @data_router.post("/data/status")
 def create_result_set_status_data(input_query: InputTimeQuery,
+                                  authorization: Optional[str] = Header(None),
                                   settings: config.BaseSettings = Depends(get_settings),
                                   processor: Processor = Depends(get_processor)):
     """
@@ -79,6 +84,9 @@ def create_result_set_status_data(input_query: InputTimeQuery,
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/status with input query: {input_query}')
 
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
+
     result_filename = processor.process_status_request(input_query)
     log.info(f'Filename with status result set: {result_filename}')
 
@@ -88,6 +96,7 @@ def create_result_set_status_data(input_query: InputTimeQuery,
 
 @data_router.post("/data/fixed")
 def create_result_set_fixed_data(input_query: InputFixedQuery, 
+                                 authorization: Optional[str] = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
     """
@@ -98,6 +107,9 @@ def create_result_set_fixed_data(input_query: InputFixedQuery,
      """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/fixed with input query: {input_query}')
+
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
 
     result_filename = processor.process_fixed_request(input_query)
     log.info(f'Filename with fixed result set: {result_filename}')
@@ -110,4 +122,4 @@ def create_data_url(result_filename, settings):
     if (result_filename == Processor.EMPTY_RESULT_TEXT) or ('_not_found' in result_filename):
         return result_filename
     else:
-        return settings.DATA_SERVICE_URL + '/retrieveResultSet?file_name=' + result_filename
+        return settings.DATA_SERVICE_URL + '/data/resultSet?file_name=' + result_filename
