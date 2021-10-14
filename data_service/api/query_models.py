@@ -14,7 +14,9 @@ class InputQuery(BaseModel):
     def check_for_sem_ver(cls, version):
         pattern = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$")
         if not pattern.match(version):
-            raise ValueError("==> version {} is not a valid semantic version.".format(version))
+            raise ValueError(
+                f"==> version {version} is not a valid semantic version."
+            )
         return version
 
 

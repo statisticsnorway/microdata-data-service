@@ -34,7 +34,6 @@ class LocalFileSettings(BaseSettings):
                f'DATASTORE_ROOT: {self.DATASTORE_ROOT}, ' \
                f'DATA_SERVICE_URL: {self.DATA_SERVICE_URL}, ' \
                f'FILE_SERVICE_DATASTORE_ROOT_PREFIX: {self.FILE_SERVICE_DATASTORE_ROOT_PREFIX}'
-
     class Config:
         env_file = "data_service/config/.env.local_file"
 

@@ -7,6 +7,10 @@ import pyarrow as pa
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
 
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+import jwt
+
 
 def convert_csv_to_parquet(csv_file: str, parquet_dir: str, partitioned: bool):
     print("Start ", datetime.now())
@@ -63,3 +67,29 @@ def convert_csv_to_parquet(csv_file: str, parquet_dir: str, partitioned: bool):
         pq.write_to_dataset(table, root_path=parquet_dir)
 
     print("End ", datetime.now())
+
+
+def generate_RSA_key_pairs():
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048
+    )
+    public_key = private_key.public_key()
+
+    serialized_private_key = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
+    serialized_public_key = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    print(serialized_public_key)
+    print(serialized_private_key)
+    return serialized_private_key, serialized_public_key
+
+
+def encode_jwt_payload(payload, private_key):
+    return jwt.encode(payload, private_key, algorithm="RS256")
