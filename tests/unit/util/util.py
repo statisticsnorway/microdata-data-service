@@ -86,8 +86,6 @@ def generate_RSA_key_pairs():
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    print(serialized_public_key)
-    print(serialized_private_key)
     return serialized_private_key, serialized_public_key
 
 
