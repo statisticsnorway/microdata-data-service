@@ -31,7 +31,7 @@ def test_auth_wrong_audience():
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
-    assert e.value.detail == "Unauthorized"
+    assert "Unauthorized" in e.value.detail
 
 
 def test_auth_expired_token():
@@ -41,7 +41,7 @@ def test_auth_expired_token():
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
-    assert e.value.detail == "Unauthorized"
+    assert "Unauthorized" in e.value.detail
 
 
 def test_auth_missing_user_id():
@@ -51,14 +51,14 @@ def test_auth_missing_user_id():
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
-    assert e.value.detail == "Unauthorized"
+    assert "Unauthorized" in e.value.detail
 
 
 def test_auth_missing_token():
     with pytest.raises(HTTPException) as e:
         authorize_user(None)
     assert e.value.status_code == 401
-    assert e.value.detail == "Unauthorized"
+    assert "Unauthorized" in e.value.detail
 
 
 def test_auth_missing_config_public_key(monkeypatch):
@@ -69,7 +69,7 @@ def test_auth_missing_config_public_key(monkeypatch):
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 500
-    assert e.value.detail == "Internal Server Error"
+    assert "Internal Server Error" in e.value.detail
 
 
 def test_auth_toggled_off(monkeypatch):

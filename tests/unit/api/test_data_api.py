@@ -73,7 +73,7 @@ def test_get_result_set_invalid_signature_request():
     )
 
     assert response.status_code == 401
-    assert response.json() == {"detail": "Unauthorized"}
+    assert "Unauthorized" in response.json()["detail"]
 
 
 # /data/event
