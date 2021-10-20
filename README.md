@@ -26,6 +26,9 @@ Then install the virtual environment from the root directory:
 poetry install
 ```
 
+#### Intellij IDEA
+Use plugin Poetry and add Python Interpreter "Poetry Environment". See https://plugins.jetbrains.com/plugin/14307-poetry
+
 ### Running tests
 Open terminal and go to root directory of the project and run:
 ````
