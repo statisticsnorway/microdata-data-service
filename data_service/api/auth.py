@@ -12,6 +12,9 @@ from fastapi import HTTPException, status
 def authorize_user(authorization_header):
     log = logging.getLogger(__name__)
     try:
+        if os.environ.get('TOGGLE_AUTH', 'ON') == 'OFF':
+            log.info('Auth toggled off. Returning "default" as user_id.')
+            return 'default'
         JWT_token = authorization_header.removeprefix('Bearer ')
         public_key = os.environ['JWT_PUBLIC_KEY']
 
@@ -25,7 +28,7 @@ def authorize_user(authorization_header):
 
     except (InvalidSignatureError, ExpiredSignatureError, InvalidAudienceError,
             NoUserError, DecodeError, ValueError, AttributeError) as e:
-        log.warn(f"{e}")
+        log.error(f"{e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized"
