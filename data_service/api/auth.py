@@ -31,14 +31,14 @@ def authorize_user(authorization_header):
         log.error(f"{e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized"
+            detail=f"Unauthorized {e}"
         )
 
     except (KeyError, Exception) as e:
         log.error(f"Internal Server Error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error"
+            detail=f"Internal Server Error {e}"
         )
 
 
