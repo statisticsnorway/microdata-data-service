@@ -28,6 +28,8 @@ class CustomJSONLog(json_logging.JSONLogFormatter):
             "message": record.getMessage()
         })
 
+        json_log_object["@timestamp"] = json_log_object.pop('written_at')
+
         del json_log_object['msg']
 
         return json_log_object
