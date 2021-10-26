@@ -35,7 +35,10 @@ def retrieve_result_set(file_name: str,
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    file_path = f"{settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/resultset/{file_name}"
+    file_path = (
+        f"{settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/"
+        f"{settings.DATASTORE_ROOT}/resultset/{file_name}"
+    )
     if not os.path.isfile(file_path):
         log.warn(f"No file found for path: {file_path}")
         raise HTTPException(
