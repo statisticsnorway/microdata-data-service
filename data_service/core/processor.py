@@ -78,11 +78,11 @@ class Processor:
                       f'Parquet metadata: {pq.read_metadata(parquet_file)} '
                       f'Parquet schema: {pq.read_schema(parquet_file).to_string()}')
 
-    def log_result_info(self, data, result_filename):
+    def log_result_info(self, data, result_file_path):
         size = sys.getsizeof(data)
         self.log.info(f'Size of filtered pyarrow table: {size} bytes ({size / 1000000} MB)')
-        self.log.info(f'Parquet metadata of result set: {pq.read_metadata(result_filename)}')
-        self.log.info(f'Size of file with result set: {os.path.getsize(result_filename) / 1000000} MB')
+        self.log.info(f'Parquet metadata of result set: {pq.read_metadata(result_file_path)}')
+        self.log.info(f'Size of file with result set: {os.path.getsize(result_file_path) / 1000000} MB')
 
     def get_parquet_file_path(self, input_query):
         file_service: FileAdapter = self.__get_storage__()
@@ -99,12 +99,12 @@ class Processor:
 
     def __write_table__(self, data):
         if data and data.num_rows > 0:
-            result_filename = (
-                f'{self.settings.RESULTSET_DIR}/'
-                f'{str(uuid.uuid4())}.parquet'
+            result_filename = f'{str(uuid.uuid4())}.parquet'
+            result_file_path = (
+                f'{self.settings.RESULTSET_DIR}/{result_filename}'
             )
-            pq.write_table(data, result_filename)
-            self.log_result_info(data, result_filename)
+            pq.write_table(data, result_file_path)
+            self.log_result_info(data, result_file_path)
             return result_filename
         else:
             return self.EMPTY_RESULT_TEXT
