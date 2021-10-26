@@ -101,7 +101,7 @@ class Processor:
         if data and data.num_rows > 0:
             result_filename = (
                 f'{self.settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/'
-                f'{self.setting.DATASTORE_ROOT}/resultset/{str(uuid.uuid4())}.parquet'
+                f'{self.settings.DATASTORE_ROOT}/resultset/{str(uuid.uuid4())}.parquet'
             )
             pq.write_table(data, result_filename)
             self.log_result_info(data, result_filename)
