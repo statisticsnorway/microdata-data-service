@@ -36,8 +36,7 @@ def retrieve_result_set(file_name: str,
     log.info(f"Authorized token for user: {user_id}")
 
     file_path = (
-        f"{settings.FILE_SERVICE_DATASTORE_ROOT_PREFIX}/"
-        f"{settings.DATASTORE_ROOT}/resultset/{file_name}"
+        f"{settings.FILE_SERVICE_RESULTSET_DIR}/{file_name}"
     )
     if not os.path.isfile(file_path):
         log.warn(f"No file found for path: {file_path}")
@@ -72,8 +71,10 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     result_filename = processor.process_event_request(input_query)
     log.info(f'Filename with event result set: {result_filename}')
 
-    return {'name': input_query.dataStructureName,
-            'dataUrl': create_data_url(result_filename, settings)}
+    return {
+        'name': input_query.dataStructureName,
+        'resultSetFileName': result_filename
+    }
 
 
 @data_router.post("/data/status")
@@ -97,8 +98,10 @@ def create_result_set_status_data(input_query: InputTimeQuery,
     result_filename = processor.process_status_request(input_query)
     log.info(f'Filename with status result set: {result_filename}')
 
-    return {'name': input_query.dataStructureName,
-            'dataUrl': create_data_url(result_filename, settings)}
+    return {
+        'name': input_query.dataStructureName,
+        'resultSetFileName': result_filename
+    }
 
 
 @data_router.post("/data/fixed")
@@ -122,12 +125,8 @@ def create_result_set_fixed_data(input_query: InputFixedQuery,
     result_filename = processor.process_fixed_request(input_query)
     log.info(f'Filename with fixed result set: {result_filename}')
 
-    return {'name': input_query.dataStructureName,
-            'dataUrl': create_data_url(result_filename, settings)}
+    return {
+        'name': input_query.dataStructureName,
+        'resultSetFileName': result_filename
+    }
 
-
-def create_data_url(result_filename, settings):
-    if (result_filename == Processor.EMPTY_RESULT_TEXT) or ('_not_found' in result_filename):
-        return result_filename
-    else:
-        return settings.DATA_SERVICE_URL + '/data/resultSet?file_name=' + result_filename

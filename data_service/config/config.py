@@ -28,12 +28,14 @@ class LocalFileSettings(BaseSettings):
     DATASTORE_ROOT: str
     DATA_SERVICE_URL: str
     FILE_SERVICE_DATASTORE_ROOT_PREFIX: str
-
+    FILE_SERVICE_RESULTSET_DIR: str
+    
     def print(self):
         return f'Using LocalFileSettings: ' \
                f'DATASTORE_ROOT: {self.DATASTORE_ROOT}, ' \
                f'DATA_SERVICE_URL: {self.DATA_SERVICE_URL}, ' \
-               f'FILE_SERVICE_DATASTORE_ROOT_PREFIX: {self.FILE_SERVICE_DATASTORE_ROOT_PREFIX}'
+               f'FILE_SERVICE_DATASTORE_ROOT_PREFIX: {self.FILE_SERVICE_DATASTORE_ROOT_PREFIX}' \
+               f'FILE_SERVICE_RESULTSET_DIR: {self.FILE_SERVICE_RESULTSET_DIR}'
     class Config:
         env_file = "data_service/config/.env.local_file"
 
