@@ -100,7 +100,7 @@ class Processor:
     def __write_table__(self, data):
         if data and data.num_rows > 0:
             result_filename = (
-                f'{self.settings.FILE_SERVICE_RESULTSET_DIR}/'
+                f'{self.settings.RESULTSET_DIR}/'
                 f'{str(uuid.uuid4())}.parquet'
             )
             pq.write_table(data, result_filename)

@@ -29,10 +29,9 @@ def get_processor_override():
 data_service_app.dependency_overrides[dependencies.get_processor] = get_processor_override
 data_service_app.dependency_overrides[config.get_settings] = (
     lambda: config.LocalFileSettings(
-        DATASTORE_ROOT='datastore_unit_test',
         DATA_SERVICE_URL='https://fake-data-service-url',
-        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources',
-        FILE_SERVICE_RESULTSET_DIR='tests/resources/resultset'
+        DATASTORE_DIR='tests/resources/datastore_unit_test',
+        RESULTSET_DIR='tests/resources/resultset'
     )
 )
 

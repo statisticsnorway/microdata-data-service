@@ -36,7 +36,7 @@ def retrieve_result_set(file_name: str,
     log.info(f"Authorized token for user: {user_id}")
 
     file_path = (
-        f"{settings.FILE_SERVICE_RESULTSET_DIR}/{file_name}"
+        f"{settings.RESULTSET_DIR}/{file_name}"
     )
     if not os.path.isfile(file_path):
         log.warn(f"No file found for path: {file_path}")
