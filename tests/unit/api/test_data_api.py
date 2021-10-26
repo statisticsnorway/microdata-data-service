@@ -29,9 +29,9 @@ def get_processor_override():
 data_service_app.dependency_overrides[dependencies.get_processor] = get_processor_override
 data_service_app.dependency_overrides[config.get_settings] = (
     lambda: config.LocalFileSettings(
-        DATASTORE_ROOT='datastore_unit_test',
         DATA_SERVICE_URL='https://fake-data-service-url',
-        FILE_SERVICE_DATASTORE_ROOT_PREFIX='tests/resources'
+        DATASTORE_DIR='tests/resources/datastore_unit_test',
+        RESULTSET_DIR='tests/resources/resultset'
     )
 )
 
@@ -50,7 +50,7 @@ def test_get_result_set_valid_request():
             headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     expected_response = open(
-        'tests/resources/datastore_unit_test/resultset/1234-1234-1234-1234.parquet', 'rb'
+        'tests/resources/resultset/1234-1234-1234-1234.parquet', 'rb'
     ).read()
 
     assert response.content == expected_response
@@ -84,7 +84,7 @@ def test_data_event():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['resultSetFileName']
 
 # /data/status
 def test_data_status():
@@ -94,7 +94,7 @@ def test_data_status():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['resultSetFileName']
 
 # /data/fixed
 def test_data_fixed():
@@ -104,4 +104,4 @@ def test_data_fixed():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['resultSetFileName']
