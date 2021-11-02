@@ -84,7 +84,7 @@ def test_data_event():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['resultSetFileName']
+    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
 
 # /data/status
 def test_data_status():
@@ -94,7 +94,7 @@ def test_data_status():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['resultSetFileName']
+    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
 
 # /data/fixed
 def test_data_fixed():
@@ -104,4 +104,4 @@ def test_data_fixed():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['resultSetFileName']
+    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
