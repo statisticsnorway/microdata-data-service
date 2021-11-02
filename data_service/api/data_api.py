@@ -68,12 +68,16 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    result_filename = processor.process_event_request(input_query)
-    log.info(f'Filename with event result set: {result_filename}')
+    resultset_file_name = processor.process_event_request(input_query)
+    resultset_data_url = (
+        f"{settings.DATA_SERVICE_URL}/data/resultSet"
+        f"?file_name={resultset_file_name}"
+    )
+    log.info(f'Data url for event result set: {resultset_data_url}')
 
     return {
         'name': input_query.dataStructureName,
-        'resultSetFileName': result_filename
+        'dataUrl': resultset_data_url
     }
 
 
@@ -95,12 +99,16 @@ def create_result_set_status_data(input_query: InputTimeQuery,
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    result_filename = processor.process_status_request(input_query)
-    log.info(f'Filename with status result set: {result_filename}')
+    resultset_file_name = processor.process_status_request(input_query)
+    resultset_data_url = (
+        f"{settings.DATA_SERVICE_URL}/data/resultSet"
+        f"?file_name={resultset_file_name}"
+    )
+    log.info(f'Data url for status result set: {resultset_data_url}')
 
     return {
         'name': input_query.dataStructureName,
-        'resultSetFileName': result_filename
+        'dataUrl': resultset_data_url
     }
 
 
@@ -122,11 +130,15 @@ def create_result_set_fixed_data(input_query: InputFixedQuery,
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    result_filename = processor.process_fixed_request(input_query)
-    log.info(f'Filename with fixed result set: {result_filename}')
+    resultset_file_name = processor.process_fixed_request(input_query)
+    resultset_data_url = (
+        f"{settings.DATA_SERVICE_URL}/data/resultSet"
+        f"?file_name={resultset_file_name}"
+    )
+    log.info(f'data url for fixed result set: {resultset_data_url}')
 
     return {
         'name': input_query.dataStructureName,
-        'resultSetFileName': result_filename
+        'dataUrl': resultset_data_url
     }
 
