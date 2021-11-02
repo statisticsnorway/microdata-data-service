@@ -11,10 +11,17 @@ from fastapi import HTTPException, status
 
 def authorize_user(authorization_header):
     log = logging.getLogger(__name__)
-    try:
-        if os.environ.get('TOGGLE_AUTH', 'ON') == 'OFF':
+
+    if os.environ.get('TOGGLE_AUTH', 'ON') == 'OFF':
             log.info('Auth toggled off. Returning "default" as user_id.')
             return 'default'
+    if authorization_header is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Unauthorized. No token was provided"
+        )
+
+    try:
         JWT_token = authorization_header.removeprefix('Bearer ')
         public_key = os.environ['JWT_PUBLIC_KEY']
 
