@@ -28,7 +28,7 @@ def authorize_user(authorization_header):
         decoded_jwt = jwt.decode(
             JWT_token, public_key, algorithms=["RS256"], audience="datastore"
         )
-        user_id = decoded_jwt.get("user_id")
+        user_id = decoded_jwt.get("sub")
         if user_id in [None, '']:
             raise NoUserError("No valid user_id")
         return user_id
