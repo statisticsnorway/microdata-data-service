@@ -21,7 +21,7 @@ def test_auth_valid_token():
         test_data.valid_jwt_payload, JWT_PRIVATE_KEY
     )
     user_id = authorize_user(f'Bearer {token}')
-    assert user_id == test_data.valid_jwt_payload['user_id']
+    assert user_id == test_data.valid_jwt_payload['aud']
 
 
 def test_auth_wrong_audience():
