@@ -8,12 +8,12 @@ def generate():
     VALID_JWT_PAYLOAD = {
         "aud": "datastore",
         "exp": (datetime.now() + timedelta(hours=24)).timestamp(),
-        "user_id": "testuser"
+        "sub": "testuser"
     }
     EXPIRED_JWT_PAYLOAD = {
         "aud": "datastore",
         "exp": (datetime.now() - timedelta(hours=24)).timestamp(),
-        "user_id": "testuser"
+        "sub": "testuser"
     }
 
     VALID_TOKEN = encode_jwt_payload(VALID_JWT_PAYLOAD, JWT_PRIVATE_KEY)
