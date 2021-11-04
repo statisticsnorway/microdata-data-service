@@ -5,7 +5,6 @@ from jwt.exceptions import (
     InvalidSignatureError, ExpiredSignatureError,
     InvalidAudienceError, DecodeError
 )
-
 from fastapi import HTTPException, status
 
 
@@ -13,12 +12,12 @@ def authorize_user(authorization_header):
     log = logging.getLogger(__name__)
 
     if os.environ.get('JWT_AUTH', 'true') == 'false':
-            log.info('Auth toggled off. Returning "default" as user_id.')
-            return 'default'
+        log.info('Auth toggled off. Returning "default" as user_id.')
+        return 'default'
     if authorization_header is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Unauthorized. No token was provided"
+            detail="Unauthorized. No token was provided"
         )
 
     try:

@@ -4,7 +4,6 @@ import os
 from fastapi import APIRouter, Depends, Header
 from fastapi.responses import FileResponse
 from fastapi import HTTPException, status
-from typing import Optional
 
 from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
@@ -30,8 +29,10 @@ def retrieve_result_set(file_name: str,
     - **authorization**: JWT token authorization header
     """
     log = logging.getLogger(__name__)
-    log.info(f"Entering /data/resultSet with request for file name: {file_name}")
-    
+    log.info(
+        f"Entering /data/resultSet with request for file name: {file_name}"
+    )
+
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
@@ -113,7 +114,7 @@ def create_result_set_status_data(input_query: InputTimeQuery,
 
 
 @data_router.post("/data/fixed")
-def create_result_set_fixed_data(input_query: InputFixedQuery, 
+def create_result_set_fixed_data(input_query: InputFixedQuery,
                                  authorization: str = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
                                  processor: Processor = Depends(get_processor)):
