@@ -5,6 +5,7 @@ from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 from fastapi import HTTPException
 from tests.resources import test_data
 
+
 JWT_PRIVATE_KEY, JWT_PUBLIC_KEY = generate_RSA_key_pairs()
 JWT_INVALID_PRIVATE_KEY, _ = generate_RSA_key_pairs()
 
