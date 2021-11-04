@@ -73,6 +73,6 @@ def test_auth_missing_config_public_key(monkeypatch):
 
 
 def test_auth_toggled_off(monkeypatch):
-    monkeypatch.setenv('TOGGLE_AUTH', 'OFF')
+    monkeypatch.setenv('JWT_AUTH', 'false')
     user_id = authorize_user(None)
     assert user_id == "default"
