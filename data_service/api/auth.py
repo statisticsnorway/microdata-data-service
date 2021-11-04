@@ -12,7 +12,7 @@ from fastapi import HTTPException, status
 def authorize_user(authorization_header):
     log = logging.getLogger(__name__)
 
-    if os.environ.get('TOGGLE_AUTH', 'ON') == 'OFF':
+    if os.environ.get('JWT_AUTH', 'true') == 'false':
             log.info('Auth toggled off. Returning "default" as user_id.')
             return 'default'
     if authorization_header is None:
