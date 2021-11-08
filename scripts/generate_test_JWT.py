@@ -3,6 +3,7 @@
 from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 from datetime import datetime, timedelta
 
+
 def generate():
     JWT_PRIVATE_KEY, JWT_PUBLIC_KEY = generate_RSA_key_pairs()
     VALID_JWT_PAYLOAD = {
@@ -32,6 +33,7 @@ def generate():
     print()
     print('Expired token for use in authorization header:')
     print(EXPIRED_TOKEN)
+
 
 if __name__ == "__main__":
     generate()
