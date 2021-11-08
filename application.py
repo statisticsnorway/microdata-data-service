@@ -1,14 +1,19 @@
 import logging
 
 import json_logging
+from fastapi.encoders import jsonable_encoder
 import uvicorn
-from fastapi import FastAPI
-from starlette.responses import PlainTextResponse
+from fastapi import FastAPI, status
+from fastapi.responses import JSONResponse
+from starlette.responses import PlainTextResponse, Response
 
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
-
 from data_service.config import config
+from data_service.core.processor import (
+    NotFoundException, EmptyResultSetException
+)
+
 
 data_service_app = FastAPI()
 
@@ -35,8 +40,27 @@ class CustomJSONLog(json_logging.JSONLogFormatter):
         return json_log_object
 
 
+@data_service_app.exception_handler(EmptyResultSetException)
+async def empty_result_set_exception_handler(request, exc):
+    log = logging.getLogger(__name__)
+    log.exception(exc)
+    return Response(
+        status_code=status.HTTP_204_NO_CONTENT
+    )
+
+
+@data_service_app.exception_handler(NotFoundException)
+async def not_found_exception_handler(request, exc):
+    log = logging.getLogger(__name__)
+    log.exception(exc)
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content=jsonable_encoder({"detail": "No such datastructure"})
+    )
+
+
 @data_service_app.exception_handler(Exception)
-async def validation_exception_handler(request, exc):
+async def unknown_exception_handler(request, exc):
     log = logging.getLogger(__name__)
     log.exception(exc)
     return PlainTextResponse("Internal Server Error", status_code=500)

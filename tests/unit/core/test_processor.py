@@ -1,10 +1,11 @@
 import pytest
 import os
 import pyarrow.parquet as pq
-from fastapi import HTTPException
 from tests.resources import test_data
 from data_service.config import config
-from data_service.core.processor import Processor
+from data_service.core.processor import (
+    Processor, NotFoundException, EmptyResultSetException
+)
 
 
 RESULTSET_DIR = 'tests/resources/resultset'
@@ -26,12 +27,11 @@ def test_valid_event_request():
 
 
 def test_invalid_event_request():
-    with pytest.raises(HTTPException) as e:
+    with pytest.raises(EmptyResultSetException) as e:
         processor.process_event_request(
             test_data.INVALID_EVENT_QUERY_INVALID_STOP_DATE
         )
-    assert "Empty result set" in e.value.detail
-    assert e.value.status_code == 204
+    assert str(e.value) == "Empty result set"
 
 
 def test_valid_status_request():
@@ -44,12 +44,11 @@ def test_valid_status_request():
 
 
 def test_invalid_status_request():
-    with pytest.raises(HTTPException) as e:
+    with pytest.raises(NotFoundException) as e:
         processor.process_status_request(
             test_data.INVALID_STATUS_QUERY_NOT_FOUND
         )
-    assert "No such data structure" in e.value.detail
-    assert e.value.status_code == 404
+    assert str(e.value) == "No such data structure"
 
 
 def test_valid_fixed_request():
@@ -60,12 +59,11 @@ def test_valid_fixed_request():
 
 
 def test_invalid_fixed_request():
-    with pytest.raises(HTTPException) as e:
+    with pytest.raises(NotFoundException) as e:
         processor.process_fixed_request(
             test_data.INVALID_FIXED_QUERY_NOT_FOUND
         )
-    assert "No such data structure" in e.value.detail
-    assert e.value.status_code == 404
+    assert str(e.value) == "No such data structure"
 
 
 def teardown_function(file_name):

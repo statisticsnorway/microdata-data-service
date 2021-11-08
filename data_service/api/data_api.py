@@ -1,6 +1,5 @@
 import logging
 import os
-
 from fastapi import APIRouter, Depends, Header
 from fastapi.responses import FileResponse
 from fastapi import HTTPException, status
@@ -9,6 +8,7 @@ from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
 )
 from data_service.config import config
+from data_service.api.response_models import ErrorMessage
 from data_service.config.config import get_settings
 from data_service.config.dependencies import get_processor
 from data_service.core.processor import Processor
@@ -17,7 +17,8 @@ from data_service.api.auth import authorize_user
 data_router = APIRouter()
 
 
-@data_router.get("/data/resultSet")
+@data_router.get("/data/resultSet", responses={
+                 204: {}, 404: {"model": ErrorMessage}})
 def retrieve_result_set(file_name: str,
                         authorization: str = Header(None),
                         settings: config.BaseSettings = Depends(get_settings)):
@@ -51,7 +52,7 @@ def retrieve_result_set(file_name: str,
         )
 
 
-@data_router.post("/data/event")
+@data_router.post("/data/event", responses={404: {"model": ErrorMessage}})
 def create_result_set_event_data(input_query: InputTimePeriodQuery,
                                  authorization: str = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
@@ -82,7 +83,7 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     }
 
 
-@data_router.post("/data/status")
+@data_router.post("/data/status", responses={404: {"model": ErrorMessage}})
 def create_result_set_status_data(input_query: InputTimeQuery,
                                   authorization: str = Header(None),
                                   settings: config.BaseSettings = Depends(get_settings),
@@ -113,7 +114,7 @@ def create_result_set_status_data(input_query: InputTimeQuery,
     }
 
 
-@data_router.post("/data/fixed")
+@data_router.post("/data/fixed", responses={404: {"model": ErrorMessage}})
 def create_result_set_fixed_data(input_query: InputFixedQuery,
                                  authorization: str = Header(None),
                                  settings: config.BaseSettings = Depends(get_settings),
@@ -142,4 +143,3 @@ def create_result_set_fixed_data(input_query: InputFixedQuery,
         'name': input_query.dataStructureName,
         'dataUrl': resultset_data_url
     }
-

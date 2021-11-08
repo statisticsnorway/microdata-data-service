@@ -72,11 +72,9 @@ class Processor:
                 self.__log_info_partitioned_parquet__(parquet_file)
             else:
                 self.__log_parquet_details__(parquet_file)
-        except FileNotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="No such data structure"
-            )
+        except FileNotFoundError as e:
+            self.log.error("File not found: {str(e)}")
+            raise NotFoundException("No such data structure")
 
     def __log_info_partitioned_parquet__(self, parquet_file):
         for subdir, dirs, files in os.walk(parquet_file):
@@ -132,7 +130,12 @@ class Processor:
             self.log_result_info(data, result_file_path)
             return result_filename
         else:
-            raise HTTPException(
-                status_code=status.HTTP_204_NO_CONTENT,
-                detail="Empty result set"
-            )
+            raise EmptyResultSetException("Empty result set")
+
+
+class NotFoundException(Exception):
+    pass
+
+
+class EmptyResultSetException(Exception):
+    pass
