@@ -4,6 +4,13 @@ import json_logging
 from fastapi.encoders import jsonable_encoder
 import uvicorn
 from fastapi import FastAPI, status
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
+from fastapi.staticfiles import StaticFiles
+
 from fastapi.responses import JSONResponse
 from starlette.responses import PlainTextResponse, Response
 
@@ -14,11 +21,40 @@ from data_service.core.processor import (
     NotFoundException, EmptyResultSetException
 )
 
-
-data_service_app = FastAPI()
+"""
+    Self-hosting JavaScript and CSS for docs
+    https://fastapi.tiangolo.com/advanced/extending-openapi/#self-hosting-javascript-and-css-for-docs
+"""
+data_service_app = FastAPI(docs_url=None, redoc_url=None)
+data_service_app.mount("/static", StaticFiles(directory="static"), name="static")
 
 data_service_app.include_router(data_router)
 data_service_app.include_router(observability_router)
+
+
+@data_service_app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=data_service_app.openapi_url,
+        title=data_service_app.title + " - Swagger UI",
+        oauth2_redirect_url=data_service_app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="/static/swagger-ui-bundle.js",
+        swagger_css_url="/static/swagger-ui.css",
+    )
+
+
+@data_service_app.get(data_service_app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+async def swagger_ui_redirect():
+    return get_swagger_ui_oauth2_redirect_html()
+
+
+@data_service_app.get("/redoc", include_in_schema=False)
+async def redoc_html():
+    return get_redoc_html(
+        openapi_url=data_service_app.openapi_url,
+        title=data_service_app.title + " - ReDoc",
+        redoc_js_url="/static/redoc.standalone.js",
+    )
 
 
 class CustomJSONLog(json_logging.JSONLogFormatter):
