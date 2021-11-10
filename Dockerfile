@@ -45,6 +45,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 COPY data_service data_service
+COPY static static
 COPY application.py application.py
 COPY --from=builder /app/requirements.txt requirements.txt
 
