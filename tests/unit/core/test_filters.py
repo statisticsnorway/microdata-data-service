@@ -13,13 +13,13 @@ from tests.unit.util.util import convert_csv_to_parquet
 DATASTORE_DIR = 'tests/resources/datastore_unit_test'
 NO_PARTITION_DIR = 'tests/resources/unit_test_data/NO_PARTITION'
 TEST_BOSTED_CSV_FILE = (
-    f'{DATASTORE_DIR}/dataset/TEST_BOSTED/TEST_BOSTED__3_2.csv'
+    f'{DATASTORE_DIR}/data/TEST_BOSTED/TEST_BOSTED__3_2.csv'
 )
 TEST_BOSTED_PARQUET_DIR = (
-    f'{DATASTORE_DIR}/dataset/TEST_BOSTED/TEST_BOSTED__3_2'
+    f'{DATASTORE_DIR}/data/TEST_BOSTED/TEST_BOSTED__3_2'
 )
 TEST_PERSON_INCOME_PARQUET_FILE = (
-    f'{DATASTORE_DIR}/dataset/TEST_PERSON_INCOME/'
+    f'{DATASTORE_DIR}/data/TEST_PERSON_INCOME/'
     'TEST_PERSON_INCOME__1_0.parquet'
 )
 

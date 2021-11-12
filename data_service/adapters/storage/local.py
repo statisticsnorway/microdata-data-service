@@ -18,7 +18,10 @@ class LocalFileAdapter(FileAdapter):
         return self.__create_download_path(path)
 
     def __create_download_path(self, dataStructureName: str) -> str:
-        path = f"{self.settings.DATASTORE_DIR}/dataset/{dataStructureName}/{dataStructureName}"
+        path = (
+            f"{self.settings.DATASTORE_DIR}/data/"
+            f"{dataStructureName}/{dataStructureName}"
+        )
         if os.path.isdir(path):
             pass
         else:
