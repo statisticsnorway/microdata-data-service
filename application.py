@@ -1,17 +1,17 @@
 import logging
-from importlib.metadata import version
+
 import json_logging
-from fastapi.encoders import jsonable_encoder
+import tomlkit
 import uvicorn
 from fastapi import FastAPI, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
-from fastapi.staticfiles import StaticFiles
-
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.responses import PlainTextResponse, Response
 
 from data_service.api.data_api import data_router
@@ -57,6 +57,16 @@ async def redoc_html():
     )
 
 
+def _get_project_meta():
+    with open('./pyproject.toml') as pyproject:
+        file_contents = pyproject.read()
+
+    return tomlkit.parse(file_contents)['tool']['poetry']
+
+
+pkg_meta = _get_project_meta()
+
+
 class CustomJSONLog(json_logging.JSONLogFormatter):
     """
     Customized application logger
@@ -78,7 +88,7 @@ class CustomJSONLog(json_logging.JSONLogFormatter):
         json_log_object["levelName"] = json_log_object.pop('level')
 
         json_log_object["schemaVersion"] = "v3"
-        json_log_object["serviceVersion"] = version("data-service")
+        json_log_object["serviceVersion"] = str(pkg_meta['version'])
         json_log_object["serviceName"] = "data-service"
         # TODO what is the value of these fields in Kibana if not sent
         # json_log_object["xRequestId"] = ""
