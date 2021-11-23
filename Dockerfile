@@ -47,6 +47,8 @@ WORKDIR /app
 COPY data_service data_service
 COPY static static
 COPY application.py application.py
+#To use application version in logs
+COPY pyproject.toml pyproject.toml
 COPY --from=builder /app/requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
