@@ -1,5 +1,5 @@
 import logging
-
+from importlib.metadata import version
 import json_logging
 from fastapi.encoders import jsonable_encoder
 import uvicorn
@@ -59,7 +59,7 @@ async def redoc_html():
 
 class CustomJSONLog(json_logging.JSONLogFormatter):
     """
-    Customized logger
+    Customized application logger
     """
 
     def _format_log_object(self, record, request_util):
@@ -69,9 +69,65 @@ class CustomJSONLog(json_logging.JSONLogFormatter):
             "message": record.getMessage()
         })
 
-        json_log_object["@timestamp"] = json_log_object.pop('written_at')
+        if "exc_info" in json_log_object:
+            json_log_object["error.stack"] = json_log_object.pop('exc_info')
+            del json_log_object['filename']
 
+        json_log_object["@timestamp"] = json_log_object.pop('written_at')
+        json_log_object["loggerName"] = json_log_object.pop('logger')
+        json_log_object["levelName"] = json_log_object.pop('level')
+
+        json_log_object["schemaVersion"] = "v3"
+        json_log_object["serviceVersion"] = version("data-service")
+        json_log_object["serviceName"] = "data-service"
+        # TODO what is the value of these fields in Kibana if not sent
+        # json_log_object["xRequestId"] = ""
+        # json_log_object["method"] = ""
+        # json_log_object["url"] = ""
+        # json_log_object["statusCode"] = ""
+        # json_log_object["responseTime"] = ""
+
+        del json_log_object['written_ts']
+        del json_log_object['type']
         del json_log_object['msg']
+        del json_log_object['module']
+        del json_log_object['line_no']
+
+        return json_log_object
+
+
+class CustomJSONRequestLogFormatter(json_logging.JSONRequestLogFormatter):
+    """
+    Customized request logger
+    """
+
+    def _format_log_object(self, record, request_util):
+        json_log_object = super(CustomJSONRequestLogFormatter, self)._format_log_object(record, request_util)
+
+        json_log_object.update({
+            "message": record.getMessage()
+        })
+
+        json_log_object["@timestamp"] = json_log_object.pop('written_at')
+        json_log_object["xRequestId"] = json_log_object.pop('correlation_id')
+        json_log_object["url"] = json_log_object.pop('request')
+        json_log_object["source_host"] = json_log_object.pop('remote_host')
+        json_log_object["responseTime"] = json_log_object.pop('response_time_ms')
+        json_log_object["statusCode"] = json_log_object.pop('response_status')
+
+        del json_log_object['written_ts']
+        del json_log_object['type']
+        del json_log_object['remote_user']
+        del json_log_object['referer']
+        del json_log_object['x_forwarded_for']
+        del json_log_object['protocol']
+        del json_log_object['remote_ip']
+        del json_log_object['request_size_b']
+        del json_log_object['remote_port']
+        del json_log_object['request_received_at']
+        del json_log_object['response_size_b']
+        del json_log_object['response_content_type']
+        del json_log_object['response_sent_at']
 
         return json_log_object
 
@@ -105,7 +161,7 @@ async def unknown_exception_handler(request, exc):
 @data_service_app.on_event("startup")
 def startup_event():
     json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
-    json_logging.init_request_instrument(data_service_app)
+    json_logging.init_request_instrument(data_service_app, custom_formatter=CustomJSONRequestLogFormatter)
 
     logging.basicConfig(level=logging.INFO)
     json_logging.config_root_logger()
