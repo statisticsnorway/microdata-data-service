@@ -75,6 +75,7 @@ stages:
             repository: $(imageName)
             command: 'build'
             Dockerfile: 'Dockerfile'
+            arguments: '--build-arg BUILD_NUMBER=$(Build.BuildId)'
             tags: |
               $(Build.SourceBranchName)-$(fullSha)
               $(latestTag)

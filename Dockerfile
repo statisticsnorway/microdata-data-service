@@ -38,6 +38,11 @@ COPY poetry.lock pyproject.toml /app/
 # Install poetry and export dependencies to requirements yaml
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python -
+
+#Set application version in pyproject.toml, use zero if not set
+ARG BUILD_NUMBER=0
+RUN poetry version 1.0.${BUILD_NUMBER}
+
 RUN poetry export > requirements.txt
 
 # Production image
@@ -48,7 +53,7 @@ COPY data_service data_service
 COPY static static
 COPY application.py application.py
 #To use application version in logs
-COPY pyproject.toml pyproject.toml
+COPY --from=builder /app/pyproject.toml pyproject.toml
 COPY --from=builder /app/requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
