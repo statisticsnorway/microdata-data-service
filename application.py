@@ -90,12 +90,6 @@ class CustomJSONLog(json_logging.JSONLogFormatter):
         json_log_object["schemaVersion"] = "v3"
         json_log_object["serviceVersion"] = str(pkg_meta['version'])
         json_log_object["serviceName"] = "data-service"
-        # TODO what is the value of these fields in Kibana if not sent
-        # json_log_object["xRequestId"] = ""
-        # json_log_object["method"] = ""
-        # json_log_object["url"] = ""
-        # json_log_object["statusCode"] = ""
-        # json_log_object["responseTime"] = ""
 
         del json_log_object['written_ts']
         del json_log_object['type']
