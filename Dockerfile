@@ -41,7 +41,7 @@ RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poet
 
 #Set application version in pyproject.toml, use zero if not set
 ARG BUILD_NUMBER=0
-RUN poetry version 1.0.${BUILD_NUMBER}
+RUN poetryVersion=$(poetry version -s); buildNumber=${BUILD_NUMBER}; newVersion=$(echo $poetryVersion | sed "s/[[:digit:]]\{1,\}$/$buildNumber/"); poetry version $newVersion
 
 RUN poetry export > requirements.txt
 
