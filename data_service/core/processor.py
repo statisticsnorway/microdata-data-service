@@ -73,7 +73,7 @@ class Processor:
             else:
                 self.__log_parquet_details__(parquet_file)
         except FileNotFoundError as e:
-            self.log.error("File not found: {str(e)}")
+            self.log.error(f"File not found: {str(e)}")
             raise NotFoundException("No such data structure")
 
     def __log_info_partitioned_parquet__(self, parquet_file):
