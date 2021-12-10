@@ -63,14 +63,19 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
      - **input_query**: InputTimePeriodQuery as JSON
      - **settings**: config.Settings object
      - **authorization**: JWT token authorization header
-     """
+    """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
-
-    resultset_file_name = processor.process_event_request(input_query)
+    try:
+        resultset_file_name = processor.process_event_request(input_query)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'404: {input_query.dataStructureName} Not Found'
+        )
     resultset_data_url = (
         f"{settings.DATA_SERVICE_URL}/data/resultSet"
         f"?file_name={resultset_file_name}"
@@ -94,14 +99,21 @@ def create_result_set_status_data(input_query: InputTimeQuery,
      - **input_query**: InputTimeQuery as JSON
      - **settings**: config.Settings object
      - **authorization**: JWT token authorization header
-     """
+    """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/status with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    resultset_file_name = processor.process_status_request(input_query)
+    try:
+        resultset_file_name = processor.process_status_request(input_query)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'404: {input_query.dataStructureName} Not Found'
+        )
+
     resultset_data_url = (
         f"{settings.DATA_SERVICE_URL}/data/resultSet"
         f"?file_name={resultset_file_name}"
@@ -125,14 +137,21 @@ def create_result_set_fixed_data(input_query: InputFixedQuery,
      - **input_query**: InputFixedQuery as JSON
      - **settings**: config.Settings object
      - **authorization**: JWT token authorization header
-     """
+    """
     log = logging.getLogger(__name__)
     log.info(f'Entering /data/fixed with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    resultset_file_name = processor.process_fixed_request(input_query)
+    try:
+        resultset_file_name = processor.process_fixed_request(input_query)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'404: {input_query.dataStructureName} Not Found'
+        )
+
     resultset_data_url = (
         f"{settings.DATA_SERVICE_URL}/data/resultSet"
         f"?file_name={resultset_file_name}"
