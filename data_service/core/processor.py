@@ -108,7 +108,8 @@ class Processor:
     def get_parquet_file_path(self, input_query):
         file_service: FileAdapter = self.__get_storage__()
         parquet_file = file_service.get_file(
-            path=input_query.dataStructureName
+            input_query.dataStructureName,
+            input_query.version
         )
         return parquet_file
 

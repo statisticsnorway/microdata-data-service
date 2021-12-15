@@ -14,18 +14,20 @@ class LocalFileAdapter(FileAdapter):
         self.log = logging.getLogger(__name__ + '.LocalFileAdapter')
         self.settings = settings
 
-    def get_file(self, path: str) -> str:
-        return self.__create_download_path(path)
+    def get_file(self, dataset_name: str, version: str) -> str:
+        dataset_version = version.replace('.', '_')[:3]
+        return self.__create_download_path(dataset_name, dataset_version)
 
-    def __create_download_path(self, dataStructureName: str) -> str:
+    def __create_download_path(self, dataset_name: str, version: str) -> str:
         path = (
             f"{self.settings.DATASTORE_DIR}/data/"
-            f"{dataStructureName}/{dataStructureName}"
+            f"{dataset_name}/{dataset_name}__{version}"
         )
+        print(f"VERSIONSSS {path}")
         if os.path.isdir(path):
             pass
         else:
-            path = path + '__1_0.parquet'
+            path = path + '.parquet'
 
         self.log.info(f'Download path: {path}')
         return path
