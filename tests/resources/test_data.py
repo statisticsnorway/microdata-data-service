@@ -40,6 +40,19 @@ PERSON_INCOME_ALL = (
     "8;11111112261125;6926636\n"
 )
 
+TEST_STUDIEPOENG_ALL = (
+    ';unit_id;value\n'
+    '0;11111111111123;1000\n'
+    '1;11111111111124;1000\n'
+    '2;11111111111125;1000\n'
+    '3;11111111111123;2000\n'
+    '4;11111111111124;2000\n'
+    '5;11111111111125;2000\n'
+    '6;11111111111123;3000\n'
+    '7;11111111111124;3000\n'
+    '8;11111111111125;3000\n'
+)
+
 PERSON_INCOME_LAST_ROW = (
     ";unit_id;value\n"
     "0;11111112261125;6926636\n"
@@ -47,6 +60,13 @@ PERSON_INCOME_LAST_ROW = (
 
 VALID_EVENT_QUERY_PERSON_INCOME_ALL = InputTimePeriodQuery(
     dataStructureName="TEST_PERSON_INCOME",
+    version="1.0.0.0",
+    startDate=1,
+    stopDate=32767
+)
+
+VALID_EVENT_QUERY_TEST_STUDIEPOENG_ALL = InputTimePeriodQuery(
+    dataStructureName="TEST_STUDIEPOENG",
     version="1.0.0.0",
     startDate=1,
     stopDate=32767

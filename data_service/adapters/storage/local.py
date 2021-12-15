@@ -23,11 +23,9 @@ class LocalFileAdapter(FileAdapter):
             f"{self.settings.DATASTORE_DIR}/data/"
             f"{dataset_name}/{dataset_name}__{version}"
         )
-        print(f"VERSIONSSS {path}")
         if os.path.isdir(path):
             pass
         else:
             path = path + '.parquet'
-
         self.log.info(f'Download path: {path}')
         return path
