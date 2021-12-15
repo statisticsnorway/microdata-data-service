@@ -26,6 +26,13 @@ def test_valid_event_request():
     assert result_set_to_csv_string(file_name) == test_data.PERSON_INCOME_ALL
 
 
+def test_valid_event_request_partitioned():
+    file_name = processor.process_event_request(
+        test_data.VALID_EVENT_QUERY_TEST_STUDIEPOENG_ALL
+    )
+    assert result_set_to_csv_string(file_name) == test_data.TEST_STUDIEPOENG_ALL
+
+
 def test_invalid_event_request():
     with pytest.raises(EmptyResultSetException) as e:
         processor.process_event_request(
