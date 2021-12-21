@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from data_service.config import config
 from data_service.config.config import get_settings
-from data_service.core.file_adapter import FileAdapter
+from data_service.adapters.storage.file_adapter import FileAdapter
 
 
 class LocalFileAdapter(FileAdapter):
@@ -23,9 +23,4 @@ class LocalFileAdapter(FileAdapter):
             f"{self.settings.DATASTORE_DIR}/data/"
             f"{dataset_name}/{dataset_name}__{version}"
         )
-        if os.path.isdir(path):
-            pass
-        else:
-            path = path + '.parquet'
-        self.log.info(f'Download path: {path}')
-        return path
+        return path if os.path.isdir(path) else f"{path}.parquet"

@@ -11,7 +11,7 @@ from fastapi import Depends, HTTPException, status
 from data_service.config import config
 from data_service.config.config import get_settings
 from data_service.core import filters
-from data_service.core.file_adapter import FileAdapter
+from data_service.adapters.storage.file_adapter import FileAdapter
 from data_service.adapters.storage.gcs import GcsBucketAdapter
 from data_service.adapters.storage.local import LocalFileAdapter
 from data_service.api.query_models import (

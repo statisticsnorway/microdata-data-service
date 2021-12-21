@@ -7,7 +7,7 @@ from google.cloud import storage
 
 from data_service.config import config
 from data_service.config.config import get_settings
-from data_service.core.file_adapter import FileAdapter
+from data_service.adapters.storage.file_adapter import FileAdapter
 
 
 class GcsBucketAdapter(FileAdapter):
@@ -16,14 +16,15 @@ class GcsBucketAdapter(FileAdapter):
         self.log = logging.getLogger(__name__ + '.GcsBucketAdapter')
         self.settings = settings
 
-    def get_file(self, path: str) -> str:
-        result = self.__download_file_from_storage(path)
+    def get_file(self, path: str, version: str) -> str:
+        result = self.__download_file_from_storage(path, version)
         if result is None:
             result = self.__download_partitioned_file_from_storage(path)
         return result
 
-    def __download_file_from_storage(self, path: str) -> str:
-        destination_uri = path + '__1_0.parquet'
+    def __download_file_from_storage(self, path: str, version: str) -> str:
+        dataset_version = version.replace('.', '_')[:3]
+        destination_uri = f'{path}__{dataset_version}.parquet'
         bucket_name = self.settings.BUCKET_NAME
         blob_download_path = self.__create_download_path(path)
         storage_client = storage.Client()
@@ -36,10 +37,14 @@ class GcsBucketAdapter(FileAdapter):
         self.log.info(f'Trying to download blob {blob_download_path}')
         blob.download_to_filename(destination_uri)
 
-        self.log.info(f'Downloaded blob {blob_download_path} to {destination_uri} from bucket {bucket_name}')
+        self.log.info(
+            f'Downloaded blob {blob_download_path} to '
+            f'{destination_uri} from bucket {bucket_name}'
+        )
         return destination_uri
 
-    def __download_partitioned_file_from_storage(self, path: str) -> str:
+    def __download_partitioned_file_from_storage(self, path: str,
+                                                 version: str) -> str:
         bucket_name = self.settings.BUCKET_NAME
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
