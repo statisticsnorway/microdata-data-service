@@ -55,7 +55,6 @@ class GcsBucketAdapter(FileAdapter):
 
         os.makedirs(blob_download_path)
 
-        # Is this path to partitioned parquet valid considering todays structure?
         dataset_dir_in_bucket = f'{self.settings.DATASTORE_ROOT}/{"dataset"}/{path}/{path}/'
         blobs = bucket.list_blobs(prefix=dataset_dir_in_bucket)
 
