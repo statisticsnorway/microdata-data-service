@@ -38,7 +38,7 @@ class Processor:
             parquet_file, input_query.startDate, input_query.stopDate,
             input_query.population, input_query.include_attributes
         )
-        return self.__write_table__(data)
+        return data
 
     def process_status_request(self, input_query: InputTimeQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
@@ -51,7 +51,7 @@ class Processor:
             parquet_file, input_query.date, input_query.population,
             input_query.include_attributes
         )
-        return self.__write_table__(data)
+        return data
 
     def process_fixed_request(self, input_query: InputFixedQuery) -> str:
         parquet_file = self.get_parquet_file_path(input_query)
@@ -64,7 +64,7 @@ class Processor:
             parquet_file, input_query.population,
             input_query.include_attributes
         )
-        return self.__write_table__(data)
+        return data
 
     def log_parquet_info(self, parquet_file):
         try:
@@ -121,22 +121,15 @@ class Processor:
             self.log.info('Using LocalFiledapter')
             return LocalFileAdapter(self.settings)
 
-    def __write_table__(self, data):
-        if data and data.num_rows > 0:
-            result_filename = f'{str(uuid.uuid4())}.parquet'
-            result_file_path = (
-                f'{self.settings.RESULTSET_DIR}/{result_filename}'
-            )
-            pq.write_table(data, result_file_path)
-            self.log_result_info(data, result_file_path)
-            return result_filename
-        else:
-            raise EmptyResultSetException("Empty result set")
+    def write_table(self, data):
+        result_filename = f'{str(uuid.uuid4())}.parquet'
+        result_file_path = (
+            f'{self.settings.RESULTSET_DIR}/{result_filename}'
+        )
+        pq.write_table(data, result_file_path)
+        self.log_result_info(data, result_file_path)
+        return result_filename
 
 
 class NotFoundException(Exception):
-    pass
-
-
-class EmptyResultSetException(Exception):
     pass
