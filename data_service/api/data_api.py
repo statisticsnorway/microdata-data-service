@@ -1,8 +1,12 @@
 import logging
 import os
+import io
 from fastapi import APIRouter, Depends, Header
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi import HTTPException, status
+
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
@@ -40,7 +44,7 @@ def retrieve_result_set(file_name: str,
         f"{settings.RESULTSET_DIR}/{file_name}"
     )
     if not os.path.isfile(file_path):
-        log.warn(f"No file found for path: {file_path}")
+        log.warning(f"No file found for path: {file_path}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Result set not found'
@@ -69,13 +73,13 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
     log.info(f"Authorized token for user: {user_id}")
 
     try:
-        resultset_file_name = processor.process_event_request(input_query)
+        result_data = processor.process_event_request(input_query)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-
+    resultset_file_name = processor.write_table(result_data)
     log.info(f'File name for event result set: {resultset_file_name}')
 
     return {
@@ -101,13 +105,13 @@ def create_result_file_status(input_query: InputTimeQuery,
     log.info(f"Authorized token for user: {user_id}")
 
     try:
-        resultset_file_name = processor.process_status_request(input_query)
+        result_data = processor.process_status_request(input_query)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-
+    resultset_file_name = processor.write_table(result_data)
     log.info(f'File name for event result set: {resultset_file_name}')
 
     return {
@@ -133,21 +137,18 @@ def create_file_result_fixed(input_query: InputFixedQuery,
     log.info(f"Authorized token for user: {user_id}")
 
     try:
-        resultset_file_name = processor.process_fixed_request(input_query)
+        result_data = processor.process_fixed_request(input_query)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-
+    resultset_file_name = processor.write_table(result_data)
     log.info(f'File name for event result set: {resultset_file_name}')
 
     return {
         'filename': resultset_file_name,
     }
-
-
-
 
 
 @data_router.post("/data/event/stream",
@@ -161,18 +162,17 @@ def stream_result_event(input_query: InputTimePeriodQuery,
     log.info(f"Authorized token for user: {user_id}")
 
     try:
-        resultset_file_name = processor.process_event_request(input_query)
+        result_data = processor.process_event_request(input_query)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-
-    log.info(f'File name for event result set: {resultset_file_name}')
-
-    return {
-        'filename': resultset_file_name,
-    }
+    buffer_stream = pa.BufferOutputStream()
+    pq.write_table(result_data, buffer_stream)
+    return StreamingResponse(
+        io.BytesIO(buffer_stream.getvalue().to_pybytes())
+    )
 
 
 @data_router.post("/data/status/stream",
@@ -186,18 +186,17 @@ def stream_result_status(input_query: InputTimeQuery,
     log.info(f"Authorized token for user: {user_id}")
 
     try:
-        resultset_file_name = processor.process_status_request(input_query)
+        result_data = processor.process_status_request(input_query)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-
-    log.info(f'File name for event result set: {resultset_file_name}')
-
-    return {
-        'filename': resultset_file_name,
-    }
+    buffer_stream = pa.BufferOutputStream()
+    pq.write_table(result_data, buffer_stream)
+    return StreamingResponse(
+        io.BytesIO(buffer_stream.getvalue().to_pybytes())
+    )
 
 
 @data_router.post("/data/fixed/stream",
@@ -210,15 +209,14 @@ def stream_result_fixed(input_query: InputFixedQuery,
     log.info(f"Authorized token for user: {user_id}")
 
     try:
-        resultset_file_name = processor.process_fixed_request(input_query)
+        result_data = processor.process_fixed_request(input_query)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-
-    log.info(f'File name for event result set: {resultset_file_name}')
-
-    return {
-        'filename': resultset_file_name,
-    }
+    buffer_stream = pa.BufferOutputStream()
+    pq.write_table(result_data, buffer_stream)
+    return StreamingResponse(
+        io.BytesIO(buffer_stream.getvalue().to_pybytes())
+    )
