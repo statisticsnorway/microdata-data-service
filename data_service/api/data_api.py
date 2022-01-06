@@ -15,6 +15,7 @@ from data_service.core.processor import Processor
 from data_service.api.auth import authorize_user
 
 data_router = APIRouter()
+log = logging.getLogger(__name__)
 
 
 @data_router.get("/data/resultSet", responses={
@@ -29,11 +30,9 @@ def retrieve_result_set(file_name: str,
     - **settings**: config.Settings object
     - **authorization**: JWT token authorization header
     """
-    log = logging.getLogger(__name__)
     log.info(
         f"Entering /data/resultSet with request for file name: {file_name}"
     )
-
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
@@ -64,7 +63,6 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
      - **settings**: config.Settings object
      - **authorization**: JWT token authorization header
     """
-    log = logging.getLogger(__name__)
     log.info(f'Entering /data/event with input query: {input_query}')
 
     user_id = authorize_user(authorization)
@@ -97,7 +95,6 @@ def create_result_file_status(input_query: InputTimeQuery,
      - **settings**: config.Settings object
      - **authorization**: JWT token authorization header
     """
-    log = logging.getLogger(__name__)
     log.info(f'Entering /data/status with input query: {input_query}')
 
     user_id = authorize_user(authorization)
@@ -130,9 +127,85 @@ def create_file_result_fixed(input_query: InputFixedQuery,
      - **settings**: config.Settings object
      - **authorization**: JWT token authorization header
     """
-    log = logging.getLogger(__name__)
     log.info(f'Entering /data/fixed with input query: {input_query}')
 
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
+
+    try:
+        resultset_file_name = processor.process_fixed_request(input_query)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'404: {input_query.dataStructureName} Not Found'
+        )
+
+    log.info(f'File name for event result set: {resultset_file_name}')
+
+    return {
+        'filename': resultset_file_name,
+    }
+
+
+
+
+
+@data_router.post("/data/event/stream",
+                  responses={404: {"model": ErrorMessage}})
+def stream_result_event(input_query: InputTimePeriodQuery,
+                        authorization: str = Header(None),
+                        processor: Processor = Depends(get_processor)):
+    log.info(f'Entering /data/event with input query: {input_query}')
+
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
+
+    try:
+        resultset_file_name = processor.process_event_request(input_query)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'404: {input_query.dataStructureName} Not Found'
+        )
+
+    log.info(f'File name for event result set: {resultset_file_name}')
+
+    return {
+        'filename': resultset_file_name,
+    }
+
+
+@data_router.post("/data/status/stream",
+                  responses={404: {"model": ErrorMessage}})
+def stream_result_status(input_query: InputTimeQuery,
+                         authorization: str = Header(None),
+                         processor: Processor = Depends(get_processor)):
+    log.info(f'Entering /data/status with input query: {input_query}')
+
+    user_id = authorize_user(authorization)
+    log.info(f"Authorized token for user: {user_id}")
+
+    try:
+        resultset_file_name = processor.process_status_request(input_query)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'404: {input_query.dataStructureName} Not Found'
+        )
+
+    log.info(f'File name for event result set: {resultset_file_name}')
+
+    return {
+        'filename': resultset_file_name,
+    }
+
+
+@data_router.post("/data/fixed/stream",
+                  responses={404: {"model": ErrorMessage}})
+def stream_result_fixed(input_query: InputFixedQuery,
+                        authorization: str = Header(None),
+                        processor: Processor = Depends(get_processor)):
+    log.info(f'Entering /data/fixed with input query: {input_query}')
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
