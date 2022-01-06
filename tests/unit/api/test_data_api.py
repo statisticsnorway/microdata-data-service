@@ -84,9 +84,9 @@ def test_get_result_set_invalid_signature_request():
 
 
 # /data/event
-def test_data_event():
+def test_data_event_generate_file():
     response = client.post(
-        "/data/event",
+        "/data/event/generate-file",
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME",
@@ -96,13 +96,13 @@ def test_data_event():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['filename']
 
 
 # /data/status
-def test_data_status():
+def test_data_status_generate_file():
     response = client.post(
-        "/data/status",
+        "/data/status/generate-file",
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME",
@@ -111,13 +111,13 @@ def test_data_status():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['filename']
 
 
 # /data/fixed
-def test_data_fixed():
+def test_data_fixed_generate_file():
     response = client.post(
-        "/data/fixed",
+        "/data/fixed/generate-file",
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME"
@@ -125,4 +125,4 @@ def test_data_fixed():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['filename']

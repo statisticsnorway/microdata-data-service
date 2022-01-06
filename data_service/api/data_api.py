@@ -56,7 +56,6 @@ def retrieve_result_set(file_name: str,
                   responses={404: {"model": ErrorMessage}})
 def create_result_file_event(input_query: InputTimePeriodQuery,
                              authorization: str = Header(None),
-                             settings: config.BaseSettings = Depends(get_settings),
                              processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type event.
@@ -70,6 +69,7 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
+
     try:
         resultset_file_name = processor.process_event_request(input_query)
     except FileNotFoundError:
@@ -77,15 +77,11 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
-    resultset_data_url = (
-        f"{settings.DATA_SERVICE_URL}/data/resultSet"
-        f"?file_name={resultset_file_name}"
-    )
-    log.info(f'Data url for event result set: {resultset_data_url}')
+
+    log.info(f'File name for event result set: {resultset_file_name}')
 
     return {
-        'name': input_query.dataStructureName,
-        'dataUrl': resultset_data_url
+        'filename': resultset_file_name,
     }
 
 
@@ -93,7 +89,6 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
                   responses={404: {"model": ErrorMessage}})
 def create_result_file_status(input_query: InputTimeQuery,
                               authorization: str = Header(None),
-                              settings: config.BaseSettings = Depends(get_settings),
                               processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type status.
@@ -116,15 +111,10 @@ def create_result_file_status(input_query: InputTimeQuery,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
 
-    resultset_data_url = (
-        f"{settings.DATA_SERVICE_URL}/data/resultSet"
-        f"?file_name={resultset_file_name}"
-    )
-    log.info(f'Data url for status result set: {resultset_data_url}')
+    log.info(f'File name for event result set: {resultset_file_name}')
 
     return {
-        'name': input_query.dataStructureName,
-        'dataUrl': resultset_data_url
+        'filename': resultset_file_name,
     }
 
 
@@ -132,7 +122,6 @@ def create_result_file_status(input_query: InputTimeQuery,
                   responses={404: {"model": ErrorMessage}})
 def create_file_result_fixed(input_query: InputFixedQuery,
                              authorization: str = Header(None),
-                             settings: config.BaseSettings = Depends(get_settings),
                              processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type fixed.
@@ -155,13 +144,8 @@ def create_file_result_fixed(input_query: InputFixedQuery,
             detail=f'404: {input_query.dataStructureName} Not Found'
         )
 
-    resultset_data_url = (
-        f"{settings.DATA_SERVICE_URL}/data/resultSet"
-        f"?file_name={resultset_file_name}"
-    )
-    log.info(f'data url for fixed result set: {resultset_data_url}')
+    log.info(f'File name for event result set: {resultset_file_name}')
 
     return {
-        'name': input_query.dataStructureName,
-        'dataUrl': resultset_data_url
+        'filename': resultset_file_name,
     }
