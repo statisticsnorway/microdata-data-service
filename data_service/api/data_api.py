@@ -57,10 +57,12 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
                              authorization: str = Header(None),
                              processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type event, and write result to file.
-     Returns name of file in response.
+    Create result set of data with temporality type event,
+    and write result to file. Returns name of file in response.
     """
-    log.info(f'Entering /data/event with input query: {input_query}')
+    log.info(
+        f'Entering /data/event/generate-file with input query: {input_query}'
+    )
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
@@ -80,10 +82,12 @@ def create_result_file_status(input_query: InputTimeQuery,
                               authorization: str = Header(None),
                               processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type status, and write result to file.
-     Returns name of file in response.
+    Create result set of data with temporality type status,
+    and write result to file. Returns name of file in response.
     """
-    log.info(f'Entering /data/status with input query: {input_query}')
+    log.info(
+        f'Entering /data/status/generate-file with input query: {input_query}'
+    )
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
@@ -103,10 +107,12 @@ def create_file_result_fixed(input_query: InputFixedQuery,
                              authorization: str = Header(None),
                              processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type fixed, and write result to file.
-     Returns name of file in response.
+    Create result set of data with temporality type fixed,
+    and write result to file. Returns name of file in response.
     """
-    log.info(f'Entering /data/fixed with input query: {input_query}')
+    log.info(
+        f'Entering /data/fixed/generate-file with input query: {input_query}'
+    )
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
@@ -126,9 +132,10 @@ def stream_result_event(input_query: InputTimePeriodQuery,
                         authorization: str = Header(None),
                         processor: Processor = Depends(get_processor)):
     """
-     Create Result set of data with temporality type event, and stream result as response.
+    Create Result set of data with temporality type event,
+    and stream result as response.
     """
-    log.info(f'Entering /data/event with input query: {input_query}')
+    log.info(f'Entering /data/event/stream with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
@@ -147,9 +154,10 @@ def stream_result_status(input_query: InputTimeQuery,
                          authorization: str = Header(None),
                          processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type status, and stream result as response.
+    Create result set of data with temporality type status,
+    and stream result as response.
     """
-    log.info(f'Entering /data/status with input query: {input_query}')
+    log.info(f'Entering /data/status/stream with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
@@ -168,9 +176,10 @@ def stream_result_fixed(input_query: InputFixedQuery,
                         authorization: str = Header(None),
                         processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type fixed, and stream result as response.
+    Create result set of data with temporality type fixed,
+    and stream result as response.
     """
-    log.info(f'Entering /data/fixed with input query: {input_query}')
+    log.info(f'Entering /data/fixed/stream with input query: {input_query}')
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
