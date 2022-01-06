@@ -28,11 +28,7 @@ def retrieve_result_set(file_name: str,
                         authorization: str = Header(None),
                         settings: config.BaseSettings = Depends(get_settings)):
     """
-    Retrieve a result set:
-
-    - **file_name**: UUID of the file generated
-    - **settings**: config.Settings object
-    - **authorization**: JWT token authorization header
+    Stream a generated result parquet file.
     """
     log.info(
         f"Entering /data/resultSet with request for file name: {file_name}"
@@ -61,24 +57,15 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
                              authorization: str = Header(None),
                              processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type event.
-
-     - **input_query**: InputTimePeriodQuery as JSON
-     - **settings**: config.Settings object
-     - **authorization**: JWT token authorization header
+     Create result set of data with temporality type event, and write result to file.
+     Returns name of file in response.
     """
     log.info(f'Entering /data/event with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    try:
-        result_data = processor.process_event_request(input_query)
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'404: {input_query.dataStructureName} Not Found'
-        )
+    result_data = processor.process_event_request(input_query)
     resultset_file_name = processor.write_table(result_data)
     log.info(f'File name for event result set: {resultset_file_name}')
 
@@ -93,24 +80,15 @@ def create_result_file_status(input_query: InputTimeQuery,
                               authorization: str = Header(None),
                               processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type status.
-
-     - **input_query**: InputTimeQuery as JSON
-     - **settings**: config.Settings object
-     - **authorization**: JWT token authorization header
+     Create result set of data with temporality type status, and write result to file.
+     Returns name of file in response.
     """
     log.info(f'Entering /data/status with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    try:
-        result_data = processor.process_status_request(input_query)
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'404: {input_query.dataStructureName} Not Found'
-        )
+    result_data = processor.process_status_request(input_query)
     resultset_file_name = processor.write_table(result_data)
     log.info(f'File name for event result set: {resultset_file_name}')
 
@@ -125,24 +103,15 @@ def create_file_result_fixed(input_query: InputFixedQuery,
                              authorization: str = Header(None),
                              processor: Processor = Depends(get_processor)):
     """
-     Create result set of data with temporality type fixed.
-
-     - **input_query**: InputFixedQuery as JSON
-     - **settings**: config.Settings object
-     - **authorization**: JWT token authorization header
+     Create result set of data with temporality type fixed, and write result to file.
+     Returns name of file in response.
     """
     log.info(f'Entering /data/fixed with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    try:
-        result_data = processor.process_fixed_request(input_query)
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'404: {input_query.dataStructureName} Not Found'
-        )
+    result_data = processor.process_fixed_request(input_query)
     resultset_file_name = processor.write_table(result_data)
     log.info(f'File name for event result set: {resultset_file_name}')
 
@@ -156,18 +125,15 @@ def create_file_result_fixed(input_query: InputFixedQuery,
 def stream_result_event(input_query: InputTimePeriodQuery,
                         authorization: str = Header(None),
                         processor: Processor = Depends(get_processor)):
+    """
+     Create Result set of data with temporality type event, and stream result as response.
+    """
     log.info(f'Entering /data/event with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    try:
-        result_data = processor.process_event_request(input_query)
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'404: {input_query.dataStructureName} Not Found'
-        )
+    result_data = processor.process_event_request(input_query)
     buffer_stream = pa.BufferOutputStream()
     pq.write_table(result_data, buffer_stream)
     return StreamingResponse(
@@ -180,18 +146,15 @@ def stream_result_event(input_query: InputTimePeriodQuery,
 def stream_result_status(input_query: InputTimeQuery,
                          authorization: str = Header(None),
                          processor: Processor = Depends(get_processor)):
+    """
+     Create result set of data with temporality type status, and stream result as response.
+    """
     log.info(f'Entering /data/status with input query: {input_query}')
 
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    try:
-        result_data = processor.process_status_request(input_query)
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'404: {input_query.dataStructureName} Not Found'
-        )
+    result_data = processor.process_status_request(input_query)
     buffer_stream = pa.BufferOutputStream()
     pq.write_table(result_data, buffer_stream)
     return StreamingResponse(
@@ -204,17 +167,14 @@ def stream_result_status(input_query: InputTimeQuery,
 def stream_result_fixed(input_query: InputFixedQuery,
                         authorization: str = Header(None),
                         processor: Processor = Depends(get_processor)):
+    """
+     Create result set of data with temporality type fixed, and stream result as response.
+    """
     log.info(f'Entering /data/fixed with input query: {input_query}')
     user_id = authorize_user(authorization)
     log.info(f"Authorized token for user: {user_id}")
 
-    try:
-        result_data = processor.process_fixed_request(input_query)
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'404: {input_query.dataStructureName} Not Found'
-        )
+    result_data = processor.process_fixed_request(input_query)
     buffer_stream = pa.BufferOutputStream()
     pq.write_table(result_data, buffer_stream)
     return StreamingResponse(
