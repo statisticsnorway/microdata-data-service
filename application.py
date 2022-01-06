@@ -17,9 +17,8 @@ from starlette.responses import PlainTextResponse, Response
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
 from data_service.config import config
-from data_service.core.processor import (
-    NotFoundException, EmptyResultSetException
-)
+from data_service.core.processor import NotFoundException
+from data_service.core.filters import EmptyResultSetException
 
 """
     Self-hosting JavaScript and CSS for docs
