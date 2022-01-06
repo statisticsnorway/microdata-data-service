@@ -52,11 +52,12 @@ def retrieve_result_set(file_name: str,
         )
 
 
-@data_router.post("/data/event", responses={404: {"model": ErrorMessage}})
-def create_result_set_event_data(input_query: InputTimePeriodQuery,
-                                 authorization: str = Header(None),
-                                 settings: config.BaseSettings = Depends(get_settings),
-                                 processor: Processor = Depends(get_processor)):
+@data_router.post("/data/event/generate-file",
+                  responses={404: {"model": ErrorMessage}})
+def create_result_file_event(input_query: InputTimePeriodQuery,
+                             authorization: str = Header(None),
+                             settings: config.BaseSettings = Depends(get_settings),
+                             processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type event.
 
@@ -88,11 +89,12 @@ def create_result_set_event_data(input_query: InputTimePeriodQuery,
     }
 
 
-@data_router.post("/data/status", responses={404: {"model": ErrorMessage}})
-def create_result_set_status_data(input_query: InputTimeQuery,
-                                  authorization: str = Header(None),
-                                  settings: config.BaseSettings = Depends(get_settings),
-                                  processor: Processor = Depends(get_processor)):
+@data_router.post("/data/status/generate-file",
+                  responses={404: {"model": ErrorMessage}})
+def create_result_file_status(input_query: InputTimeQuery,
+                              authorization: str = Header(None),
+                              settings: config.BaseSettings = Depends(get_settings),
+                              processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type status.
 
@@ -126,11 +128,12 @@ def create_result_set_status_data(input_query: InputTimeQuery,
     }
 
 
-@data_router.post("/data/fixed", responses={404: {"model": ErrorMessage}})
-def create_result_set_fixed_data(input_query: InputFixedQuery,
-                                 authorization: str = Header(None),
-                                 settings: config.BaseSettings = Depends(get_settings),
-                                 processor: Processor = Depends(get_processor)):
+@data_router.post("/data/fixed/generate-file",
+                  responses={404: {"model": ErrorMessage}})
+def create_file_result_fixed(input_query: InputFixedQuery,
+                             authorization: str = Header(None),
+                             settings: config.BaseSettings = Depends(get_settings),
+                             processor: Processor = Depends(get_processor)):
     """
      Create result set of data with temporality type fixed.
 
