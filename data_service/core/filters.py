@@ -90,4 +90,12 @@ def do_filter(filter: Expression, incl_attributes: bool,
             filters=filter,
             columns=columns_excluding_attributes
         )
-    return table
+
+    if table and table.num_rows > 0:
+        return table
+    else:
+        raise EmptyResultSetException("Empty result set")
+
+
+class EmptyResultSetException(Exception):
+    pass

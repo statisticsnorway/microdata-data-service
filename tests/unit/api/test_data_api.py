@@ -1,4 +1,7 @@
 import pytest
+import pyarrow as pa
+import pyarrow.parquet as pq
+
 from unittest.mock import Mock
 from fastapi.testclient import TestClient
 
@@ -19,15 +22,19 @@ INVALID_JWT_TOKEN = encode_jwt_payload(
     test_data.valid_jwt_payload, JWT_INVALID_PRIVATE_KEY
 )
 FAKE_RESULT_FILE_NAME = "fake_result_file_name"
+MOCK_RESULTSET = pq.read_table(
+    'tests/resources/resultset/1234-1234-1234-1234.parquet'
+)
 
 client = TestClient(data_service_app)
 
 
 def get_processor_override():
     mock = Mock(spec=Processor)
-    mock.process_event_request.return_value = FAKE_RESULT_FILE_NAME
-    mock.process_status_request.return_value = FAKE_RESULT_FILE_NAME
-    mock.process_fixed_request.return_value = FAKE_RESULT_FILE_NAME
+    mock.process_event_request.return_value = MOCK_RESULTSET
+    mock.process_status_request.return_value = MOCK_RESULTSET
+    mock.process_fixed_request.return_value = MOCK_RESULTSET
+    mock.write_table.return_value = FAKE_RESULT_FILE_NAME
     return mock
 
 
@@ -84,9 +91,9 @@ def test_get_result_set_invalid_signature_request():
 
 
 # /data/event
-def test_data_event():
+def test_data_event_generate_file():
     response = client.post(
-        "/data/event",
+        "/data/event/generate-file",
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME",
@@ -96,13 +103,30 @@ def test_data_event():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['filename']
+
+
+def test_data_event_stream_result():
+    response = client.post(
+        "/data/event/stream",
+        json={
+            "version": "1.0.0.0",
+            "dataStructureName": "FAKE_NAME",
+            "startDate": 0,
+            "stopDate": 0
+        },
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+    )
+
+    reader = pa.BufferReader(response.content)
+    assert response.status_code == 200
+    assert pq.read_table(reader) == MOCK_RESULTSET
 
 
 # /data/status
-def test_data_status():
+def test_data_status_generate_file():
     response = client.post(
-        "/data/status",
+        "/data/status/generate-file",
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME",
@@ -111,13 +135,29 @@ def test_data_status():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['filename']
+
+
+def test_data_status_stream_result():
+    response = client.post(
+        "/data/status/stream",
+        json={
+            "version": "1.0.0.0",
+            "dataStructureName": "FAKE_NAME",
+            "date": 0
+        },
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+    )
+
+    reader = pa.BufferReader(response.content)
+    assert response.status_code == 200
+    assert pq.read_table(reader) == MOCK_RESULTSET
 
 
 # /data/fixed
-def test_data_fixed():
+def test_data_fixed_generate_file():
     response = client.post(
-        "/data/fixed",
+        "/data/fixed/generate-file",
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME"
@@ -125,4 +165,19 @@ def test_data_fixed():
         headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
     )
     assert response.status_code == 200
-    assert FAKE_RESULT_FILE_NAME in response.json()['dataUrl']
+    assert FAKE_RESULT_FILE_NAME in response.json()['filename']
+
+
+def test_data_fixed_stream_result():
+    response = client.post(
+        "/data/fixed/stream",
+        json={
+            "version": "1.0.0.0",
+            "dataStructureName": "FAKE_NAME"
+        },
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+    )
+
+    reader = pa.BufferReader(response.content)
+    assert response.status_code == 200
+    assert pq.read_table(reader) == MOCK_RESULTSET
