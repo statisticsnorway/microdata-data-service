@@ -24,7 +24,30 @@ from data_service.core.filters import EmptyResultSetException
     Self-hosting JavaScript and CSS for docs
     https://fastapi.tiangolo.com/advanced/extending-openapi/#self-hosting-javascript-and-css-for-docs
 """
-data_service_app = FastAPI(docs_url=None, redoc_url=None)
+
+description = """
+The Parquet file format returned or produced by this service reported by `pq.read_schema(parquet_file).to_string()` is as follows:
+```
+format_version: 1.0
+unit_id: uint64
+-- field metadata --
+PARQUET:field_id: '1'
+value: string
+-- field metadata --
+PARQUET:field_id: '2'
+start_epoch_days: int16
+-- field metadata --
+PARQUET:field_id: '3'
+stop_epoch_days: int16
+-- field metadata --
+PARQUET:field_id: '4'
+```
+"""
+
+data_service_app = FastAPI(
+    title="Data service",
+    description=description
+)
 data_service_app.mount("/static", StaticFiles(directory="static"), name="static")
 
 data_service_app.include_router(data_router)
