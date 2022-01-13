@@ -11,16 +11,18 @@ from data_service.adapters.storage.file_adapter import FileAdapter
 
 
 class GcsBucketAdapter(FileAdapter):
+    """ This adapter is not currently maintained. See git history for previous version """
+
     def __init__(self, settings: config.GoogleCloudSettings = Depends(get_settings)):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.GcsBucketAdapter')
         self.settings = settings
 
-    def get_file(self, path: str, version: str) -> str:
-        result = self.__download_file_from_storage(path, version)
-        if result is None:
-            result = self.__download_partitioned_file_from_storage(path)
-        return result
+    def get_file_path(self, path: str) -> str:
+        raise NotImplementedError
+
+    def get_data_versions(self, version: str) -> str:
+        raise NotImplementedError
 
     def __download_file_from_storage(self, path: str, version: str) -> str:
         dataset_version = version.replace('.', '_')[:3]

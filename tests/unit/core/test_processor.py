@@ -56,7 +56,7 @@ def test_invalid_status_request():
         processor.process_status_request(
             test_data.INVALID_STATUS_QUERY_NOT_FOUND
         )
-    assert str(e.value) == "No such data structure"
+    assert str(e.value) == "No such data structure in data_versions file for version 1.0.0.0"
 
 
 def test_valid_fixed_request():
@@ -71,7 +71,7 @@ def test_invalid_fixed_request():
         processor.process_fixed_request(
             test_data.INVALID_FIXED_QUERY_NOT_FOUND
         )
-    assert str(e.value) == "No such data structure"
+    assert str(e.value) == "No such data structure in data_versions file for version 1.0.0.0"
 
 
 def teardown_function(file_name):

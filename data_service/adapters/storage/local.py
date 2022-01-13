@@ -1,11 +1,11 @@
+import json
 import logging
-import os
 
 from fastapi import Depends
 
+from data_service.adapters.storage.file_adapter import FileAdapter
 from data_service.config import config
 from data_service.config.config import get_settings
-from data_service.adapters.storage.file_adapter import FileAdapter
 
 
 class LocalFileAdapter(FileAdapter):
@@ -14,13 +14,13 @@ class LocalFileAdapter(FileAdapter):
         self.log = logging.getLogger(__name__ + '.LocalFileAdapter')
         self.settings = settings
 
-    def get_file(self, dataset_name: str, version: str) -> str:
-        dataset_version = version.replace('.', '_')[:3]
-        return self.__create_download_path(dataset_name, dataset_version)
+    def get_file_path(self, path: str) -> str:
+        return f"{self.settings.DATASTORE_DIR}/data/{path}"
 
-    def __create_download_path(self, dataset_name: str, version: str) -> str:
-        path = (
-            f"{self.settings.DATASTORE_DIR}/data/"
-            f"{dataset_name}/{dataset_name}__{version}"
+    def get_data_versions(self, version: str) -> str:
+        version_underscored = version.replace('.', '_')[:3]
+        data_versions_file = (
+            f"{self.settings.DATASTORE_DIR}/datastore/data_versions__{version_underscored}.json"
         )
-        return path if os.path.isdir(path) else f"{path}.parquet"
+        with open(data_versions_file, encoding="utf-8") as f:
+            return json.load(f)
