@@ -103,23 +103,7 @@ class Processor:
 
     def __get_parquet_file_path__(self, input_query):
         file_service: FileAdapter = self.__get_storage__()
-
-        data_versions = file_service.get_data_versions(
-            input_query.version
-        )
-
-        if input_query.dataStructureName not in data_versions:
-            raise NotFoundException(
-                f"No such data structure in data_versions file for version {input_query.version}")
-
-        parquet_file_path = file_service.get_file_path(data_versions[input_query.dataStructureName],
-                                                       input_query.dataStructureName)
-
-        if not os.path.exists(parquet_file_path):
-            self.log.error(f"Path {parquet_file_path} not does not exist")
-            raise NotFoundException("No such data structure")
-
-        return parquet_file_path
+        return file_service.get_file_path(input_query.dataStructureName, input_query.version)
 
     def __get_storage__(self):
         if isinstance(self.settings, config.GoogleCloudSettings):
@@ -139,5 +123,3 @@ class Processor:
         return result_filename
 
 
-class NotFoundException(Exception):
-    pass

@@ -4,8 +4,9 @@ import pyarrow.parquet as pq
 from tests.resources import test_data
 from data_service.config import config
 from data_service.core.processor import (
-    Processor, NotFoundException
+    Processor
 )
+from data_service.exceptions import NotFoundException
 from data_service.core.filters import EmptyResultSetException
 
 
