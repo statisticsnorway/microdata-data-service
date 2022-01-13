@@ -112,7 +112,8 @@ class Processor:
             raise NotFoundException(
                 f"No such data structure in data_versions file for version {input_query.version}")
 
-        parquet_file_path = file_service.get_file_path(data_versions[input_query.dataStructureName])
+        parquet_file_path = file_service.get_file_path(data_versions[input_query.dataStructureName],
+                                                       input_query.dataStructureName)
 
         if not os.path.exists(parquet_file_path):
             self.log.error(f"Path {parquet_file_path} not does not exist")
