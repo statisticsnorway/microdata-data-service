@@ -20,7 +20,7 @@ class LocalFileAdapter(FileAdapter):
         version_underscored = version.replace('.', '_')[:5]
         path_prefix = f"{self.settings.DATASTORE_DIR}/data/{data_structure_name}"
 
-        if version == "0.0.0":
+        if version.startswith("0.0.0") or version == "draft":
             parquet_file_path = f"{data_structure_name}__{version_underscored[:3]}"
             full_path = (
                 f"{path_prefix}/{parquet_file_path}"
