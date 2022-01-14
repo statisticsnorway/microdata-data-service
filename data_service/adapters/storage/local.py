@@ -17,7 +17,7 @@ class LocalFileAdapter(FileAdapter):
         self.settings = settings
 
     def get_file_path(self, data_structure_name: str, version: str) -> str:
-        version_underscored = version.replace('.', '_')[:3]
+        version_underscored = version.replace('.', '_')[:5]
         data_versions = self.__get_data_versions__(version_underscored)
 
         if data_structure_name not in data_versions:
