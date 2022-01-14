@@ -16,7 +16,7 @@ class LocalFileAdapter(FileAdapter):
         self.log = logging.getLogger(__name__ + '.LocalFileAdapter')
         self.settings = settings
 
-    def get_file_path(self, data_structure_name: str, version: str) -> str:
+    def get_parquet_file_path(self, data_structure_name: str, version: str) -> str:
         version_underscored = version.replace('.', '_')[:5]
         path_prefix = f"{self.settings.DATASTORE_DIR}/data/{data_structure_name}"
 

@@ -18,7 +18,7 @@ class GcsBucketAdapter(FileAdapter):
         self.log = logging.getLogger(__name__ + '.GcsBucketAdapter')
         self.settings = settings
 
-    def get_file_path(self, data_structure_name: str, version: str) -> str:
+    def get_parquet_file_path(self, data_structure_name: str, version: str) -> str:
         raise NotImplementedError
 
     def __download_file_from_storage(self, path: str, version: str) -> str:
