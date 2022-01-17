@@ -57,39 +57,6 @@ def setup(monkeypatch):
     )
 
 
-# /data/resultset
-def test_get_result_set_valid_request():
-    response = client.get(
-            "/data/resultSet?file_name=1234-1234-1234-1234.parquet",
-            headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
-    )
-    expected_response = open(
-        'tests/resources/resultset/1234-1234-1234-1234.parquet', 'rb'
-    ).read()
-
-    assert response.content == expected_response
-
-
-def test_get_result_set_not_found_dataset():
-    response = client.get(
-            "/data/resultSet?file_name=does-not-exist.parquet",
-            headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
-    )
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Result set not found"}
-
-
-def test_get_result_set_invalid_signature_request():
-    response = client.get(
-            "/data/resultSet?file_name=1234-1234-1234-1234.parquet",
-            headers={"Authorization": f"Bearer {INVALID_JWT_TOKEN}"}
-    )
-
-    assert response.status_code == 401
-    assert "Unauthorized" in response.json()["detail"]
-
-
 # /data/event
 def test_data_event_generate_file():
     response = client.post(
