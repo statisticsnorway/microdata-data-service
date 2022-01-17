@@ -22,35 +22,6 @@ data_router = APIRouter()
 log = logging.getLogger(__name__)
 
 
-@data_router.get("/data/resultSet", responses={
-                 204: {}, 404: {"model": ErrorMessage}})
-def retrieve_result_set(file_name: str,
-                        authorization: str = Header(None),
-                        settings: config.BaseSettings = Depends(get_settings)):
-    """
-    Stream a generated result parquet file.
-    """
-    log.info(
-        f"Entering /data/resultSet with request for file name: {file_name}"
-    )
-    user_id = authorize_user(authorization)
-    log.info(f"Authorized token for user: {user_id}")
-
-    file_path = (
-        f"{settings.RESULTSET_DIR}/{file_name}"
-    )
-    if not os.path.isfile(file_path):
-        log.warning(f"No file found for path: {file_path}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Result set not found'
-        )
-    else:
-        return FileResponse(
-            file_path, media_type='application/octet-stream'
-        )
-
-
 @data_router.post("/data/event/generate-file",
                   responses={404: {"model": ErrorMessage}})
 def create_result_file_event(input_query: InputTimePeriodQuery,
