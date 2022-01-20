@@ -2,7 +2,7 @@ import logging
 import os
 import io
 from fastapi import APIRouter, Depends, Header
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import PlainTextResponse
 from fastapi import HTTPException, status
 
 import pyarrow as pa
@@ -114,8 +114,8 @@ def stream_result_event(input_query: InputTimePeriodQuery,
     result_data = processor.process_event_request(input_query)
     buffer_stream = pa.BufferOutputStream()
     pq.write_table(result_data, buffer_stream)
-    return StreamingResponse(
-        io.BytesIO(buffer_stream.getvalue().to_pybytes())
+    return PlainTextResponse(
+        buffer_stream.getvalue().to_pybytes()
     )
 
 
@@ -136,8 +136,8 @@ def stream_result_status(input_query: InputTimeQuery,
     result_data = processor.process_status_request(input_query)
     buffer_stream = pa.BufferOutputStream()
     pq.write_table(result_data, buffer_stream)
-    return StreamingResponse(
-        io.BytesIO(buffer_stream.getvalue().to_pybytes())
+    return PlainTextResponse(
+        buffer_stream.getvalue().to_pybytes()
     )
 
 
@@ -157,6 +157,6 @@ def stream_result_fixed(input_query: InputFixedQuery,
     result_data = processor.process_fixed_request(input_query)
     buffer_stream = pa.BufferOutputStream()
     pq.write_table(result_data, buffer_stream)
-    return StreamingResponse(
-        io.BytesIO(buffer_stream.getvalue().to_pybytes())
+    return PlainTextResponse(
+        buffer_stream.getvalue().to_pybytes()
     )
