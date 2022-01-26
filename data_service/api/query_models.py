@@ -7,8 +7,8 @@ from pydantic import BaseModel, validator
 class InputQuery(BaseModel):
     dataStructureName: str
     version: str
-    population: Optional[list]
-    include_attributes: Optional[bool] = False
+    population: Optional[list[int]]
+    includeAttributes: Optional[bool] = False
 
     @validator('version')
     def check_for_sem_ver(cls, version):

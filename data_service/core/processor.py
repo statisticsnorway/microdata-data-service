@@ -36,7 +36,7 @@ class Processor:
 
         data = filters.filter_by_time_period(
             parquet_file, input_query.startDate, input_query.stopDate,
-            input_query.population, input_query.include_attributes
+            input_query.population, input_query.includeAttributes
         )
         return data
 
@@ -49,7 +49,7 @@ class Processor:
 
         data = filters.filter_by_time(
             parquet_file, input_query.date, input_query.population,
-            input_query.include_attributes
+            input_query.includeAttributes
         )
         return data
 
@@ -62,7 +62,7 @@ class Processor:
 
         data = filters.filter_by_fixed(
             parquet_file, input_query.population,
-            input_query.include_attributes
+            input_query.includeAttributes
         )
         return data
 
