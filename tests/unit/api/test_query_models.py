@@ -23,7 +23,7 @@ def test_create_and_validate_full_input_time_period_query():
         "startDate": 1964,
         "stopDate": 2056,
         "population": [1, 2, 3],
-        "include_attributes": True
+        "includeAttributes": True
     }
     actual = InputTimePeriodQuery.parse_obj(data)
     assert actual.dataStructureName == "DATASET_NAME"
@@ -32,7 +32,7 @@ def test_create_and_validate_full_input_time_period_query():
     assert actual.stopDate == 2056
     assert isinstance(actual.population, List)
     assert actual.population == [1, 2, 3]
-    assert actual.include_attributes is True
+    assert actual.includeAttributes is True
 
 
 def test_create_and_validate_input_time_period_query_with_error():
@@ -60,7 +60,7 @@ def test_create_and_validate_full_input_time_query():
         "version": "1.0.0.0",
         "date": 1964,
         "population": [1, 2, 3],
-        "include_attributes": True
+        "includeAttributes": True
     }
     InputTimeQuery.parse_obj(data)
 
@@ -88,7 +88,7 @@ def test_create_and_validate_full_input_fixed_query():
         "dataStructureName": "DATASET_NAME",
         "version": "1.0.0.0",
         "population": [1, 2, 3],
-        "include_attributes": True
+        "includeAttributes": True
     }
     InputFixedQuery.parse_obj(data)
 
