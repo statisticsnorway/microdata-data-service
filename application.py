@@ -141,6 +141,10 @@ class CustomJSONRequestLogFormatter(json_logging.JSONRequestLogFormatter):
         json_log_object["responseTime"] = json_log_object.pop('response_time_ms')
         json_log_object["statusCode"] = json_log_object.pop('response_status')
 
+        json_log_object["schemaVersion"] = "v3"
+        json_log_object["serviceVersion"] = str(pkg_meta['version'])
+        json_log_object["serviceName"] = "data-service"
+
         del json_log_object['written_ts']
         del json_log_object['type']
         del json_log_object['remote_user']
@@ -186,6 +190,7 @@ async def unknown_exception_handler(request, exc):
 
 @data_service_app.on_event("startup")
 def startup_event():
+    json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = False
     json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
     json_logging.init_request_instrument(data_service_app, custom_formatter=CustomJSONRequestLogFormatter)
 
