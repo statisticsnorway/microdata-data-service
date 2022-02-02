@@ -79,7 +79,7 @@ class Processor:
                 if filepath.endswith(".parquet"):
                     self.__log_parquet_details__(filepath)
                     # Log just the first file
-                    break
+                    return
 
     def __log_parquet_details__(self, parquet_file):
         self.log.info(
