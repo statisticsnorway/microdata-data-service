@@ -1,17 +1,15 @@
-import pytest
+from unittest.mock import Mock
+
 import pyarrow as pa
 import pyarrow.parquet as pq
-
-from unittest.mock import Mock
+import pytest
 from fastapi.testclient import TestClient
 
 from application import data_service_app
 from data_service.config import config, dependencies
 from data_service.core.processor import Processor
-
-from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 from tests.resources import test_data
-
+from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 
 JWT_PRIVATE_KEY, JWT_PUBLIC_KEY = generate_RSA_key_pairs()
 JWT_INVALID_PRIVATE_KEY, _ = generate_RSA_key_pairs()
