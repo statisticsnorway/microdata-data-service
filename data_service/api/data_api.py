@@ -2,7 +2,7 @@ import logging
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import PlainTextResponse
 
 from data_service.api.auth import authorize_user
@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @data_router.post("/data/event/generate-file",
                   responses={404: {"model": ErrorMessage}})
 def create_result_file_event(input_query: InputTimePeriodQuery,
+                             request: Request,  # needed for json_logging.get_correlation_id to work correctly
                              authorization: str = Header(None),
                              processor: Processor = Depends(get_processor)):
     """
@@ -45,6 +46,7 @@ def create_result_file_event(input_query: InputTimePeriodQuery,
 @data_router.post("/data/status/generate-file",
                   responses={404: {"model": ErrorMessage}})
 def create_result_file_status(input_query: InputTimeQuery,
+                              request: Request,  # needed for json_logging.get_correlation_id to work correctly
                               authorization: str = Header(None),
                               processor: Processor = Depends(get_processor)):
     """
@@ -70,6 +72,7 @@ def create_result_file_status(input_query: InputTimeQuery,
 @data_router.post("/data/fixed/generate-file",
                   responses={404: {"model": ErrorMessage}})
 def create_file_result_fixed(input_query: InputFixedQuery,
+                             request: Request,  # needed for json_logging.get_correlation_id to work correctly
                              authorization: str = Header(None),
                              processor: Processor = Depends(get_processor)):
     """
@@ -95,6 +98,7 @@ def create_file_result_fixed(input_query: InputFixedQuery,
 @data_router.post("/data/event/stream",
                   responses={404: {"model": ErrorMessage}})
 def stream_result_event(input_query: InputTimePeriodQuery,
+                        request: Request,  # needed for json_logging.get_correlation_id to work correctly
                         authorization: str = Header(None),
                         processor: Processor = Depends(get_processor)):
     """
@@ -117,6 +121,7 @@ def stream_result_event(input_query: InputTimePeriodQuery,
 @data_router.post("/data/status/stream",
                   responses={404: {"model": ErrorMessage}})
 def stream_result_status(input_query: InputTimeQuery,
+                         request: Request,  # needed for json_logging.get_correlation_id to work correctly
                          authorization: str = Header(None),
                          processor: Processor = Depends(get_processor)):
     """
@@ -139,6 +144,7 @@ def stream_result_status(input_query: InputTimeQuery,
 @data_router.post("/data/fixed/stream",
                   responses={404: {"model": ErrorMessage}})
 def stream_result_fixed(input_query: InputFixedQuery,
+                        request: Request,  # needed for json_logging.get_correlation_id to work correctly
                         authorization: str = Header(None),
                         processor: Processor = Depends(get_processor)):
     """

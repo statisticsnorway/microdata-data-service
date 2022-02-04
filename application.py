@@ -114,6 +114,7 @@ class CustomJSONLog(json_logging.JSONLogFormatter):
         json_log_object["schemaVersion"] = "v3"
         json_log_object["serviceVersion"] = str(pkg_meta['version'])
         json_log_object["serviceName"] = "data-service"
+        json_log_object["xRequestId"] = request_util.get_correlation_id()
 
         del json_log_object['written_ts']
         del json_log_object['type']
@@ -193,12 +194,13 @@ async def unknown_exception_handler(request, exc):
 @data_service_app.middleware("http")
 async def add_x_request_id_response_header(request: Request, call_next):
     response = await call_next(request)
-    response.headers["X-Request-ID"] = json_logging.get_correlation_id()
+    response.headers["X-Request-ID"] = json_logging.get_correlation_id(request=request)
     return response
 
 
 @data_service_app.on_event("startup")
 def startup_event():
+    json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = True
     json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(uuid.uuid1())
     json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
     json_logging.init_request_instrument(data_service_app, custom_formatter=CustomJSONRequestLogFormatter)
