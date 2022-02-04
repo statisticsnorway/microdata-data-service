@@ -34,7 +34,7 @@ format_version: 1.0
 unit_id: uint64
 -- field metadata --
 PARQUET:field_id: '1'
-value: string
+value: string | int64 | float64
 -- field metadata --
 PARQUET:field_id: '2'
 start_epoch_days: int16
