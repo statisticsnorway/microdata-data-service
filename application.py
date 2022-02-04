@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 import json_logging
 import tomlkit
@@ -12,6 +13,7 @@ from fastapi.openapi.docs import (
 )
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.requests import Request
 from starlette.responses import PlainTextResponse, Response
 
 from data_service.api.data_api import data_router
@@ -141,6 +143,10 @@ class CustomJSONRequestLogFormatter(json_logging.JSONRequestLogFormatter):
         json_log_object["responseTime"] = json_log_object.pop('response_time_ms')
         json_log_object["statusCode"] = json_log_object.pop('response_status')
 
+        json_log_object["schemaVersion"] = "v3"
+        json_log_object["serviceVersion"] = str(pkg_meta['version'])
+        json_log_object["serviceName"] = "data-service"
+
         del json_log_object['written_ts']
         del json_log_object['type']
         del json_log_object['remote_user']
@@ -184,8 +190,16 @@ async def unknown_exception_handler(request, exc):
     return PlainTextResponse("Internal Server Error", status_code=500)
 
 
+@data_service_app.middleware("http")
+async def add_x_request_id_response_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = json_logging.get_correlation_id()
+    return response
+
+
 @data_service_app.on_event("startup")
 def startup_event():
+    json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(uuid.uuid1())
     json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
     json_logging.init_request_instrument(data_service_app, custom_formatter=CustomJSONRequestLogFormatter)
 

@@ -78,6 +78,8 @@ class Processor:
                 filepath = subdir + os.sep + filename
                 if filepath.endswith(".parquet"):
                     self.__log_parquet_details__(filepath)
+                    # Log just the first file
+                    return
 
     def __log_parquet_details__(self, parquet_file):
         self.log.info(

@@ -1,22 +1,17 @@
 import logging
-import os
-import io
-from fastapi import APIRouter, Depends, Header
-from fastapi.responses import PlainTextResponse
-from fastapi import HTTPException, status
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+from fastapi import APIRouter, Depends, Header
+from fastapi.responses import PlainTextResponse
 
+from data_service.api.auth import authorize_user
 from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
 )
-from data_service.config import config
 from data_service.api.response_models import ErrorMessage
-from data_service.config.config import get_settings
 from data_service.config.dependencies import get_processor
 from data_service.core.processor import Processor
-from data_service.api.auth import authorize_user
 
 data_router = APIRouter()
 log = logging.getLogger(__name__)
