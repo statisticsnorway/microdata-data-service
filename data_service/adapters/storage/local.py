@@ -27,8 +27,7 @@ class LocalFileAdapter(FileAdapter):
             )
             full_path = full_path if os.path.isdir(full_path) else f"{full_path}.parquet"
         else:
-            version_underscored = version.replace('.', '_')[:5]
-            data_versions = self.__get_data_versions__(version_underscored)
+            data_versions = self.__get_data_versions__(version)
             if data_structure_name not in data_versions:
                 raise NotFoundException(
                     f"No such data structure in data_versions file for version {version}")
@@ -44,9 +43,14 @@ class LocalFileAdapter(FileAdapter):
 
         return full_path
 
-    def __get_data_versions__(self, version_underscored: str) -> str:
+    def __get_data_versions__(self, version: str) -> str:
+
+        if version.count('.') > 2:
+            version = '.'.join(version.split('.')[:-1])
+        version = version.replace('.', '_')
+
         data_versions_file = (
-            f"{self.settings.DATASTORE_DIR}/datastore/data_versions__{version_underscored}.json"
+            f"{self.settings.DATASTORE_DIR}/datastore/data_versions__{version}.json"
         )
         with open(data_versions_file, encoding="utf-8") as f:
             return json.load(f)
