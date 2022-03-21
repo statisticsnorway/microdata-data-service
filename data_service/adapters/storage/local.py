@@ -44,13 +44,15 @@ class LocalFileAdapter(FileAdapter):
         return full_path
 
     def __get_data_versions__(self, version: str) -> str:
-
-        if version.count('.') > 2:
-            version = '.'.join(version.split('.')[:-1])
-        version = version.replace('.', '_')
-
+        version = self.__to_underscored_version__(version)
         data_versions_file = (
             f"{self.settings.DATASTORE_DIR}/datastore/data_versions__{version}.json"
         )
         with open(data_versions_file, encoding="utf-8") as f:
             return json.load(f)
+
+    def __to_underscored_version__(self, version: str) -> str:
+        if version.count('.') > 2:
+            version = '.'.join(version.split('.')[:-1])
+        version = version.replace('.', '_')
+        return version
