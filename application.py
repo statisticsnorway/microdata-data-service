@@ -19,6 +19,7 @@ from starlette.responses import PlainTextResponse, Response
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
 from data_service.config import config
+from data_service.config.logging_config import CustomJSONLog, CustomJSONRequestLogFormatter
 from data_service.exceptions import NotFoundException
 from data_service.core.filters import EmptyResultSetException
 
@@ -79,90 +80,6 @@ async def redoc_html():
         title=data_service_app.title + " - ReDoc",
         redoc_js_url="/static/redoc.standalone.js",
     )
-
-
-def _get_project_meta():
-    with open('./pyproject.toml') as pyproject:
-        file_contents = pyproject.read()
-
-    return tomlkit.parse(file_contents)['tool']['poetry']
-
-
-pkg_meta = _get_project_meta()
-
-
-class CustomJSONLog(json_logging.JSONLogFormatter):
-    """
-    Customized application logger
-    """
-
-    def _format_log_object(self, record, request_util):
-        json_log_object = super(CustomJSONLog, self)._format_log_object(record, request_util)
-
-        json_log_object.update({
-            "message": record.getMessage()
-        })
-
-        if "exc_info" in json_log_object:
-            json_log_object["error.stack"] = json_log_object.pop('exc_info')
-            del json_log_object['filename']
-
-        json_log_object["@timestamp"] = json_log_object.pop('written_at')
-        json_log_object["loggerName"] = json_log_object.pop('logger')
-        json_log_object["levelName"] = json_log_object.pop('level')
-
-        json_log_object["schemaVersion"] = "v3"
-        json_log_object["serviceVersion"] = str(pkg_meta['version'])
-        json_log_object["serviceName"] = "data-service"
-        json_log_object["xRequestId"] = request_util.get_correlation_id()
-
-        del json_log_object['written_ts']
-        del json_log_object['type']
-        del json_log_object['msg']
-        del json_log_object['module']
-        del json_log_object['line_no']
-
-        return json_log_object
-
-
-class CustomJSONRequestLogFormatter(json_logging.JSONRequestLogFormatter):
-    """
-    Customized request logger
-    """
-
-    def _format_log_object(self, record, request_util):
-        json_log_object = super(CustomJSONRequestLogFormatter, self)._format_log_object(record, request_util)
-
-        json_log_object.update({
-            "message": record.getMessage()
-        })
-
-        json_log_object["@timestamp"] = json_log_object.pop('written_at')
-        json_log_object["xRequestId"] = json_log_object.pop('correlation_id')
-        json_log_object["url"] = json_log_object.pop('request')
-        json_log_object["source_host"] = json_log_object.pop('remote_host')
-        json_log_object["responseTime"] = json_log_object.pop('response_time_ms')
-        json_log_object["statusCode"] = json_log_object.pop('response_status')
-
-        json_log_object["schemaVersion"] = "v3"
-        json_log_object["serviceVersion"] = str(pkg_meta['version'])
-        json_log_object["serviceName"] = "data-service"
-
-        del json_log_object['written_ts']
-        del json_log_object['type']
-        del json_log_object['remote_user']
-        del json_log_object['referer']
-        del json_log_object['x_forwarded_for']
-        del json_log_object['protocol']
-        del json_log_object['remote_ip']
-        del json_log_object['request_size_b']
-        del json_log_object['remote_port']
-        del json_log_object['request_received_at']
-        del json_log_object['response_size_b']
-        del json_log_object['response_content_type']
-        del json_log_object['response_sent_at']
-
-        return json_log_object
 
 
 @data_service_app.exception_handler(EmptyResultSetException)
