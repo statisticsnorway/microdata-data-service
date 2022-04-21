@@ -19,6 +19,7 @@ PyJWT = "^2.2.0"
 aiofiles = "^0.7.0"
 cryptography = "^35.0.0"
 tomlkit = "^0.7.2"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

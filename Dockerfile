@@ -61,5 +61,5 @@ RUN pip install -r requirements.txt
 #the output is sent straight to terminal without being first buffered
 ENV PYTHONUNBUFFERED 1
 
-CMD [ "uvicorn", "--host=0.0.0.0",  "application:data_service_app"]
+CMD [ "uvicorn", "--host=0.0.0.0", "application:data_service_app", "--log-config=data_service/config/log_config.yaml"]
 
