@@ -16,21 +16,27 @@ class LocalFileAdapter(FileAdapter):
         self.log = logging.getLogger(__name__ + '.LocalFileAdapter')
         self.settings = settings
 
-    def get_parquet_file_path(self, data_structure_name: str, version: str) -> str:
-        path_prefix = f"{self.settings.DATASTORE_DIR}/data/{data_structure_name}"
-
-        if version.startswith("0.0.0") or version == "draft":
-            # TODO change to f"{data_structure_name}__draft" if the API contract change will be accepted
-            parquet_file_path = f"{data_structure_name}__0_0"
+    def get_parquet_file_path(self, data_structure_name: str,
+                              version: str) -> str:
+        path_prefix = (
+            f"{self.settings.DATASTORE_DIR}/data/{data_structure_name}"
+        )
+        if version.startswith("0"):
+            parquet_file_path = f"{data_structure_name}__DRAFT"
             full_path = (
                 f"{path_prefix}/{parquet_file_path}"
             )
-            full_path = full_path if os.path.isdir(full_path) else f"{full_path}.parquet"
+            full_path = (
+                full_path if os.path.isdir(full_path)
+                else f"{full_path}.parquet"
+            )
         else:
-            data_versions = self.__get_data_versions__(version)
+            data_versions = self.__get_data_versions(version)
             if data_structure_name not in data_versions:
                 raise NotFoundException(
-                    f"No such data structure in data_versions file for version {version}")
+                    "No such data structure in data_versions file "
+                    f"for version {version}"
+                )
             parquet_file_path = data_versions[data_structure_name]
 
             full_path = (
@@ -43,16 +49,16 @@ class LocalFileAdapter(FileAdapter):
 
         return full_path
 
-    def __get_data_versions__(self, version: str) -> str:
-        version = self.__to_underscored_version__(version)
+    def __get_data_versions(self, version: str) -> str:
+        version = self.__to_underscored_version(version)
         data_versions_file = (
-            f"{self.settings.DATASTORE_DIR}/datastore/data_versions__{version}.json"
+            f"{self.settings.DATASTORE_DIR}/datastore"
+            f"/data_versions__{version}.json"
         )
         with open(data_versions_file, encoding="utf-8") as f:
             return json.load(f)
 
-    def __to_underscored_version__(self, version: str) -> str:
-        if version.count('.') > 2:
-            version = '.'.join(version.split('.')[:-1])
+    def __to_underscored_version(self, version: str) -> str:
+        version = '.'.join(version.split('.')[:-2])
         version = version.replace('.', '_')
         return version

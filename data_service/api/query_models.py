@@ -15,7 +15,7 @@ class InputQuery(BaseModel):
         pattern = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$")
         if not pattern.match(version):
             raise ValueError(
-                f"==> version {version} is not a valid semantic version."
+                f"'{version}' is not a valid semantic version."
             )
         return version
 
