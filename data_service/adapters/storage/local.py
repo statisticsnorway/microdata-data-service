@@ -59,6 +59,5 @@ class LocalFileAdapter(FileAdapter):
             return json.load(f)
 
     def __to_underscored_version(self, version: str) -> str:
-        version = '.'.join(version.split('.')[:-2])
         version = version.replace('.', '_')
         return version
