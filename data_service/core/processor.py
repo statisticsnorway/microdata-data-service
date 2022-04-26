@@ -105,7 +105,9 @@ class Processor:
 
     def __get_parquet_file_path__(self, input_query):
         file_service: FileAdapter = self.__get_storage__()
-        return file_service.get_parquet_file_path(input_query.dataStructureName, input_query.version)
+        return file_service.get_parquet_file_path(
+            input_query.dataStructureName, input_query.version
+        )
 
     def __get_storage__(self):
         if isinstance(self.settings, config.GoogleCloudSettings):

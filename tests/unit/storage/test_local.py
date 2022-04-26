@@ -33,7 +33,7 @@ def test_get_file_path_draft():
 def test_to_underscored_version():
     assert local_file_adapter._LocalFileAdapter__to_underscored_version(
         "13.0.0.0"
-    ) == "13_0"
+    ) == "13_0_0_0"
     assert local_file_adapter._LocalFileAdapter__to_underscored_version(
-        "1.0.0.0"
-    ) == "1_0"
+        "1.2.0.0"
+    ) == "1_2_0_0"
