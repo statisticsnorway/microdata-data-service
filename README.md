@@ -81,6 +81,7 @@ Set "Working directory" to `[your-path]/microdata-data-service`
 Check [Configuration](#Configuration) for key file.
 
 
+
 ## Running/debugging tests in IntelliJ IDEA
 Go to Edit configurations... -> Add New Configuration -> Python tests -> pytest.
 
