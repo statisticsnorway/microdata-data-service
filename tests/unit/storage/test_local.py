@@ -7,6 +7,8 @@ TEST_PERSON_INCOME_PATH = (
 )
 TEST_PERSON_INCOME_PATH_1_0 = f"{TEST_PERSON_INCOME_PATH}__1_0.parquet"
 TEST_PERSON_INCOME_PATH_DRAFT = f"{TEST_PERSON_INCOME_PATH}__DRAFT.parquet"
+TEST_STUDIEPOENG_PATH_1_0 = "tests/resources/datastore_unit_test/data/TEST_STUDIEPOENG/TEST_STUDIEPOENG__1_0"
+
 
 local_file_adapter = LocalFileAdapter(
     settings=config.LocalFileSettings(
@@ -28,6 +30,14 @@ def test_get_file_path_draft():
             "TEST_PERSON_INCOME", "0.0.0.1"
         )
      )
+
+
+def test_get_partitioned_file_path():
+    assert TEST_STUDIEPOENG_PATH_1_0 == (
+        local_file_adapter.get_parquet_file_path(
+            "TEST_STUDIEPOENG", "1.0.0.0"
+        )
+    )
 
 
 def test_to_underscored_version():

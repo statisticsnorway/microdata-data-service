@@ -44,7 +44,7 @@ class LocalFileAdapter(FileAdapter):
             )
 
         if not os.path.exists(full_path):
-            self.log.error(f"Path {parquet_file_path} not does not exist")
+            self.log.error(f"Path {full_path} does not exist")
             raise NotFoundException("No such data structure")
 
         return full_path
