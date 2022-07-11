@@ -17,4 +17,3 @@ class FileAdapter(ABC):
             Returns:
                 parquet file path (str)
         """
-        pass

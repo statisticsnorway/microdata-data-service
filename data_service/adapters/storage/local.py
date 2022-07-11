@@ -11,7 +11,9 @@ from data_service.exceptions import NotFoundException
 
 
 class LocalFileAdapter(FileAdapter):
-    def __init__(self, settings: config.LocalFileSettings = Depends(get_settings)):
+    def __init__(
+        self, settings: config.LocalFileSettings = Depends(get_settings)
+    ):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.LocalFileAdapter')
         self.settings = settings
@@ -31,7 +33,7 @@ class LocalFileAdapter(FileAdapter):
                 else f"{full_path}.parquet"
             )
         else:
-            data_versions = self.__get_data_versions(version)
+            data_versions = self._get_data_versions(version)
             if data_structure_name not in data_versions:
                 raise NotFoundException(
                     "No such data structure in data_versions file "
@@ -49,8 +51,8 @@ class LocalFileAdapter(FileAdapter):
 
         return full_path
 
-    def __get_data_versions(self, version: str) -> str:
-        version = self.__to_underscored_version(version)
+    def _get_data_versions(self, version: str) -> str:
+        version = self._to_underscored_version(version)
         data_versions_file = (
             f"{self.settings.DATASTORE_DIR}/datastore"
             f"/data_versions__{version}.json"
@@ -58,6 +60,6 @@ class LocalFileAdapter(FileAdapter):
         with open(data_versions_file, encoding="utf-8") as f:
             return json.load(f)
 
-    def __to_underscored_version(self, version: str) -> str:
+    def _to_underscored_version(self, version: str) -> str:
         version = version.replace('.', '_')
         return version
