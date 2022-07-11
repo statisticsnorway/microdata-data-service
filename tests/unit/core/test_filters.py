@@ -98,7 +98,7 @@ def test_by_time_period_from_7670_to_8400():
     )
 
 
-def test_by_time_period_from_7670_to_8400_including_attributes_and_population_filter():
+def test_by_time_period_from_7670_to_8400_pop_filter_and_attributes():
     population_filter = [1000000002, 1000000003]
 
     expected = Table.from_pydict({

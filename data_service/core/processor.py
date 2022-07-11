@@ -9,7 +9,6 @@ from fastapi import Depends
 from pyarrow import Table
 
 from data_service.adapters.storage.file_adapter import FileAdapter
-from data_service.adapters.storage.gcs import GcsBucketAdapter
 from data_service.adapters.storage.local import LocalFileAdapter
 from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
@@ -27,7 +26,9 @@ class Processor:
         self.log = logging.getLogger(__name__ + '.Processor')
         self.settings = settings
 
-    def process_event_request(self, input_query: InputTimePeriodQuery) -> Union[Table, str]:
+    def process_event_request(
+        self, input_query: InputTimePeriodQuery
+    ) -> Union[Table, str]:
         parquet_file = self.__get_parquet_file_path__(input_query)
         if parquet_file is None:
             return f'dataset_{input_query.dataStructureName}_not_found'
@@ -40,7 +41,9 @@ class Processor:
         )
         return data
 
-    def process_status_request(self, input_query: InputTimeQuery) -> Union[Table, str]:
+    def process_status_request(
+        self, input_query: InputTimeQuery
+    ) -> Union[Table, str]:
         parquet_file = self.__get_parquet_file_path__(input_query)
         if parquet_file is None:
             return f'dataset_{input_query.dataStructureName}_not_found'
@@ -53,7 +56,9 @@ class Processor:
         )
         return data
 
-    def process_fixed_request(self, input_query: InputFixedQuery) -> Union[Table, str]:
+    def process_fixed_request(
+        self, input_query: InputFixedQuery
+    ) -> Union[Table, str]:
         parquet_file = self.__get_parquet_file_path__(input_query)
         if parquet_file is None:
             return f'dataset_{input_query.dataStructureName}_not_found'
@@ -73,7 +78,7 @@ class Processor:
             self.__log_parquet_details__(parquet_file)
 
     def __log_info_partitioned_parquet__(self, parquet_file):
-        for subdir, dirs, files in os.walk(parquet_file):
+        for subdir, _, files in os.walk(parquet_file):
             for filename in files:
                 filepath = subdir + os.sep + filename
                 if filepath.endswith(".parquet"):
@@ -111,8 +116,7 @@ class Processor:
 
     def __get_storage__(self):
         if isinstance(self.settings, config.GoogleCloudSettings):
-            self.log.info('Using GcsBucketAdapter')
-            return GcsBucketAdapter(self.settings)
+            raise NotImplementedError('Cloud storage not yet implemented')
         else:
             self.log.info('Using LocalFiledapter')
             return LocalFileAdapter(self.settings)
@@ -125,5 +129,3 @@ class Processor:
         pq.write_table(data, result_file_path)
         self.__log_result_info__(data, result_file_path)
         return result_filename
-
-
