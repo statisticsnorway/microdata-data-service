@@ -40,15 +40,17 @@ class LocalFileAdapter(FileAdapter):
             full_path = f'{path_prefix}/{file_name}'
 
         if not os.path.exists(full_path):
-            self.log.error(f"Path {full_path} does not exist")
-            raise NotFoundException("No such data structure")
+            self.log.error(f'Path {full_path} does not exist')
+            raise NotFoundException(
+                f'No file exists for {dataset_name} in {version}'
+            )
 
         return full_path
 
     def _get_file_name_from_data_versions(
         self, version: str, dataset_name: str
     ) -> str:
-        version = self._to_underscored_version(version)
+        version = self._to_underscored_two_number_version(version)
         data_versions_file = (
             f"{self.settings.DATASTORE_DIR}/datastore"
             f"/data_versions__{version}.json"
@@ -85,10 +87,12 @@ class LocalFileAdapter(FileAdapter):
         ]
         data_versions_files.sort()
         latest_data_versions_file = data_versions_files[-1]
-        return (
+        two_number_underscored = (
             latest_data_versions_file.strip('.json').strip('data_versions__')
         )
+        two_number_version = two_number_underscored.split('_')
+        return f'{two_number_version[0]}.{two_number_version[1]}.0.0'
 
-    def _to_underscored_version(self, version: str) -> str:
-        version = version.replace('.', '_')
-        return version
+    def _to_underscored_two_number_version(self, version: str) -> str:
+        version_numbers = version.split('.')
+        return f'{version_numbers[0]}_{version_numbers[1]}'
