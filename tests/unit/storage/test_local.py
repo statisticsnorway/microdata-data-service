@@ -33,6 +33,14 @@ def test_get_file_path_draft():
      )
 
 
+def test_get_latest_in_draft_version():
+    assert TEST_STUDIEPOENG_PATH_1_0 == (
+        local_file_adapter.get_parquet_file_path(
+            "TEST_STUDIEPOENG", "0.0.0.1"
+        )
+     )
+
+
 def test_get_partitioned_file_path():
     assert TEST_STUDIEPOENG_PATH_1_0 == (
         local_file_adapter.get_parquet_file_path(
