@@ -1,7 +1,5 @@
 # microdata-data-service
-Receives POST request with dataset name and filter and creates a result set binary file.
-
-Receives GET request for downloading binary file.
+Filters a parquet dataset based on query and returns it as bytes, or a URL to a written parquet file.
 
 
 API documentation:
