@@ -50,10 +50,10 @@ class LocalFileAdapter(FileAdapter):
     def _get_file_name_from_data_versions(
         self, version: str, dataset_name: str
     ) -> str:
-        version = self._to_underscored_two_number_version(version)
+        file_version = self._to_underscored_two_number_version(version)
         data_versions_file = (
             f"{self.settings.DATASTORE_DIR}/datastore"
-            f"/data_versions__{version}.json"
+            f"/data_versions__{file_version}.json"
         )
         with open(data_versions_file, encoding="utf-8") as f:
             data_versions = json.load(f)

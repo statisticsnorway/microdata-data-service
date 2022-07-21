@@ -62,7 +62,7 @@ def test_invalid_status_request():
             test_data.INVALID_STATUS_QUERY_NOT_FOUND
         )
     assert str(e.value) == (
-        "No NOT_A_DATASET in data_versions file for version 1_0"
+        "No NOT_A_DATASET in data_versions file for version 1.0.0.0"
     )
 
 
@@ -81,7 +81,7 @@ def test_invalid_fixed_request():
             test_data.INVALID_FIXED_QUERY_NOT_FOUND
         )
     assert str(e.value) == (
-        "No NOT_A_DATASET in data_versions file for version 1_0"
+        "No NOT_A_DATASET in data_versions file for version 1.0.0.0"
     )
 
 
