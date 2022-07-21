@@ -25,7 +25,7 @@ class LocalFileAdapter(FileAdapter):
         path_prefix = (
             f"{self.settings.DATASTORE_DIR}/data/{dataset_name}"
         )
-        if version.startswith("0"):
+        if version.startswith("0.0.0"):
             full_path = self._get_draft_file_path(path_prefix, dataset_name)
             if full_path is None:
                 latest = self._get_latest_version()
