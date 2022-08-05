@@ -35,14 +35,14 @@ def authorize_user(authorization_header):
     except (InvalidSignatureError, ExpiredSignatureError, InvalidAudienceError,
             NoUserError, DecodeError, ValueError, AttributeError) as e:
         log.error(f"{e}")
-        raise HTTPException(
+        raise HTTPException(  # pylint: disable=raise-missing-from
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Unauthorized {e}"
         )
 
     except (KeyError, Exception) as e:
         log.error(f"Internal Server Error: {e}")
-        raise HTTPException(
+        raise HTTPException(  # pylint: disable=raise-missing-from
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal Server Error {e}"
         )

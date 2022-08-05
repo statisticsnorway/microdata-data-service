@@ -25,14 +25,18 @@ def test_valid_event_request():
     file_name = processor.process_event_request(
         test_data.VALID_EVENT_QUERY_PERSON_INCOME_ALL
     )
-    assert parquet_table_to_csv_string(file_name) == test_data.PERSON_INCOME_ALL
+    assert parquet_table_to_csv_string(file_name) == (
+        test_data.PERSON_INCOME_ALL
+    )
 
 
 def test_valid_event_request_partitioned():
     file_name = processor.process_event_request(
         test_data.VALID_EVENT_QUERY_TEST_STUDIEPOENG_ALL
     )
-    assert parquet_table_to_csv_string(file_name) == test_data.TEST_STUDIEPOENG_ALL
+    assert parquet_table_to_csv_string(file_name) == (
+        test_data.TEST_STUDIEPOENG_ALL
+    )
 
 
 def test_invalid_event_request():
@@ -57,14 +61,18 @@ def test_invalid_status_request():
         processor.process_status_request(
             test_data.INVALID_STATUS_QUERY_NOT_FOUND
         )
-    assert str(e.value) == "No such data structure in data_versions file for version 1.0.0.0"
+    assert str(e.value) == (
+        "No NOT_A_DATASET in data_versions file for version 1.0.0.0"
+    )
 
 
 def test_valid_fixed_request():
     file_name = processor.process_fixed_request(
         test_data.VALID_FIXED_QUERY_PERSON_INCOME_ALL
     )
-    assert parquet_table_to_csv_string(file_name) == test_data.PERSON_INCOME_ALL
+    assert parquet_table_to_csv_string(file_name) == (
+        test_data.PERSON_INCOME_ALL
+    )
 
 
 def test_invalid_fixed_request():
@@ -72,7 +80,9 @@ def test_invalid_fixed_request():
         processor.process_fixed_request(
             test_data.INVALID_FIXED_QUERY_NOT_FOUND
         )
-    assert str(e.value) == "No such data structure in data_versions file for version 1.0.0.0"
+    assert str(e.value) == (
+        "No NOT_A_DATASET in data_versions file for version 1.0.0.0"
+    )
 
 
 def teardown_function(file_name):

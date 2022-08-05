@@ -11,7 +11,7 @@ class InputQuery(BaseModel):
     includeAttributes: Optional[bool] = False
 
     @validator('version')
-    def check_for_sem_ver(cls, version):
+    def check_for_sem_ver(cls, version):  # pylint: disable=no-self-argument
         pattern = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$")
         if not pattern.match(version):
             raise ValueError(

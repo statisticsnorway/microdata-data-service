@@ -76,18 +76,21 @@ def filter_by_fixed(parquet_partition_name: str,
     return table
 
 
-def do_filter(filter: Expression, incl_attributes: bool,
-              parquet_partition_name: str) -> Table:
+def do_filter(
+    table_filter: Expression,
+    incl_attributes: bool,
+    parquet_partition_name: str
+) -> Table:
     if incl_attributes:
         table = pq.read_table(
             source=parquet_partition_name,
-            filters=filter,
+            filters=table_filter,
             columns=columns_including_attributes
         )
     else:
         table = pq.read_table(
             source=parquet_partition_name,
-            filters=filter,
+            filters=table_filter,
             columns=columns_excluding_attributes
         )
 
