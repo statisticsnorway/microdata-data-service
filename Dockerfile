@@ -1,5 +1,5 @@
 # Export Poetry Packages
-FROM ubuntu:21.10 as builder
+FROM ubuntu:22.04 as builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
