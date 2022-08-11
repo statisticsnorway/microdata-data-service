@@ -37,7 +37,7 @@ COPY poetry.lock pyproject.toml /app/
 
 # Install poetry and export dependencies to requirements yaml
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python -
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
 #Set application version in pyproject.toml, use zero if not set
 ARG BUILD_NUMBER=0
