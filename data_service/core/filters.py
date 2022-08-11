@@ -1,10 +1,7 @@
 import logging
 
 import pyarrow.dataset as ds
-import pyarrow.parquet as pq
 from pyarrow import Table
-from pyarrow.dataset import Expression
-
 
 columns_including_attributes = [
     "unit_id", "value", "start_epoch_days", "stop_epoch_days"
@@ -18,13 +15,13 @@ module_logger = logging.getLogger(__name__)
 def filter_by_time_period(parquet_partition_name: str, start: int, stop: int,
                           population_filter: list = None,
                           incl_attributes=False) -> Table:
-    stop_missing: Expression = ~ds.field("stop_epoch_days").is_valid()
-    start_epoch_le_start: Expression = ds.field('start_epoch_days') <= start
-    start_epoch_ge_start: Expression = ds.field('start_epoch_days') >= start
-    start_epoch_le_stop: Expression = ds.field('start_epoch_days') <= stop
-    start_epoch_g_start: Expression = ds.field('start_epoch_days') > start
-    stop_epoch_ge_start: Expression = ds.field('stop_epoch_days') >= start
-    stop_epoch_le_stop: Expression = ds.field('stop_epoch_days') <= stop
+    stop_missing = ~ds.field("stop_epoch_days").is_valid()
+    start_epoch_le_start = ds.field('start_epoch_days') <= start
+    start_epoch_ge_start = ds.field('start_epoch_days') >= start
+    start_epoch_le_stop = ds.field('start_epoch_days') <= stop
+    start_epoch_g_start = ds.field('start_epoch_days') > start
+    stop_epoch_ge_start = ds.field('stop_epoch_days') >= start
+    stop_epoch_le_stop = ds.field('stop_epoch_days') <= stop
 
     find_by_time_period_filter = (
         (start_epoch_le_start & stop_missing) |
@@ -33,7 +30,7 @@ def filter_by_time_period(parquet_partition_name: str, start: int, stop: int,
         (start_epoch_g_start & stop_epoch_le_stop)
     )
     if population_filter:
-        population: Expression = ds.field("unit_id").isin(population_filter)
+        population = ds.field("unit_id").isin(population_filter)
         find_by_time_period_filter = population & find_by_time_period_filter
 
     table = do_filter(
@@ -45,16 +42,16 @@ def filter_by_time_period(parquet_partition_name: str, start: int, stop: int,
 def filter_by_time(parquet_partition_name: str, date: int,
                    population_filter: list = None,
                    incl_attributes=False) -> Table:
-    stop_missing: Expression = ~ds.field("stop_epoch_days").is_valid()
-    start_epoch_le_date: Expression = ds.field('start_epoch_days') <= date
-    stop_epoch_ge_date: Expression = ds.field('stop_epoch_days') >= date
+    stop_missing = ~ds.field("stop_epoch_days").is_valid()
+    start_epoch_le_date = ds.field('start_epoch_days') <= date
+    stop_epoch_ge_date = ds.field('stop_epoch_days') >= date
 
     find_by_time_filter = (
         (start_epoch_le_date & stop_missing) |
         (start_epoch_le_date & stop_epoch_ge_date)
     )
     if population_filter:
-        population: Expression = ds.field("unit_id").isin(population_filter)
+        population = ds.field("unit_id").isin(population_filter)
         find_by_time_filter = population & find_by_time_filter
 
     table = do_filter(
@@ -67,7 +64,7 @@ def filter_by_fixed(parquet_partition_name: str,
                     population_filter: list = None,
                     incl_attributes=False) -> Table:
     if population_filter:
-        fixed_filter: Expression = ds.field("unit_id").isin(population_filter)
+        fixed_filter = ds.field("unit_id").isin(population_filter)
         table = do_filter(
             fixed_filter, incl_attributes, parquet_partition_name
         )
@@ -77,27 +74,23 @@ def filter_by_fixed(parquet_partition_name: str,
 
 
 def do_filter(
-    table_filter: Expression,
+    table_filter,
     incl_attributes: bool,
     parquet_partition_name: str
 ) -> Table:
     if incl_attributes:
-        table = pq.read_table(
-            source=parquet_partition_name,
-            filters=table_filter,
-            columns=columns_including_attributes
-        )
+        my_dataset = ds.dataset(parquet_partition_name)
+        table = my_dataset.to_table(
+            filter=table_filter, columns=columns_including_attributes)
     else:
-        table = pq.read_table(
-            source=parquet_partition_name,
-            filters=table_filter,
-            columns=columns_excluding_attributes
-        )
+        my_dataset = ds.dataset(parquet_partition_name)
+        table = my_dataset.to_table(
+            filter=table_filter, columns=columns_excluding_attributes)
 
     if table and table.num_rows > 0:
         return table
-    else:
-        raise EmptyResultSetException("Empty result set")
+
+    raise EmptyResultSetException("Empty result set")
 
 
 class EmptyResultSetException(Exception):
