@@ -103,5 +103,5 @@ def result_set_to_csv_string(file_name):
 
 def parquet_table_to_csv_string(table):
     data_frame = table.to_pandas()
-    csv_string = data_frame.to_csv(sep=';', encoding='utf-8')
+    csv_string = data_frame.to_csv(sep=';', encoding='utf-8', line_terminator='\n')
     return csv_string
