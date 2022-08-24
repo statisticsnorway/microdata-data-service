@@ -68,7 +68,7 @@ The configuration files are ```data_service/config/.env.gcs``` and ```data_servi
 
 ## Running application from command line
 ```
-poetry run uvicorn application:data_service_app --log-config=data_service/config/log_config.yaml --reload
+poetry run uvicorn application:data_service_app --reload
 ```
 
 
