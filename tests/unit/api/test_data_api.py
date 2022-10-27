@@ -4,8 +4,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 from fastapi.testclient import TestClient
+from pytest import MonkeyPatch
 
 from application import data_service_app
+from data_service.api import auth
 from data_service.config import config, dependencies
 from data_service.core.processor import Processor
 from tests.resources import test_data
@@ -49,9 +51,11 @@ data_service_app.dependency_overrides[config.get_settings] = (
 
 
 @pytest.fixture(autouse=True)
-def setup(monkeypatch):
-    monkeypatch.setenv(
-        'JWT_PUBLIC_KEY', JWT_PUBLIC_KEY.decode('utf-8')
+def setup(monkeypatch: MonkeyPatch):
+    monkeypatch.setattr(
+        auth,
+        'get_signing_key',
+        lambda _: JWT_PUBLIC_KEY.decode('utf-8')
     )
 
 

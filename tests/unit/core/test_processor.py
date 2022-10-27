@@ -1,14 +1,15 @@
-import pytest
 import os
+
 import pyarrow.parquet as pq
-from tests.resources import test_data
+import pytest
+
 from data_service.config import config
+from data_service.core.filters import EmptyResultSetException
 from data_service.core.processor import (
     Processor
 )
 from data_service.exceptions import NotFoundException
-from data_service.core.filters import EmptyResultSetException
-
+from tests.resources import test_data
 
 RESULTSET_DIR = 'tests/resources/resultset'
 
@@ -85,7 +86,7 @@ def test_invalid_fixed_request():
     )
 
 
-def teardown_function(file_name):
+def teardown_function():
     result_sets = os.listdir(RESULTSET_DIR)
     test_generated_result_sets = [
         result_set for result_set in result_sets
@@ -103,5 +104,7 @@ def result_set_to_csv_string(file_name):
 
 def parquet_table_to_csv_string(table):
     data_frame = table.to_pandas()
-    csv_string = data_frame.to_csv(sep=';', encoding='utf-8', line_terminator='\n')
+    csv_string = data_frame.to_csv(
+        sep=';', encoding='utf-8', lineterminator='\n'
+    )
     return csv_string

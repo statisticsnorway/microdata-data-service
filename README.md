@@ -53,7 +53,8 @@ docker run --publish 8000:8000 \
 --env CONFIG_PROFILE=LOCAL \
 --env DATASTORE_DIR=/datastore_path \
 --env RESULTSET_DIR=/resultset_path \
---env JWT_PUBLIC_KEY=some-key-here \
+--env JWKS_URL=<URL here> \
+--env STACK=<dev | qa | prod> \
 --env JWT_AUTH=true \
 -v /path/datastore:/datastore_path \
 -v /path/resultset:/resultset_path data-service
