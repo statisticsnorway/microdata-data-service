@@ -1,4 +1,5 @@
 import pytest
+from pytest import MonkeyPatch
 from fastapi import HTTPException
 
 from data_service.api import auth
@@ -11,7 +12,7 @@ JWT_INVALID_PRIVATE_KEY, _ = generate_RSA_key_pairs()
 
 
 @pytest.fixture(autouse=True)
-def setup(monkeypatch):
+def setup(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
         auth,
         'get_signing_key',
@@ -64,17 +65,17 @@ def test_auth_missing_token():
     assert "Unauthorized" in e.value.detail
 
 
-def test_auth_toggled_off(monkeypatch):
+def test_auth_toggled_off(monkeypatch: MonkeyPatch):
     monkeypatch.setenv('JWT_AUTH', 'false')
     user_id = authorize_user(None)
     assert user_id == "default"
 
 
-def test_jwt_audience_qa(monkeypatch):
+def test_jwt_audience_qa(monkeypatch: MonkeyPatch):
     monkeypatch.setenv("STACK", "qa")
     assert get_jwks_aud() == "datastore-qa"
 
 
-def test_jwt_audience_prod(monkeypatch):
+def test_jwt_audience_prod(monkeypatch: MonkeyPatch):
     monkeypatch.setenv("STACK", "prod")
     assert get_jwks_aud() == "datastore"

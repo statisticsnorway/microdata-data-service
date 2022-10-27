@@ -17,8 +17,7 @@ def get_jwks_aud() -> str:
 
 
 def get_signing_key(jwt_token: str):
-    signing_key = jwks_client.get_signing_key_from_jwt(jwt_token)
-    return signing_key.key
+    return jwks_client.get_signing_key_from_jwt(jwt_token).key
 
 
 def authorize_user(authorization_header) -> str:

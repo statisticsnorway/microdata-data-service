@@ -4,6 +4,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 from fastapi.testclient import TestClient
+from pytest import MonkeyPatch
 
 from application import data_service_app
 from data_service.api import auth
@@ -50,7 +51,7 @@ data_service_app.dependency_overrides[config.get_settings] = (
 
 
 @pytest.fixture(autouse=True)
-def setup(monkeypatch):
+def setup(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
         auth,
         'get_signing_key',
