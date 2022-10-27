@@ -1,14 +1,27 @@
-import os
 import logging
+import os
+
 import jwt
+from fastapi import HTTPException, status
+from jwt import PyJWKClient
 from jwt.exceptions import (
     InvalidSignatureError, ExpiredSignatureError,
     InvalidAudienceError, DecodeError
 )
-from fastapi import HTTPException, status
+
+jwks_client = PyJWKClient(os.environ['JWKS_URL'], lifespan=3000)
 
 
-def authorize_user(authorization_header):
+def get_jwks_aud() -> str:
+    return "datastore-qa" if os.environ['STACK'] == 'qa' else "datastore"
+
+
+def get_signing_key(jwt_token: str):
+    signing_key = jwks_client.get_signing_key_from_jwt(jwt_token)
+    return signing_key.key
+
+
+def authorize_user(authorization_header) -> str:
     log = logging.getLogger(__name__)
 
     if os.environ.get('JWT_AUTH', 'true') == 'false':
@@ -21,11 +34,14 @@ def authorize_user(authorization_header):
         )
 
     try:
-        JWT_token = authorization_header.removeprefix('Bearer ')
-        public_key = os.environ['JWT_PUBLIC_KEY']
+        jwt_token = authorization_header.removeprefix('Bearer ')
+        signing_key = get_signing_key(jwt_token)
 
         decoded_jwt = jwt.decode(
-            JWT_token, public_key, algorithms=["RS256"], audience="datastore"
+            jwt_token,
+            signing_key,
+            algorithms=["RS256", "RS512"],
+            audience=get_jwks_aud()
         )
         user_id = decoded_jwt.get("sub")
         if user_id in [None, '']:

@@ -1,10 +1,10 @@
 import pytest
-
-from data_service.api.auth import authorize_user
-from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 from fastapi import HTTPException
-from tests.resources import test_data
 
+from data_service.api import auth
+from data_service.api.auth import authorize_user, get_jwks_aud
+from tests.resources import test_data
+from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 
 JWT_PRIVATE_KEY, JWT_PUBLIC_KEY = generate_RSA_key_pairs()
 JWT_INVALID_PRIVATE_KEY, _ = generate_RSA_key_pairs()
@@ -12,8 +12,10 @@ JWT_INVALID_PRIVATE_KEY, _ = generate_RSA_key_pairs()
 
 @pytest.fixture(autouse=True)
 def setup(monkeypatch):
-    monkeypatch.setenv(
-        'JWT_PUBLIC_KEY', JWT_PUBLIC_KEY.decode('utf-8')
+    monkeypatch.setattr(
+        auth,
+        'get_signing_key',
+        lambda *a: JWT_PUBLIC_KEY.decode('utf-8')
     )
 
 
@@ -62,18 +64,17 @@ def test_auth_missing_token():
     assert "Unauthorized" in e.value.detail
 
 
-def test_auth_missing_config_public_key(monkeypatch):
-    monkeypatch.delenv('JWT_PUBLIC_KEY')
-    with pytest.raises(HTTPException) as e:
-        token = encode_jwt_payload(
-            test_data.valid_jwt_payload, JWT_PRIVATE_KEY
-        )
-        authorize_user(f'Bearer {token}')
-    assert e.value.status_code == 500
-    assert "Internal Server Error" in e.value.detail
-
-
 def test_auth_toggled_off(monkeypatch):
     monkeypatch.setenv('JWT_AUTH', 'false')
     user_id = authorize_user(None)
     assert user_id == "default"
+
+
+def test_jwt_audience_qa(monkeypatch):
+    monkeypatch.setenv("STACK", "qa")
+    assert get_jwks_aud() == "datastore-qa"
+
+
+def test_jwt_audience_prod(monkeypatch):
+    monkeypatch.setenv("STACK", "prod")
+    assert get_jwks_aud() == "datastore"
