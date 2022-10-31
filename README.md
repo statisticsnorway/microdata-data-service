@@ -1,4 +1,5 @@
 # microdata-data-service
+Data service for microdata.no.
 Filters a parquet dataset based on query and returns it as bytes, or a URL to a written parquet file.
 
 
