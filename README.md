@@ -57,6 +57,7 @@ docker run --publish 8000:8000 \
 --env JWKS_URL=<URL here> \
 --env STACK=<dev | qa | prod> \
 --env JWT_AUTH=true \
+--env DOCKER_HOST_NAME=localhost \
 -v /path/datastore:/datastore_path \
 -v /path/resultset:/resultset_path data-service
 ````
