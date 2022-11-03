@@ -1,5 +1,5 @@
 import json
-import platform
+import os
 import sys
 
 import json_logging
@@ -15,7 +15,7 @@ def _get_project_meta():
 
 pkg_meta = _get_project_meta()
 service_name = "data-service"
-host = platform.node()
+host = os.environ['DOCKER_HOST_NAME']
 command = json.dumps(sys.argv)
 
 
