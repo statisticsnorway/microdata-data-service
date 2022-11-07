@@ -1,8 +1,8 @@
 import logging
+import sys
 import uuid
 
 import json_logging
-import tomlkit
 import uvicorn
 from fastapi import FastAPI, status
 from fastapi.encoders import jsonable_encoder
@@ -18,10 +18,10 @@ from starlette.responses import PlainTextResponse, Response
 
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
-from data_service.config import config
-from data_service.config.logging_config import CustomJSONLog, CustomJSONRequestLogFormatter
-from data_service.exceptions import NotFoundException
+from data_service.config.logging_config import \
+    CustomJSONLog, CustomJSONRequestLogFormatter
 from data_service.core.filters import EmptyResultSetException
+from data_service.exceptions import NotFoundException
 
 """
     Self-hosting JavaScript and CSS for docs
@@ -46,6 +46,10 @@ stop_epoch_days: int16
 PARQUET:field_id: '4'
 ```
 """
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 data_service_app = FastAPI(
     title="Data service",
@@ -84,8 +88,7 @@ async def redoc_html():
 
 @data_service_app.exception_handler(EmptyResultSetException)
 async def empty_result_set_exception_handler(request, exc):
-    log = logging.getLogger(__name__)
-    log.exception(exc)
+    logger.exception(exc)
     return Response(
         status_code=status.HTTP_204_NO_CONTENT
     )
@@ -93,8 +96,7 @@ async def empty_result_set_exception_handler(request, exc):
 
 @data_service_app.exception_handler(NotFoundException)
 async def not_found_exception_handler(request, exc):
-    log = logging.getLogger(__name__)
-    log.exception(exc)
+    logger.exception(exc)
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content=jsonable_encoder({"detail": "No such datastructure"})
@@ -103,8 +105,7 @@ async def not_found_exception_handler(request, exc):
 
 @data_service_app.exception_handler(Exception)
 async def unknown_exception_handler(request, exc):
-    log = logging.getLogger(__name__)
-    log.exception(exc)
+    logger.exception(exc)
     return PlainTextResponse("Internal Server Error", status_code=500)
 
 
@@ -118,17 +119,13 @@ async def add_x_request_id_response_header(request: Request, call_next):
 @data_service_app.on_event("startup")
 def startup_event():
     json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = True
-    json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(uuid.uuid1())
+    json_logging.CORRELATION_ID_GENERATOR = \
+        lambda: "data-service-" + str(uuid.uuid1())
     json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
-    json_logging.init_request_instrument(data_service_app, custom_formatter=CustomJSONRequestLogFormatter)
-
-    logging.basicConfig(level=logging.INFO)
-    json_logging.config_root_logger()
-
-    log = logging.getLogger(__name__)
-
-    log.info('Started data-service')
-    log.info(config.get_settings().print())
+    json_logging.init_request_instrument(
+        data_service_app,
+        custom_formatter=CustomJSONRequestLogFormatter
+    )
 
 
 if __name__ == "__main__":

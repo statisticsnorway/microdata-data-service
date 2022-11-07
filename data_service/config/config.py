@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from pydantic import BaseSettings, ValidationError
 
-module_logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class GoogleCloudSettings(BaseSettings):
@@ -47,4 +47,4 @@ def get_settings():
         else:
             return LocalFileSettings()
     except ValidationError as e:
-        module_logger.exception(e)
+        logger.exception(e)
