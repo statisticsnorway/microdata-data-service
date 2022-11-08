@@ -9,6 +9,7 @@ from jwt.exceptions import (
     InvalidAudienceError, DecodeError
 )
 
+logger = logging.getLogger()
 jwks_client = PyJWKClient(os.environ['JWKS_URL'], lifespan=3000)
 
 
@@ -21,10 +22,9 @@ def get_signing_key(jwt_token: str):
 
 
 def authorize_user(authorization_header) -> str:
-    log = logging.getLogger(__name__)
 
     if os.environ.get('JWT_AUTH', 'true') == 'false':
-        log.info('Auth toggled off. Returning "default" as user_id.')
+        logger.info('Auth toggled off. Returning "default" as user_id.')
         return 'default'
     if authorization_header is None:
         raise HTTPException(
@@ -49,14 +49,14 @@ def authorize_user(authorization_header) -> str:
 
     except (InvalidSignatureError, ExpiredSignatureError, InvalidAudienceError,
             NoUserError, DecodeError, ValueError, AttributeError) as e:
-        log.error(f"{e}")
+        logger.exception(e)
         raise HTTPException(  # pylint: disable=raise-missing-from
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Unauthorized {e}"
         )
 
     except (KeyError, Exception) as e:
-        log.error(f"Internal Server Error: {e}")
+        logger.exception(e)
         raise HTTPException(  # pylint: disable=raise-missing-from
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal Server Error {e}"

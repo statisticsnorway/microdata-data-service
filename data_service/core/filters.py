@@ -9,7 +9,6 @@ columns_including_attributes = [
 columns_excluding_attributes = [
     "unit_id", "value"
 ]
-module_logger = logging.getLogger(__name__)
 
 
 def filter_by_time_period(parquet_partition_name: str, start: int, stop: int,
