@@ -109,12 +109,13 @@ def test_population_to_string():
         "version": "1.0.0.0",
         "population": [1, 2, 3]
     }
-    assert str(InputQuery.parse_obj(data)) == \
+    actual: InputQuery = InputQuery.parse_obj(data)
+    assert str(actual) == \
         "dataStructureName='DATASET_NAME' " \
         "version='1.0.0.0' " \
         "population='<length: 3>' " \
         "includeAttributes=False"
-
+    assert actual.population == data["population"]
 
 def test_population_to_string_input_time_query():
     data = {
@@ -123,9 +124,11 @@ def test_population_to_string_input_time_query():
         "population": [1, 2, 3],
         "date": 1900
     }
-    assert str(InputTimeQuery.parse_obj(data)) == \
+    actual: InputTimeQuery = InputTimeQuery.parse_obj(data)
+    assert str(actual) == \
            "dataStructureName='DATASET_NAME' " \
            "version='1.0.0.0' " \
            "population='<length: 3>' " \
            "includeAttributes=False " \
            "date=1900"
+    assert actual.population == data["population"]
