@@ -21,7 +21,7 @@ class InputQuery(BaseModel):
         return version
 
     def __str__(self) -> str:
-        temp: InputQuery = copy.copy(self)
+        temp: InputQuery = copy.deepcopy(self)
         if temp.population:
             temp.population = f"<length: {len(temp.population)}>"
         return super(InputQuery, temp).__str__()

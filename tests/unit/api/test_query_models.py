@@ -117,6 +117,7 @@ def test_population_to_string():
         "includeAttributes=False"
     assert actual.population == data["population"]
 
+
 def test_population_to_string_input_time_query():
     data = {
         "dataStructureName": "DATASET_NAME",
