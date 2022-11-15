@@ -1,3 +1,4 @@
+import copy
 import re
 from typing import Optional
 
@@ -18,6 +19,12 @@ class InputQuery(BaseModel):
                 f"'{version}' is not a valid semantic version."
             )
         return version
+
+    def __str__(self) -> str:
+        temp: InputQuery = copy.deepcopy(self)
+        if temp.population:
+            temp.population = f"<length: {len(temp.population)}>"
+        return super(InputQuery, temp).__str__()
 
 
 class InputTimePeriodQuery(InputQuery):
