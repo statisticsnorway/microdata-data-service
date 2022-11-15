@@ -1,8 +1,9 @@
-import pytest
 from typing import List
 
+import pytest
+
 from data_service.api.query_models import (
-    InputTimeQuery, InputTimePeriodQuery, InputFixedQuery
+    InputTimeQuery, InputTimePeriodQuery, InputFixedQuery, InputQuery
 )
 
 
@@ -100,3 +101,31 @@ def test_create_and_validate_input_fixed_query_with_error():
     }
     with pytest.raises(ValueError):
         InputFixedQuery.parse_obj(data)
+
+
+def test_population_to_string():
+    data = {
+        "dataStructureName": "DATASET_NAME",
+        "version": "1.0.0.0",
+        "population": [1, 2, 3]
+    }
+    assert str(InputQuery.parse_obj(data)) == \
+        "dataStructureName='DATASET_NAME' " \
+        "version='1.0.0.0' " \
+        "population='<length: 3>' " \
+        "includeAttributes=False"
+
+
+def test_population_to_string_input_time_query():
+    data = {
+        "dataStructureName": "DATASET_NAME",
+        "version": "1.0.0.0",
+        "population": [1, 2, 3],
+        "date": 1900
+    }
+    assert str(InputTimeQuery.parse_obj(data)) == \
+           "dataStructureName='DATASET_NAME' " \
+           "version='1.0.0.0' " \
+           "population='<length: 3>' " \
+           "includeAttributes=False " \
+           "date=1900"
