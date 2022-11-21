@@ -85,12 +85,4 @@ def do_filter(
         my_dataset = ds.dataset(parquet_partition_name)
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_excluding_attributes)
-
-    if table and table.num_rows > 0:
-        return table
-
-    raise EmptyResultSetException("Empty result set")
-
-
-class EmptyResultSetException(Exception):
-    pass
+    return table

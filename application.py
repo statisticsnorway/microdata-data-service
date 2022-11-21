@@ -20,7 +20,6 @@ from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
 from data_service.config.logging_config import \
     CustomJSONLog, CustomJSONRequestLogFormatter
-from data_service.core.filters import EmptyResultSetException
 from data_service.exceptions import NotFoundException
 
 # Self-hosting JavaScript and CSS for docs
@@ -87,16 +86,6 @@ async def redoc_html():
         openapi_url=data_service_app.openapi_url,
         title=data_service_app.title + " - ReDoc",
         redoc_js_url="/static/redoc.standalone.js",
-    )
-
-
-@data_service_app.exception_handler(EmptyResultSetException)
-async def empty_result_set_exception_handler(
-    request,  # pylint: disable=unused-argument
-    exc):
-    logger.exception(exc)
-    return Response(
-        status_code=status.HTTP_204_NO_CONTENT
     )
 
 
