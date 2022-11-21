@@ -92,9 +92,9 @@ async def redoc_html():
 
 @data_service_app.exception_handler(EmptyResultSetException)
 async def empty_result_set_exception_handler(
-    request,  # pylint: disable=unused-argument
-    exc):
-    logger.exception(exc)
+        request,  # pylint: disable=unused-argument
+        exc):  # pylint: disable=unused-argument
+    logger.info("Empty result set.")
     return Response(
         status_code=status.HTTP_204_NO_CONTENT
     )
@@ -102,8 +102,8 @@ async def empty_result_set_exception_handler(
 
 @data_service_app.exception_handler(NotFoundException)
 async def not_found_exception_handler(
-    request, # pylint: disable=unused-argument
-    exc):
+        request,  # pylint: disable=unused-argument
+        exc):
     logger.exception(exc)
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -113,8 +113,8 @@ async def not_found_exception_handler(
 
 @data_service_app.exception_handler(Exception)
 async def unknown_exception_handler(
-    request, # pylint: disable=unused-argument
-    exc):
+        request,  # pylint: disable=unused-argument
+        exc):
     logger.exception(exc)
     return PlainTextResponse("Internal Server Error", status_code=500)
 
