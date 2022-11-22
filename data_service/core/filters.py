@@ -88,7 +88,5 @@ def do_filter(
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_excluding_attributes)
 
-    if table.num_rows == 0:
-        logger.info("Empty result set")
-
+    logger.info(f'Number of rows in result set: {table.num_rows}')
     return table
