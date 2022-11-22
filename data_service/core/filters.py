@@ -3,6 +3,8 @@ import logging
 import pyarrow.dataset as ds
 from pyarrow import Table
 
+logger = logging.getLogger()
+
 columns_including_attributes = [
     "unit_id", "value", "start_epoch_days", "stop_epoch_days"
 ]
@@ -85,4 +87,8 @@ def do_filter(
         my_dataset = ds.dataset(parquet_partition_name)
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_excluding_attributes)
+
+    if table.num_rows == 0:
+        logger.info("Empty result set")
+
     return table
