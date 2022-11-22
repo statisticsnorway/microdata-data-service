@@ -3,6 +3,8 @@ import logging
 import pyarrow.dataset as ds
 from pyarrow import Table
 
+logger = logging.getLogger()
+
 columns_including_attributes = [
     "unit_id", "value", "start_epoch_days", "stop_epoch_days"
 ]
@@ -86,11 +88,5 @@ def do_filter(
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_excluding_attributes)
 
-    if table and table.num_rows > 0:
-        return table
-
-    raise EmptyResultSetException("Empty result set")
-
-
-class EmptyResultSetException(Exception):
-    pass
+    logger.info(f'Number of rows in result set: {table.num_rows}')
+    return table

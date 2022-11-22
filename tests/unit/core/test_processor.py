@@ -2,9 +2,9 @@ import os
 
 import pyarrow.parquet as pq
 import pytest
+from pyarrow import Table
 
 from data_service.config import config
-from data_service.core.filters import EmptyResultSetException
 from data_service.core.processor import (
     Processor
 )
@@ -40,12 +40,13 @@ def test_valid_event_request_partitioned():
     )
 
 
-def test_invalid_event_request():
-    with pytest.raises(EmptyResultSetException) as e:
-        processor.process_event_request(
-            test_data.INVALID_EVENT_QUERY_INVALID_STOP_DATE
-        )
-    assert str(e.value) == "Empty result set"
+def test_event_request_causing_empty_result():
+    data = processor.process_event_request(
+        test_data.INVALID_EVENT_QUERY_INVALID_STOP_DATE
+    )
+    assert isinstance(data, Table)
+    assert (data.num_columns == 2)
+    assert (data.num_rows == 0)
 
 
 def test_valid_status_request():

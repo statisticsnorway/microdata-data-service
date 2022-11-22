@@ -138,6 +138,22 @@ def test_by_time():
     )
 
 
+def test_empty_result_set_with_attributes():
+    actual = filter_by_time(TEST_BOSTED_PARQUET_DIR, 1, None, True)
+    print_actual(actual)
+
+    assert (actual.num_columns == 4)
+    assert (actual.num_rows == 0)
+
+
+def test_empty_result_set_without_attributes():
+    actual = filter_by_time(TEST_BOSTED_PARQUET_DIR, 1, None, False)
+    print_actual(actual)
+
+    assert (actual.num_columns == 2)
+    assert (actual.num_rows == 0)
+
+
 def test_by_time_excluding_attributes():
     expected = Table.from_pydict({
         'unit_id': [1000000002, 1000000004, 1000000003, 1000000001],
