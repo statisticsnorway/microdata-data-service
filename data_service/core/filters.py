@@ -79,12 +79,11 @@ def do_filter(
     incl_attributes: bool,
     parquet_partition_name: str
 ) -> Table:
+    my_dataset = ds.dataset(parquet_partition_name)
     if incl_attributes:
-        my_dataset = ds.dataset(parquet_partition_name)
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_including_attributes)
     else:
-        my_dataset = ds.dataset(parquet_partition_name)
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_excluding_attributes)
 
