@@ -88,13 +88,14 @@ def test_invalid_fixed_request():
 
 
 def teardown_function():
-    result_sets = os.listdir(RESULTSET_DIR)
-    test_generated_result_sets = [
-        result_set for result_set in result_sets
-        if result_set != "1234-1234-1234-1234.parquet"
-    ]
-    for file_name in test_generated_result_sets:
-        os.remove(f'{RESULTSET_DIR}/{file_name}')
+    pass
+    #result_sets = os.listdir(RESULTSET_DIR)
+    #test_generated_result_sets = [
+    #    result_set for result_set in result_sets
+    #    if result_set != "1234-1234-1234-1234_enc.parquet"
+    #]
+    #for file_name in test_generated_result_sets:
+    #    os.remove(f'{RESULTSET_DIR}/{file_name}')
 
 
 def result_set_to_csv_string(file_name):

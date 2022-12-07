@@ -5,6 +5,7 @@ import pyarrow.parquet as pq
 import pytest
 from fastapi.testclient import TestClient
 from pytest import MonkeyPatch
+from data_service.adapters.encryption import parquet_encryption
 
 from application import data_service_app
 from data_service.api import auth
@@ -22,8 +23,9 @@ INVALID_JWT_TOKEN = encode_jwt_payload(
     test_data.valid_jwt_payload, JWT_INVALID_PRIVATE_KEY
 )
 FAKE_RESULT_FILE_NAME = "fake_result_file_name"
-MOCK_RESULTSET = pq.read_table(
-    'tests/resources/resultset/1234-1234-1234-1234.parquet'
+
+MOCK_RESULTSET = parquet_encryption.decrypt(
+    'tests/resources/resultset/1234-1234-1234-1234_enc.parquet'
 )
 
 client = TestClient(data_service_app)

@@ -286,6 +286,26 @@ def test_by_time_non_existing_partition():
         filter_by_time(NO_PARTITION_DIR, 7669, None, True)
 
 
+def test_filter_decrypted_parquet():
+    parquet_file = TEST_PERSON_INCOME_PARQUET_FILE
+    population_filter = [11111113785911, 11111111190644]
+
+    expected = Table.from_pydict({
+        'unit_id': [11111113785911, 11111111190644],
+        'value': ["16354872", "11331198"],
+        'start_epoch_days': [13879, 6209],
+        'stop_epoch_days': [14244, 6573]
+    })
+    print_expected(expected)
+
+    actual = filter_by_fixed(parquet_file, population_filter, True)
+    if actual:
+        print_actual(actual)
+
+    assert_frame_equal(
+        expected.to_pandas(), actual.to_pandas(), check_dtype=False
+    )
+
 def teardown_function():
     shutil.rmtree(TEST_BOSTED_PARQUET_DIR)
 

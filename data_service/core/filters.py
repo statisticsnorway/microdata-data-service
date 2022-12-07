@@ -2,6 +2,7 @@ import logging
 
 import pyarrow.dataset as ds
 from pyarrow import Table
+from data_service.adapters.encryption import parquet_encryption
 
 logger = logging.getLogger()
 
@@ -63,7 +64,8 @@ def filter_by_time(parquet_partition_name: str, date: int,
 
 def filter_by_fixed(parquet_partition_name: str,
                     population_filter: list = None,
-                    incl_attributes=False) -> Table:
+                    incl_attributes=False,
+                    encrypted=False) -> Table:
     if population_filter:
         fixed_filter = ds.field("unit_id").isin(population_filter)
         table = do_filter(
@@ -77,14 +79,15 @@ def filter_by_fixed(parquet_partition_name: str,
 def do_filter(
     table_filter,
     incl_attributes: bool,
-    parquet_partition_name: str
+    parquet_partition_name: str,
+    encrypted:bool=False
 ) -> Table:
     if incl_attributes:
-        my_dataset = ds.dataset(parquet_partition_name)
+        my_dataset = parquet_encryption.decrypt(parquet_partition_name)
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_including_attributes)
     else:
-        my_dataset = ds.dataset(parquet_partition_name)
+        my_dataset = parquet_encryption.decrypt(parquet_partition_name)
         table = my_dataset.to_table(
             filter=table_filter, columns=columns_excluding_attributes)
 
