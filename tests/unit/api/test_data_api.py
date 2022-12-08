@@ -24,6 +24,10 @@ INVALID_JWT_TOKEN = encode_jwt_payload(
 )
 FAKE_RESULT_FILE_NAME = "fake_result_file_name"
 
+MOCK_UNENCRYPTED_RESULTSET = pq.read_table(
+    'tests/resources/resultset/1234-1234-1234-1234.parquet'
+)
+
 MOCK_RESULTSET = parquet_encryption.decrypt(
     'tests/resources/resultset/1234-1234-1234-1234_enc.parquet'
 )
@@ -152,3 +156,18 @@ def test_data_fixed_stream_result():
     reader = pa.BufferReader(response.content)
     assert response.status_code == 200
     assert pq.read_table(reader) == MOCK_RESULTSET
+
+
+def test_data_fixed_stream_decrypted_result():
+    response = client.post(
+        "/data/fixed/stream",
+        json={
+            "version": "1.0.0.0",
+            "dataStructureName": "FAKE_NAME"
+        },
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+    )
+
+    reader = pa.BufferReader(response.content)
+    assert response.status_code == 200
+    assert pq.read_table(reader) == MOCK_UNENCRYPTED_RESULTSET

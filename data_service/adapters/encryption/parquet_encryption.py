@@ -122,12 +122,7 @@ def __parquet_read_with_vault(encrypted_file):
     def kms_factory(kms_connection_configuration):
         return VaultClient(kms_connection_configuration)
 
-    # Write with encryption properties
     crypto_factory = pe.CryptoFactory(kms_factory)
-    file_encryption_properties = crypto_factory.file_encryption_properties(
-        kms_connection_config, encryption_config)
-
-    # Read with decryption properties
     file_decryption_properties = crypto_factory.file_decryption_properties(
         kms_connection_config)
     result = pq.ParquetFile(
