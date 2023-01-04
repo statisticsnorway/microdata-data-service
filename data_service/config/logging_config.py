@@ -5,6 +5,8 @@ import sys
 import json_logging
 import tomlkit
 
+from data_service.config import environment
+
 
 def _get_project_meta():
     with open('./pyproject.toml') as pyproject:
@@ -15,7 +17,7 @@ def _get_project_meta():
 
 pkg_meta = _get_project_meta()
 service_name = "data-service"
-host = os.environ['DOCKER_HOST_NAME']
+host = environment.get('DOCKER_HOST_NAME')
 command = json.dumps(sys.argv)
 
 
