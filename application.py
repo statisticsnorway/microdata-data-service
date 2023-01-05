@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, Response
 
+from data_service.config import environment
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
 from data_service.config.logging_config import \
@@ -129,4 +130,4 @@ def startup_event():
 
 
 if __name__ == "__main__":
-    uvicorn.run(data_service_app, host="0.0.0.0", port=8000)
+    uvicorn.run(data_service_app, host="0.0.0.0", port=environment.get('PORT'))
