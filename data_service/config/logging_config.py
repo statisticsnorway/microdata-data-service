@@ -1,5 +1,4 @@
 import json
-import os
 import sys
 
 import json_logging
@@ -9,14 +8,14 @@ from data_service.config import environment
 
 
 def _get_project_meta():
-    with open('./pyproject.toml') as pyproject:
+    with open('./pyproject.toml', encoding='utf-8') as pyproject:
         file_contents = pyproject.read()
 
     return tomlkit.parse(file_contents)['tool']['poetry']
 
 
 pkg_meta = _get_project_meta()
-service_name = "data-service"
+SERVICE_NAME = "data-service"
 host = environment.get('DOCKER_HOST_NAME')
 command = json.dumps(sys.argv)
 
@@ -27,7 +26,9 @@ class CustomJSONLog(json_logging.JSONLogWebFormatter):
     """
 
     def _format_log_object(self, record, request_util):
-        json_log_object = super(CustomJSONLog, self)._format_log_object(record, request_util)
+        json_log_object = super(
+            CustomJSONLog, self
+        )._format_log_object(record, request_util)
 
         return create_microdata_json_log(json_log_object, record)
 
@@ -38,7 +39,9 @@ class CustomJSONRequestLogFormatter(json_logging.JSONRequestLogFormatter):
     """
 
     def _format_log_object(self, record, request_util):
-        json_log_object = super(CustomJSONRequestLogFormatter, self)._format_log_object(record, request_util)
+        json_log_object = super(
+            CustomJSONRequestLogFormatter, self
+        )._format_log_object(record, request_util)
 
         return create_microdata_json_log(json_log_object, record)
 
@@ -56,7 +59,7 @@ def create_microdata_json_log(json_log_object, record):
         "method": json_log_object.get('method'),
         "responseTime": json_log_object.get('response_time_ms'),
         "schemaVersion": "v3",
-        "serviceName": service_name,
+        "serviceName": SERVICE_NAME,
         "serviceVersion": str(pkg_meta['version']),
         "source_host": json_log_object.get('remote_host'),
         "statusCode": json_log_object.get('response_status'),
