@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from data_service.api import auth
 from data_service.api.auth import authorize_user, get_jwks_aud
-from tests.resources import test_data
+from tests.resources import test_resources
 from tests.unit.util.util import generate_RSA_key_pairs, encode_jwt_payload
 
 JWT_PRIVATE_KEY, JWT_PUBLIC_KEY = generate_RSA_key_pairs()
@@ -22,16 +22,16 @@ def setup(monkeypatch: MonkeyPatch):
 
 def test_auth_valid_token():
     token = encode_jwt_payload(
-        test_data.valid_jwt_payload, JWT_PRIVATE_KEY
+        test_resources.valid_jwt_payload, JWT_PRIVATE_KEY
     )
     user_id = authorize_user(f'Bearer {token}')
-    assert user_id == test_data.valid_jwt_payload['sub']
+    assert user_id == test_resources.valid_jwt_payload['sub']
 
 
 def test_auth_wrong_audience():
     with pytest.raises(HTTPException) as e:
         token = encode_jwt_payload(
-            test_data.jwt_payload_missing_user_id, JWT_PRIVATE_KEY
+            test_resources.jwt_payload_missing_user_id, JWT_PRIVATE_KEY
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
@@ -41,7 +41,7 @@ def test_auth_wrong_audience():
 def test_auth_expired_token():
     with pytest.raises(HTTPException) as e:
         token = encode_jwt_payload(
-            test_data.jwt_payload_expired, JWT_PRIVATE_KEY
+            test_resources.jwt_payload_expired, JWT_PRIVATE_KEY
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
@@ -51,7 +51,7 @@ def test_auth_expired_token():
 def test_auth_missing_user_id():
     with pytest.raises(HTTPException) as e:
         token = encode_jwt_payload(
-            test_data.jwt_payload_missing_user_id, JWT_PRIVATE_KEY
+            test_resources.jwt_payload_missing_user_id, JWT_PRIVATE_KEY
         )
         authorize_user(f'Bearer {token}')
     assert e.value.status_code == 401
