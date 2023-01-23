@@ -20,6 +20,10 @@ class InputQuery(BaseModel):
             )
         return version
 
+    def get_file_version(self) -> str:
+        version_numbers = self.version.split('.')
+        return f'{version_numbers[0]}_{version_numbers[1]}'
+
     def __str__(self) -> str:
         temp: InputQuery = copy.deepcopy(self)
         if temp.population:
