@@ -7,11 +7,12 @@ from fastapi import APIRouter, Header, Request
 from fastapi.responses import PlainTextResponse
 
 from data_service.api.auth import authorize_user
+from data_service.domain import data
+from data_service.api.response_models import ErrorMessage
 from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
 )
-from data_service.api.response_models import ErrorMessage
-from data_service.domain import data
+
 
 data_router = APIRouter()
 logger = logging.getLogger()
