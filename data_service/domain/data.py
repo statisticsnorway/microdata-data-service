@@ -1,4 +1,3 @@
-import logging
 from typing import Union
 
 from pyarrow import Table
@@ -14,7 +13,6 @@ EMPTY_RESULT_TEXT = "empty_result"
 ALL_COLUMNS = [
     'unit_id', 'value', 'start_epoch_days', 'stop_epoch_days'
 ]
-logger = logging.getLogger(__name__ + '.data')
 
 
 def process_event_request(

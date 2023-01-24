@@ -1,10 +1,6 @@
-import logging
 from typing import Union
 
 from pyarrow import dataset
-
-
-logger = logging.getLogger()
 
 
 def generate_time_period_filter(

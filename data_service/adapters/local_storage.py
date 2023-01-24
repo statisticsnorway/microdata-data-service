@@ -20,16 +20,14 @@ def _get_parquet_file_path(dataset_name: str, version: str) -> str:
     if version == '0_0':
         full_path = _get_draft_file_path(path_prefix, dataset_name)
         if full_path is None:
-            latest = _get_latest_version()
-            file_name = _get_file_name_from_data_versions(
-                latest, dataset_name
-            )
-            full_path = f'{path_prefix}/{file_name}'
-    else:
-        file_name = _get_file_name_from_data_versions(
-            version, dataset_name
-        )
-        full_path = f'{path_prefix}/{file_name}'
+            logger.info(f'No DRAFT for {dataset_name}. Using latest version')
+            version = _get_latest_version()
+        else:
+            return full_path
+    file_name = _get_file_name_from_data_versions(
+        version, dataset_name
+    )
+    full_path = f'{path_prefix}/{file_name}'
 
     if not os.path.exists(full_path):
         logger.error(f'{full_path} does not exist')
@@ -58,8 +56,8 @@ def _get_file_name_from_data_versions(version: str, dataset_name: str) -> str:
 def _get_draft_file_path(
     path_prefix: str, dataset_name: str
 ) -> Union[None, str]:
-    parquet_path = f"{path_prefix}/{dataset_name}__DRAFT.parquet"
-    partitioned_parquet_path = parquet_path.replace('.parquet', '')
+    partitioned_parquet_path = f"{path_prefix}/{dataset_name}__DRAFT"
+    parquet_path = f'{partitioned_parquet_path}.parquet'
     if os.path.isfile(parquet_path):
         return parquet_path
     elif os.path.isdir(partitioned_parquet_path):
@@ -112,6 +110,16 @@ def read_parquet(
     table_filter: dataset.Expression,
     columns: list[str]
 ) -> Table:
+    """
+    Reads and filters a parquet file or partition and returns a
+    pyarrow.Table with the requested columns.
+
+    * dataset_name: str - name of dataset
+    * version: str - '<MAJOR>_<MINOR>' formatted semantic version
+    * table_filter: dataset.Expression - filters applied to the table
+    * columns: list[str] - names of the columns to include in the
+                           returned table
+    """
     parquet_path = _get_parquet_file_path(dataset_name, version)
     _log_parquet_info(parquet_path)
     table = (
