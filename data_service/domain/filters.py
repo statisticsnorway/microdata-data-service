@@ -21,7 +21,7 @@ def generate_time_period_filter(
         (start_epoch_g_start & stop_epoch_le_stop)
     )
     if population_filter:
-        population = dataset.field('unit_id').isin(population_filter)
+        population = generate_population_filter(population_filter)
         find_by_time_period_filter = population & find_by_time_period_filter
     return find_by_time_period_filter
 
@@ -39,7 +39,7 @@ def generate_time_filter(
         (start_epoch_le_date & stop_epoch_ge_date)
     )
     if population_filter:
-        population = dataset.field('unit_id').isin(population_filter)
+        population = generate_population_filter(population_filter)
         find_by_time_filter = population & find_by_time_filter
     return find_by_time_filter
 
