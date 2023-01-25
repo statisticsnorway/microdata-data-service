@@ -80,10 +80,7 @@ def _get_latest_version():
     ]
     sem_ver.sort()
     major, minor = sem_ver[-1][0], sem_ver[-1][1]
-    latest_data_versions_file = f'data_versions__{major}_{minor}.json'
-    return (
-        latest_data_versions_file.strip('.json').strip('data_versions__')
-    )
+    return f'{major}_{minor}'
 
 
 def _log_parquet_info(parquet_file):
