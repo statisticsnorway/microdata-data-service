@@ -3,8 +3,7 @@ import logging
 import os
 from typing import Union
 
-from pyarrow import Table
-from pyarrow import dataset, parquet
+from pyarrow import parquet
 
 from data_service.config import environment
 from data_service.exceptions import NotFoundException
@@ -15,7 +14,7 @@ DATA_DIR = f'{DATASTORE_DIR}/data'
 logger = logging.getLogger(__name__ + '.local_storage')
 
 
-def _get_parquet_file_path(dataset_name: str, version: str) -> str:
+def get_parquet_file_path(dataset_name: str, version: str) -> str:
     path_prefix = f'{DATA_DIR}/{dataset_name}'
     if version == '0_0':
         full_path = _get_draft_file_path(path_prefix, dataset_name)
@@ -23,7 +22,9 @@ def _get_parquet_file_path(dataset_name: str, version: str) -> str:
             logger.info(f'No DRAFT for {dataset_name}. Using latest version')
             version = _get_latest_version()
         else:
+            _log_parquet_info(full_path)
             return full_path
+
     file_name = _get_file_name_from_data_versions(
         version, dataset_name
     )
@@ -34,6 +35,7 @@ def _get_parquet_file_path(dataset_name: str, version: str) -> str:
         raise NotFoundException(
             f'No file exists for {dataset_name} in version {version}'
         )
+    _log_parquet_info(full_path)
     return full_path
 
 
@@ -106,29 +108,3 @@ def _log_parquet_details(parquet_file):
         f'Parquet metadata: {parquet.read_metadata(parquet_file)} '
         f'Parquet schema: {parquet.read_schema(parquet_file).to_string()}'
     )
-
-
-def read_parquet(
-    dataset_name: str,
-    version: str,
-    table_filter: dataset.Expression,
-    columns: list[str]
-) -> Table:
-    """
-    Reads and filters a parquet file or partition and returns a
-    pyarrow.Table with the requested columns.
-
-    * dataset_name: str - name of dataset
-    * version: str - '<MAJOR>_<MINOR>' formatted semantic version
-    * table_filter: dataset.Expression - filters applied to the table
-    * columns: list[str] - names of the columns to include in the
-                           returned table
-    """
-    parquet_path = _get_parquet_file_path(dataset_name, version)
-    _log_parquet_info(parquet_path)
-    table = (
-        dataset.dataset(parquet_path)
-        .to_table(filter=table_filter, columns=columns)
-    )
-    logger.info(f'Number of rows in result set: {table.num_rows}')
-    return table

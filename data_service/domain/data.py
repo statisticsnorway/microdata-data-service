@@ -1,6 +1,8 @@
+import logging
 from typing import Union
 
 from pyarrow import Table
+from pyarrow import dataset
 
 from data_service.domain import filters
 from data_service.adapters import local_storage
@@ -8,6 +10,7 @@ from data_service.api.query_models import (
     InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
 )
 
+logger = logging.getLogger(__name__ + '.data')
 
 EMPTY_RESULT_TEXT = "empty_result"
 ALL_COLUMNS = [
@@ -25,7 +28,7 @@ def process_event_request(
         ALL_COLUMNS if input_query.includeAttributes
         else ALL_COLUMNS[:2]
     )
-    return local_storage.read_parquet(
+    return _read_parquet(
         input_query.dataStructureName,
         input_query.get_file_version(),
         table_filter,
@@ -43,7 +46,7 @@ def process_status_request(
         ALL_COLUMNS if input_query.includeAttributes
         else ALL_COLUMNS[:2]
     )
-    return local_storage.read_parquet(
+    return _read_parquet(
         input_query.dataStructureName,
         input_query.get_file_version(),
         table_filter,
@@ -61,9 +64,36 @@ def process_fixed_request(
         ALL_COLUMNS if input_query.includeAttributes
         else ALL_COLUMNS[:2]
     )
-    return local_storage.read_parquet(
+    return _read_parquet(
         input_query.dataStructureName,
         input_query.get_file_version(),
         table_filter,
         columns
     )
+
+
+def _read_parquet(
+    dataset_name: str,
+    version: str,
+    table_filter: dataset.Expression,
+    columns: list[str]
+) -> Table:
+    """
+    Reads and filters a parquet file or partition and returns a
+    pyarrow.Table with the requested columns.
+
+    * dataset_name: str - name of dataset
+    * version: str - '<MAJOR>_<MINOR>' formatted semantic version
+    * table_filter: dataset.Expression - filters applied to the table
+    * columns: list[str] - names of the columns to include in the
+                           returned table
+    """
+    parquet_path = local_storage.get_parquet_file_path(
+        dataset_name, version
+    )
+    table = (
+        dataset.dataset(parquet_path)
+        .to_table(filter=table_filter, columns=columns)
+    )
+    logger.info(f'Number of rows in result set: {table.num_rows}')
+    return table
