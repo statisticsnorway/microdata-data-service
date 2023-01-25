@@ -68,12 +68,19 @@ def _get_draft_file_path(
 
 def _get_latest_version():
     datastore_files = os.listdir(f'{DATASTORE_DIR}/datastore')
-    data_versions_files = [
-        file for file in datastore_files
-        if file.startswith('data_versions')
+    sem_ver = [
+        (
+            int(str_version.split('_')[0]),
+            int(str_version.split('_')[1])
+        )
+        for str_version in [
+            file[15:-5] for file in datastore_files
+            if file.startswith('data_versions')
+        ]
     ]
-    data_versions_files.sort()
-    latest_data_versions_file = data_versions_files[-1]
+    sem_ver.sort()
+    major, minor = sem_ver[-1][0], sem_ver[-1][1]
+    latest_data_versions_file = f'data_versions__{major}_{minor}.json'
     return (
         latest_data_versions_file.strip('.json').strip('data_versions__')
     )
