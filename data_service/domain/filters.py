@@ -49,5 +49,5 @@ def generate_population_filter(
 ) -> Union[dataset.Expression, None]:
     return (
         dataset.field('unit_id').isin(population_filter)
-        if population_filter else population_filter
+        if population_filter else None
     )
