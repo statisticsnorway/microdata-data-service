@@ -1,3 +1,4 @@
+# pylint: disable=unused-argument
 import logging
 import sys
 import uuid
@@ -14,7 +15,7 @@ from fastapi.openapi.docs import (
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
-from starlette.responses import PlainTextResponse, Response
+from starlette.responses import PlainTextResponse
 
 from data_service.config import environment
 from data_service.api.data_api import data_router
@@ -27,7 +28,8 @@ from data_service.exceptions import NotFoundException
 # https://fastapi.tiangolo.com/advanced/extending-openapi/#self-hosting-javascript-and-css-for-docs
 
 DESCRIPTION = """
-The Parquet file format returned or produced by this service reported by `pq.read_schema(parquet_file).to_string()` is as follows:
+The Parquet file format returned or produced by this service reported by \
+`pq.read_schema(parquet_file).to_string()` is as follows:
 ```
 format_version: 1.0
 unit_id: uint64
@@ -92,8 +94,9 @@ async def redoc_html():
 
 @data_service_app.exception_handler(NotFoundException)
 async def not_found_exception_handler(
-    request, # pylint: disable=unused-argument
-    exc):
+    request,  # needed for json_logging.get_correlation_id
+    exc
+):
     logger.exception(exc)
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -103,8 +106,9 @@ async def not_found_exception_handler(
 
 @data_service_app.exception_handler(Exception)
 async def unknown_exception_handler(
-    request, # pylint: disable=unused-argument
-    exc):
+    request,  # needed for json_logging.get_correlation_id
+    exc
+):
     logger.exception(exc)
     return PlainTextResponse("Internal Server Error", status_code=500)
 

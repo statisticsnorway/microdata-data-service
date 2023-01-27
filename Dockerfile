@@ -51,7 +51,6 @@ FROM python:3.10-slim
 WORKDIR /app
 COPY data_service data_service
 COPY static static
-COPY application.py application.py
 #To use application version in logs
 COPY --from=builder /app/pyproject.toml pyproject.toml
 COPY --from=builder /app/requirements.txt requirements.txt
@@ -61,4 +60,5 @@ RUN pip install -r requirements.txt
 #the output is sent straight to terminal without being first buffered
 ENV PYTHONUNBUFFERED 1
 
-CMD [ "python", "application.py"]
+ENV PYTHONPATH "${PYTHONPATH}:/app"
+CMD [ "python", "data_service/app.py"]
