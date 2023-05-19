@@ -7,68 +7,53 @@ from pyarrow import dataset
 from data_service.domain import filters
 from data_service.adapters import local_storage
 from data_service.api.query_models import (
-    InputTimePeriodQuery, InputTimeQuery, InputFixedQuery
+    InputTimePeriodQuery,
+    InputTimeQuery,
+    InputFixedQuery,
 )
 
-logger = logging.getLogger(__name__ + '.data')
+logger = logging.getLogger(__name__ + ".data")
 
 EMPTY_RESULT_TEXT = "empty_result"
-ALL_COLUMNS = [
-    'unit_id', 'value', 'start_epoch_days', 'stop_epoch_days'
-]
+ALL_COLUMNS = ["unit_id", "value", "start_epoch_days", "stop_epoch_days"]
 
 
 def process_event_request(
-    input_query: InputTimePeriodQuery
+    input_query: InputTimePeriodQuery,
 ) -> Union[Table, str]:
     table_filter = filters.generate_time_period_filter(
         input_query.startDate, input_query.stopDate, input_query.population
     )
-    columns = (
-        ALL_COLUMNS if input_query.includeAttributes
-        else ALL_COLUMNS[:2]
-    )
+    columns = ALL_COLUMNS if input_query.includeAttributes else ALL_COLUMNS[:2]
     return _read_parquet(
         input_query.dataStructureName,
         input_query.get_file_version(),
         table_filter,
-        columns
+        columns,
     )
 
 
-def process_status_request(
-    input_query: InputTimeQuery
-) -> Union[Table, str]:
+def process_status_request(input_query: InputTimeQuery) -> Union[Table, str]:
     table_filter = filters.generate_time_filter(
         input_query.date, input_query.population
     )
-    columns = (
-        ALL_COLUMNS if input_query.includeAttributes
-        else ALL_COLUMNS[:2]
-    )
+    columns = ALL_COLUMNS if input_query.includeAttributes else ALL_COLUMNS[:2]
     return _read_parquet(
         input_query.dataStructureName,
         input_query.get_file_version(),
         table_filter,
-        columns
+        columns,
     )
 
 
-def process_fixed_request(
-    input_query: InputFixedQuery
-) -> Union[Table, str]:
-    table_filter = filters.generate_population_filter(
-        input_query.population
-    )
-    columns = (
-        ALL_COLUMNS if input_query.includeAttributes
-        else ALL_COLUMNS[:2]
-    )
+def process_fixed_request(input_query: InputFixedQuery) -> Union[Table, str]:
+    table_filter = filters.generate_population_filter(input_query.population)
+    columns = ALL_COLUMNS if input_query.includeAttributes else ALL_COLUMNS[:2]
     return _read_parquet(
         input_query.dataStructureName,
         input_query.get_file_version(),
         table_filter,
-        columns
+        columns,
     )
 
 
@@ -76,7 +61,7 @@ def _read_parquet(
     dataset_name: str,
     version: str,
     table_filter: dataset.Expression,
-    columns: list[str]
+    columns: list[str],
 ) -> Table:
     """
     Reads and filters a parquet file or partition and returns a
@@ -88,12 +73,9 @@ def _read_parquet(
     * columns: list[str] - names of the columns to include in the
                            returned table
     """
-    parquet_path = local_storage.get_parquet_file_path(
-        dataset_name, version
+    parquet_path = local_storage.get_parquet_file_path(dataset_name, version)
+    table = dataset.dataset(parquet_path).to_table(
+        filter=table_filter, columns=columns
     )
-    table = (
-        dataset.dataset(parquet_path)
-        .to_table(filter=table_filter, columns=columns)
-    )
-    logger.info(f'Number of rows in result set: {table.num_rows}')
+    logger.info(f"Number of rows in result set: {table.num_rows}")
     return table
