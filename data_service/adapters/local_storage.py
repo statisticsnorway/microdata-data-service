@@ -9,31 +9,29 @@ from data_service.config import environment
 from data_service.exceptions import NotFoundException
 
 
-DATASTORE_DIR = environment.get('DATASTORE_DIR')
-DATA_DIR = f'{DATASTORE_DIR}/data'
-logger = logging.getLogger(__name__ + '.local_storage')
+DATASTORE_DIR = environment.get("DATASTORE_DIR")
+DATA_DIR = f"{DATASTORE_DIR}/data"
+logger = logging.getLogger(__name__ + ".local_storage")
 
 
 def get_parquet_file_path(dataset_name: str, version: str) -> str:
-    path_prefix = f'{DATA_DIR}/{dataset_name}'
-    if version == '0_0':
+    path_prefix = f"{DATA_DIR}/{dataset_name}"
+    if version == "0_0":
         full_path = _get_draft_file_path(path_prefix, dataset_name)
         if full_path is None:
-            logger.info(f'No DRAFT for {dataset_name}. Using latest version')
+            logger.info(f"No DRAFT for {dataset_name}. Using latest version")
             version = _get_latest_version()
         else:
             _log_parquet_info(full_path)
             return full_path
 
-    file_name = _get_file_name_from_data_versions(
-        version, dataset_name
-    )
-    full_path = f'{path_prefix}/{file_name}'
+    file_name = _get_file_name_from_data_versions(version, dataset_name)
+    full_path = f"{path_prefix}/{file_name}"
 
     if not os.path.exists(full_path):
-        logger.error(f'{full_path} does not exist')
+        logger.error(f"{full_path} does not exist")
         raise NotFoundException(
-            f'No file exists for {dataset_name} in version {version}'
+            f"No file exists for {dataset_name} in version {version}"
         )
     _log_parquet_info(full_path)
     return full_path
@@ -41,8 +39,7 @@ def get_parquet_file_path(dataset_name: str, version: str) -> str:
 
 def _get_file_name_from_data_versions(version: str, dataset_name: str) -> str:
     data_versions_file = (
-        f"{DATASTORE_DIR}/datastore/"
-        f"data_versions__{version}.json"
+        f"{DATASTORE_DIR}/datastore/" f"data_versions__{version}.json"
     )
     with open(data_versions_file, encoding="utf-8") as f:
         data_versions = json.load(f)
@@ -59,7 +56,7 @@ def _get_draft_file_path(
     path_prefix: str, dataset_name: str
 ) -> Union[None, str]:
     partitioned_parquet_path = f"{path_prefix}/{dataset_name}__DRAFT"
-    parquet_path = f'{partitioned_parquet_path}.parquet'
+    parquet_path = f"{partitioned_parquet_path}.parquet"
     if os.path.isfile(parquet_path):
         return parquet_path
     elif os.path.isdir(partitioned_parquet_path):
@@ -69,20 +66,18 @@ def _get_draft_file_path(
 
 
 def _get_latest_version():
-    datastore_files = os.listdir(f'{DATASTORE_DIR}/datastore')
+    datastore_files = os.listdir(f"{DATASTORE_DIR}/datastore")
     sem_ver = [
-        (
-            int(str_version.split('_')[0]),
-            int(str_version.split('_')[1])
-        )
+        (int(str_version.split("_")[0]), int(str_version.split("_")[1]))
         for str_version in [
-            file[15:-5] for file in datastore_files
-            if file.startswith('data_versions')
+            file[15:-5]
+            for file in datastore_files
+            if file.startswith("data_versions")
         ]
     ]
     sem_ver.sort()
     major, minor = sem_ver[-1][0], sem_ver[-1][1]
-    return f'{major}_{minor}'
+    return f"{major}_{minor}"
 
 
 def _log_parquet_info(parquet_file):
@@ -104,7 +99,7 @@ def _log_info_partitioned_parquet(parquet_file):
 
 def _log_parquet_details(parquet_file):
     logger.info(
-        f'Parquet file: {parquet_file} '
-        f'Parquet metadata: {parquet.read_metadata(parquet_file)} '
-        f'Parquet schema: {parquet.read_schema(parquet_file).to_string()}'
+        f"Parquet file: {parquet_file} "
+        f"Parquet metadata: {parquet.read_metadata(parquet_file)} "
+        f"Parquet schema: {parquet.read_schema(parquet_file).to_string()}"
     )

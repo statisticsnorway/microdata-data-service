@@ -19,9 +19,7 @@ INVALID_JWT_TOKEN = encode_jwt_payload(
     test_resources.valid_jwt_payload, JWT_INVALID_PRIVATE_KEY
 )
 FAKE_RESULT_FILE_NAME = "fake_result_file_name"
-MOCK_RESULT = pq.read_table(
-    'tests/resources/results/mocked_result.parquet'
-)
+MOCK_RESULT = pq.read_table("tests/resources/results/mocked_result.parquet")
 
 client = TestClient(data_service_app)
 
@@ -29,15 +27,11 @@ client = TestClient(data_service_app)
 @pytest.fixture(autouse=True)
 def setup(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
-        auth,
-        'get_signing_key',
-        lambda _: JWT_PUBLIC_KEY.decode('utf-8')
+        auth, "get_signing_key", lambda _: JWT_PUBLIC_KEY.decode("utf-8")
     )
-    for temporality in ['status', 'event', 'fixed']:
+    for temporality in ["status", "event", "fixed"]:
         monkeypatch.setattr(
-            data,
-            f'process_{temporality}_request',
-            lambda _: MOCK_RESULT
+            data, f"process_{temporality}_request", lambda _: MOCK_RESULT
         )
 
 
@@ -48,9 +42,9 @@ def test_data_event_stream_result():
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME",
             "startDate": 0,
-            "stopDate": 0
+            "stopDate": 0,
         },
-        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"},
     )
 
     reader = pa.BufferReader(response.content)
@@ -64,9 +58,9 @@ def test_data_status_stream_result():
         json={
             "version": "1.0.0.0",
             "dataStructureName": "FAKE_NAME",
-            "date": 0
+            "date": 0,
         },
-        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"},
     )
 
     reader = pa.BufferReader(response.content)
@@ -77,11 +71,8 @@ def test_data_status_stream_result():
 def test_data_fixed_stream_result():
     response = client.post(
         "/data/fixed/stream",
-        json={
-            "version": "1.0.0.0",
-            "dataStructureName": "FAKE_NAME"
-        },
-        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"}
+        json={"version": "1.0.0.0", "dataStructureName": "FAKE_NAME"},
+        headers={"Authorization": f"Bearer {VALID_JWT_TOKEN}"},
     )
 
     reader = pa.BufferReader(response.content)

@@ -20,8 +20,10 @@ from starlette.responses import PlainTextResponse
 from data_service.config import environment
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
-from data_service.config.logging_config import \
-    CustomJSONLog, CustomJSONRequestLogFormatter
+from data_service.config.logging_config import (
+    CustomJSONLog,
+    CustomJSONRequestLogFormatter,
+)
 from data_service.exceptions import NotFoundException
 
 # Self-hosting JavaScript and CSS for docs
@@ -51,14 +53,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-data_service_app = FastAPI(
-    title="Data service",
-    description=DESCRIPTION
-)
+data_service_app = FastAPI(title="Data service", description=DESCRIPTION)
 data_service_app.mount(
-    "/static",
-    StaticFiles(directory="static"),
-    name="static"
+    "/static", StaticFiles(directory="static"), name="static"
 )
 
 data_service_app.include_router(data_router)
@@ -76,14 +73,14 @@ async def custom_swagger_ui_html():
     )
 
 
-@data_service_app.get(data_service_app.swagger_ui_oauth2_redirect_url,
-                      include_in_schema=False)
+@data_service_app.get(
+    data_service_app.swagger_ui_oauth2_redirect_url, include_in_schema=False
+)
 async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
 
 
-@data_service_app.get("/redoc",
-                      include_in_schema=False)
+@data_service_app.get("/redoc", include_in_schema=False)
 async def redoc_html():
     return get_redoc_html(
         openapi_url=data_service_app.openapi_url,
@@ -94,20 +91,18 @@ async def redoc_html():
 
 @data_service_app.exception_handler(NotFoundException)
 async def not_found_exception_handler(
-    request,  # needed for json_logging.get_correlation_id
-    exc
+    request, exc  # needed for json_logging.get_correlation_id
 ):
     logger.exception(exc)
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
-        content=jsonable_encoder({"detail": "No such datastructure"})
+        content=jsonable_encoder({"detail": "No such datastructure"}),
     )
 
 
 @data_service_app.exception_handler(Exception)
 async def unknown_exception_handler(
-    request,  # needed for json_logging.get_correlation_id
-    exc
+    request, exc  # needed for json_logging.get_correlation_id
 ):
     logger.exception(exc)
     return PlainTextResponse("Internal Server Error", status_code=500)
@@ -116,22 +111,23 @@ async def unknown_exception_handler(
 @data_service_app.middleware("http")
 async def add_x_request_id_response_header(request: Request, call_next):
     response = await call_next(request)
-    response.headers["X-Request-ID"] = \
-        json_logging.get_correlation_id(request=request)
+    response.headers["X-Request-ID"] = json_logging.get_correlation_id(
+        request=request
+    )
     return response
 
 
 @data_service_app.on_event("startup")
 def startup_event():
     json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = True
-    json_logging.CORRELATION_ID_GENERATOR = \
-        lambda: "data-service-" + str(uuid.uuid1())
+    json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(
+        uuid.uuid1()
+    )
     json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
     json_logging.init_request_instrument(
-        data_service_app,
-        custom_formatter=CustomJSONRequestLogFormatter
+        data_service_app, custom_formatter=CustomJSONRequestLogFormatter
     )
 
 
 if __name__ == "__main__":
-    uvicorn.run(data_service_app, host="0.0.0.0", port=environment.get('PORT'))
+    uvicorn.run(data_service_app, host="0.0.0.0", port=environment.get("PORT"))

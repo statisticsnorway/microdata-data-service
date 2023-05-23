@@ -14,9 +14,7 @@ JWT_INVALID_PRIVATE_KEY, _ = generate_RSA_key_pairs()
 @pytest.fixture(autouse=True)
 def setup(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
-        auth,
-        'get_signing_key',
-        lambda *a: JWT_PUBLIC_KEY.decode('utf-8')
+        auth, "get_signing_key", lambda *a: JWT_PUBLIC_KEY.decode("utf-8")
     )
 
 
@@ -24,8 +22,8 @@ def test_auth_valid_token():
     token = encode_jwt_payload(
         test_resources.valid_jwt_payload, JWT_PRIVATE_KEY
     )
-    user_id = authorize_user(f'Bearer {token}')
-    assert user_id == test_resources.valid_jwt_payload['sub']
+    user_id = authorize_user(f"Bearer {token}")
+    assert user_id == test_resources.valid_jwt_payload["sub"]
 
 
 def test_auth_wrong_audience():
@@ -33,7 +31,7 @@ def test_auth_wrong_audience():
         token = encode_jwt_payload(
             test_resources.jwt_payload_missing_user_id, JWT_PRIVATE_KEY
         )
-        authorize_user(f'Bearer {token}')
+        authorize_user(f"Bearer {token}")
     assert e.value.status_code == 401
     assert "Unauthorized" in e.value.detail
 
@@ -43,7 +41,7 @@ def test_auth_expired_token():
         token = encode_jwt_payload(
             test_resources.jwt_payload_expired, JWT_PRIVATE_KEY
         )
-        authorize_user(f'Bearer {token}')
+        authorize_user(f"Bearer {token}")
     assert e.value.status_code == 401
     assert "Unauthorized" in e.value.detail
 
@@ -53,7 +51,7 @@ def test_auth_missing_user_id():
         token = encode_jwt_payload(
             test_resources.jwt_payload_missing_user_id, JWT_PRIVATE_KEY
         )
-        authorize_user(f'Bearer {token}')
+        authorize_user(f"Bearer {token}")
     assert e.value.status_code == 401
     assert "Unauthorized" in e.value.detail
 
@@ -66,7 +64,7 @@ def test_auth_missing_token():
 
 
 def test_auth_toggled_off(monkeypatch: MonkeyPatch):
-    monkeypatch.setenv('JWT_AUTH', 'false')
+    monkeypatch.setenv("JWT_AUTH", "false")
     user_id = authorize_user(None)
     assert user_id == "default"
 
