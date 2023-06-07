@@ -21,7 +21,7 @@ def send_req(dataset_name: str, version: str):
     print(f"Dataset {dataset_name} ver {version}")
 
     payload = {"version": version,
-               "credentials": {"username": "StatCommandRunner", "password": "ValidPass"},
+               "credentials": {"username": "", "password": ""},
                "dataStructureName": dataset_name, "startDate": 1, "stopDate": 32767}
 
     headers = {'Content-Type': 'application/json', 'X-Request-ID': 'my-xrequest-1'}
