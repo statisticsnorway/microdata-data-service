@@ -1,9 +1,7 @@
-import json_logging
 from fastapi.testclient import TestClient
 
 from data_service.app import data_service_app
 
-json_logging.init_fastapi(enable_json=True)
 client = TestClient(data_service_app)
 
 
