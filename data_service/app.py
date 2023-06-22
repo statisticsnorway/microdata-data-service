@@ -53,7 +53,20 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
+
+def init_json_logging():
+    json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = True
+    json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(
+        uuid.uuid1()
+    )
+    json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
+    json_logging.init_request_instrument(
+        data_service_app, custom_formatter=CustomJSONRequestLogFormatter
+    )
+
+
 data_service_app = FastAPI(title="Data service", description=DESCRIPTION)
+init_json_logging()
 data_service_app.mount(
     "/static", StaticFiles(directory="static"), name="static"
 )
@@ -115,18 +128,6 @@ async def add_x_request_id_response_header(request: Request, call_next):
         request=request
     )
     return response
-
-
-@data_service_app.on_event("startup")
-def startup_event():
-    json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = True
-    json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(
-        uuid.uuid1()
-    )
-    json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
-    json_logging.init_request_instrument(
-        data_service_app, custom_formatter=CustomJSONRequestLogFormatter
-    )
 
 
 if __name__ == "__main__":
