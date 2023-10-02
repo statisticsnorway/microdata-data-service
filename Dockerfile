@@ -48,6 +48,10 @@ RUN poetry export > requirements.txt
 # Production image
 FROM python:3.10-slim
 
+# Create user
+RUN groupadd --gid 180291 microdata \
+    && useradd --uid 180291 --gid microdata microdata
+
 WORKDIR /app
 COPY data_service data_service
 COPY static static
@@ -59,6 +63,9 @@ RUN pip install -r requirements.txt
 
 #the output is sent straight to terminal without being first buffered
 ENV PYTHONUNBUFFERED 1
+
+# Change to our non-root user
+USER microdata
 
 ENV PYTHONPATH "${PYTHONPATH}:/app"
 CMD [ "python", "data_service/app.py"]
