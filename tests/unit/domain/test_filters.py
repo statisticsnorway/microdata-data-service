@@ -8,7 +8,7 @@ POPULATION = [1, 2, 3, 4]
 STR_POP_FILTER = (
     "is_in(unit_id, {value_set=int64:"
     "[\n  1,\n  2,\n  3,\n  4\n],"
-    " skip_nulls=false})"
+    " null_matching_behavior=MATCH})"
 )
 
 
