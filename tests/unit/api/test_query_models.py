@@ -39,6 +39,29 @@ def test_create_and_validate_full_input_time_period_query():
     assert actual.includeAttributes is True
 
 
+def test_no_population_type_coercion():
+    data = {
+        "dataStructureName": "DATASET_NAME",
+        "version": "1.0.0.0",
+        "startDate": 1964,
+        "stopDate": 2056,
+        "population": [1, 2, 3],
+        "includeAttributes": True,
+    }
+    actual = InputTimePeriodQuery.parse_obj(data)
+    assert actual.population == data["population"]
+    data = {
+        "dataStructureName": "DATASET_NAME",
+        "version": "1.0.0.0",
+        "startDate": 1964,
+        "stopDate": 2056,
+        "population": ["1", "2", "3"],
+        "includeAttributes": True,
+    }
+    actual = InputTimePeriodQuery.parse_obj(data)
+    assert actual.population == data["population"]
+
+
 def test_create_and_validate_input_time_period_query_with_error():
     data = {
         "dataStructureName": "DATASET_NAME",
