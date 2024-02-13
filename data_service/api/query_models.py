@@ -8,7 +8,7 @@ from pydantic import BaseModel, validator
 class InputQuery(BaseModel):
     dataStructureName: str
     version: str
-    population: Optional[list[int]]
+    population: Optional[list]
     includeAttributes: Optional[bool] = False
 
     @validator("version")
