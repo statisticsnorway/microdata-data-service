@@ -51,7 +51,6 @@ To run the application with Docker and datastore that is under /path/datastore/<
 Replace /path/datastore with absolute path to parent of DATASTORE_ROOT.
 ````
 docker run --publish 8000:8000 \
---env CONFIG_PROFILE=LOCAL \
 --env DATASTORE_DIR=/datastore_path \
 --env RESULTSET_DIR=/resultset_path \
 --env JWKS_URL=<URL here> \
@@ -62,12 +61,6 @@ docker run --publish 8000:8000 \
 -v /path/datastore:/datastore_path \
 -v /path/resultset:/resultset_path data-service
 ````
-
-
-## Configuration
-There are currently two configuration profiles: LOCAL and GCS. You need to set environment variable CONFIG_PROFILE to one of the values. In case of GCS you need to have GOOGLE_APPLICATION_CREDENTIALS in environment pointing to JSON key file. 
-
-The configuration files are ```data_service/config/.env.gcs``` and ```data_service/config/.env.local_file```.
 
 
 ## Running application from command line
