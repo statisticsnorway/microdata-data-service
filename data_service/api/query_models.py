@@ -2,16 +2,17 @@ import copy
 import re
 from typing import Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 
 class InputQuery(BaseModel):
     dataStructureName: str
     version: str
-    population: Optional[list]
+    population: Optional[list] = None
     includeAttributes: Optional[bool] = False
 
-    @validator("version")
+    @field_validator("version")
+    @classmethod
     def check_for_sem_ver(cls, version):  # pylint: disable=no-self-argument
         pattern = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$")
         if not pattern.match(version):
