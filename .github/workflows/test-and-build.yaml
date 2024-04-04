@@ -78,17 +78,17 @@ jobs:
           push: true
           tags: ${{ steps.build_metadata.outputs.tags }}
           labels: ${{ steps.build_metadata.outputs.labels }}
-  
+
   integration-test:
     name: Run Integration test
     runs-on: ubuntu-latest
-    needs: build
+    needs: build 
     permissions:
       contents: read
       id-token: write
 
     steps:
-      - name: Run integration tests
+      - name: Call workflow
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.INTEGRATION_TEST_PAT }}
@@ -96,6 +96,6 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: 'statisticsnorway',
               repo: '${{ secrets.INTEGRATION_TEST_REPO }}',
-              workflow_id: '${{ secrets.INTEGRATION_TEST_WORKFLOW }}.yml',
+              workflow_id: '${{ secrets.INTEGRATION_TEST_WORKFLOW }}.yaml',
               ref: 'master'
-            })
+            }) 
