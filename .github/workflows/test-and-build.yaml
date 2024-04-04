@@ -93,7 +93,7 @@ jobs:
         with:
           github-token: ${{ secrets.INTEGRATION_TEST_PAT }}
           script: |
-            await github.rest.actions.createworkflowDispatch({
+            await github.rest.actions.createWorkflowDispatch({
               owner: 'statisticsnorway',
               repo: '${{ secrets.INTEGRATION_TEST_REPO }}',
               workflow_id: '${{ secrets.INTEGRATION_TEST_WORKFLOW }}.yml',
