@@ -1,0 +1,34 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: data-service
+  title: Data service
+  description: |
+    Data streaming service for microdata variables
+  tags:
+    - python
+    - fast API
+    - pyarrow
+  annotations:
+    github.com/project-slug: statisticsnorway/microdata-data-service
+spec:
+  type: service
+  system: microdata
+  owner: microdata-developers
+  lifecycle: production
+  providesApis:
+    - data-service-api
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: data-service-api
+  description: Data service api
+spec:
+  type: openapi
+  system: microdata
+  owner: microdata-developers
+  lifecycle: production
+  definition: 
+    $text: .
