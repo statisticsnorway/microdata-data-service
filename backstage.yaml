@@ -7,7 +7,7 @@ metadata:
     Data streaming service for microdata variables
   tags:
     - python
-    - fast API
+    - fast-api
     - pyarrow
   annotations:
     github.com/project-slug: statisticsnorway/microdata-data-service
@@ -18,7 +18,6 @@ spec:
   lifecycle: production
   providesApis:
     - data-service-api
-
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
