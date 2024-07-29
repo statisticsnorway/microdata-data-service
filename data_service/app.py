@@ -11,7 +11,6 @@ from fastapi.openapi.docs import (
 )
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
 from data_service.config import environment

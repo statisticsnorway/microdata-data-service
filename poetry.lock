@@ -371,17 +371,6 @@ files = [
 ]
 
 [[package]]
-name = "json-logging"
-version = "1.5.0rc0"
-description = "JSON Python Logging"
-optional = false
-python-versions = "*"
-files = [
-    {file = "json-logging-1.5.0rc0.tar.gz", hash = "sha256:63f71a11e741ed80f0e7dd8747be63182953a328c48b9febf9363d17455004bb"},
-    {file = "json_logging-1.5.0rc0-py2.py3-none-any.whl", hash = "sha256:385b3508fc354b08c4b81a8013854e9c9861603fa9eb2c6d0bf1feff019e4c2c"},
-]
-
-[[package]]
 name = "numpy"
 version = "1.26.4"
 description = "Fundamental package for array computing in Python"
@@ -992,4 +981,4 @@ standard = ["PyYAML (>=5.1)", "colorama (>=0.4)", "httptools (==0.2.*)", "python
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e6f5e7854918c93836a788437a4d97a8632889e0dc6fd39d9ae1d07095cb6992"
+content-hash = "1775fdc6bee954167b95b458d446e88756945c4942f1a1eac752d4592b44f522"
