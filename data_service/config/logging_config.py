@@ -29,18 +29,6 @@ response_status: ContextVar[int] = ContextVar("response_status")
 response_time_ms: ContextVar[int] = ContextVar("response_time_ms")
 
 
-class RequestInfoFilter(logging.Filter):
-    def filter(self, record: logging.LogRecord) -> bool:
-        # Make sure string only contains alphanumeric characters, underscores and/or dashes
-        record.correlation_id = re.sub(r"[^\w\-]", "", correlation_id.get(""))
-        record.method = method.get("")
-        record.url = url.get("")
-        record.remote_host = remote_host.get("")
-        record.response_status = response_status.get("")
-        record.response_time_ms = response_time_ms.get("")
-        return True
-
-
 class MicrodataJSONFormatter(logging.Formatter):
     def __init__(self):
         self.pkg_meta = _get_project_meta()
@@ -61,34 +49,32 @@ class MicrodataJSONFormatter(logging.Formatter):
                 "level": record.levelno,
                 "levelName": record.levelname,
                 "loggerName": record.name,
-                "method": record.__dict__.get("method"),
-                "responseTime": record.__dict__.get("response_time_ms"),
+                "method": method.get(""),
+                "responseTime": response_time_ms.get(""),
                 "schemaVersion": "v3",
                 "serviceName": "data-service",
                 "serviceVersion": str(self.pkg_meta["version"]),
-                "source_host": record.__dict__.get("remote_host"),
-                "statusCode": record.__dict__.get("response_status"),
+                "source_host": remote_host.get(""),
+                "statusCode": response_status.get(""),
                 "thread": record.threadName,
-                "url": record.__dict__.get("url"),
-                "xRequestId": record.__dict__.get("correlation_id"),
+                "url": url.get(""),
+                "xRequestId": re.sub(r"[^\w\-]", "", correlation_id.get("")),
             }
         )
 
 
 def setup_logging(app, log_level=logging.INFO):
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+
+    formatter = MicrodataJSONFormatter()
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next: Callable):
-        logger = logging.getLogger()
-        logger.setLevel(log_level)
-
-        formatter = MicrodataJSONFormatter()
-
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(formatter)
-        request_info_filter = RequestInfoFilter()
-        logger.addFilter(request_info_filter)
-        logger.addHandler(stream_handler)
-
         request_start_time.set(perf_counter_ns())
         corr_id = request.headers.get("X-Request-ID", None)
         if corr_id is None:
