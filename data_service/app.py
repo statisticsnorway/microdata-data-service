@@ -1,9 +1,6 @@
 # pylint: disable=unused-argument
 import logging
-import sys
-import uuid
 
-import json_logging
 import uvicorn
 from fastapi import FastAPI, status
 from fastapi.encoders import jsonable_encoder
@@ -14,16 +11,12 @@ from fastapi.openapi.docs import (
 )
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
 from data_service.config import environment
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
-from data_service.config.logging_config import (
-    CustomJSONLog,
-    CustomJSONRequestLogFormatter,
-)
+from data_service.config.logging_config import setup_logging
 from data_service.exceptions import NotFoundException
 
 # Self-hosting JavaScript and CSS for docs
@@ -48,31 +41,16 @@ stop_epoch_days: int16
 PARQUET:field_id: '4'
 ```
 """
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-
-
-def init_json_logging():
-    json_logging.CREATE_CORRELATION_ID_IF_NOT_EXISTS = True
-    json_logging.CORRELATION_ID_GENERATOR = lambda: "data-service-" + str(
-        uuid.uuid1()
-    )
-    json_logging.init_fastapi(enable_json=True, custom_formatter=CustomJSONLog)
-    json_logging.init_request_instrument(
-        data_service_app, custom_formatter=CustomJSONRequestLogFormatter
-    )
-
-
 data_service_app = FastAPI(title="Data service", description=DESCRIPTION)
-init_json_logging()
+setup_logging(data_service_app)
 data_service_app.mount(
     "/static", StaticFiles(directory="static"), name="static"
 )
 
 data_service_app.include_router(data_router)
 data_service_app.include_router(observability_router)
+
+logger = logging.getLogger()
 
 
 @data_service_app.get("/docs", include_in_schema=False)
@@ -103,9 +81,7 @@ async def redoc_html():
 
 
 @data_service_app.exception_handler(NotFoundException)
-async def not_found_exception_handler(
-    request, exc  # needed for json_logging.get_correlation_id
-):
+async def not_found_exception_handler(exc):
     logger.exception(exc)
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -114,20 +90,9 @@ async def not_found_exception_handler(
 
 
 @data_service_app.exception_handler(Exception)
-async def unknown_exception_handler(
-    request, exc  # needed for json_logging.get_correlation_id
-):
+async def unknown_exception_handler(exc):
     logger.exception(exc)
     return PlainTextResponse("Internal Server Error", status_code=500)
-
-
-@data_service_app.middleware("http")
-async def add_x_request_id_response_header(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["X-Request-ID"] = json_logging.get_correlation_id(
-        request=request
-    )
-    return response
 
 
 if __name__ == "__main__":
