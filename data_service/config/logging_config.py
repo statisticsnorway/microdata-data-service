@@ -41,7 +41,8 @@ class MicrodataJSONFormatter(logging.Formatter):
                 "@timestamp": datetime.datetime.fromtimestamp(
                     record.created,
                     tz=datetime.timezone.utc,
-                ).isoformat(),
+                ).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+                + "Z",
                 "command": self.command,
                 "error.stack": record.__dict__.get("exc_info"),
                 "host": self.host,
@@ -96,6 +97,6 @@ def setup_logging(app, log_level=logging.INFO):
         )
         response_time_ms.set(response_time)
         response_status.set(response.status_code)
-
         response.headers["X-Request-ID"] = correlation_id.get()
+        logger.info("responded")
         return response
