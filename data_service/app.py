@@ -16,6 +16,7 @@ from starlette.responses import PlainTextResponse
 from data_service.config import environment
 from data_service.api.data_api import data_router
 from data_service.api.observability_api import observability_router
+from data_service.config.uvicorn import setup_uvicorn_logging
 from data_service.config.logging_config import setup_logging
 from data_service.exceptions import NotFoundException
 
@@ -42,7 +43,6 @@ PARQUET:field_id: '4'
 ```
 """
 data_service_app = FastAPI(title="Data service", description=DESCRIPTION)
-setup_logging(data_service_app)
 data_service_app.mount(
     "/static", StaticFiles(directory="static"), name="static"
 )
@@ -51,6 +51,8 @@ data_service_app.include_router(data_router)
 data_service_app.include_router(observability_router)
 
 logger = logging.getLogger()
+setup_logging(data_service_app)
+setup_uvicorn_logging()
 
 
 @data_service_app.get("/docs", include_in_schema=False)
@@ -96,4 +98,8 @@ async def unknown_exception_handler(exc):
 
 
 if __name__ == "__main__":
-    uvicorn.run(data_service_app, host="0.0.0.0", port=environment.get("PORT"))
+    uvicorn.run(
+        data_service_app,
+        host="0.0.0.0",
+        port=environment.get("PORT"),
+    )

@@ -6,10 +6,10 @@ observability_router = APIRouter()
 
 
 @observability_router.get("/health/alive")
-def alive(request: Request):  # needed for json_logging.get_correlation_id
+def alive(request: Request):
     return "I'm alive!"
 
 
 @observability_router.get("/health/ready")
-def ready(request: Request):  # needed for json_logging.get_correlation_id
+def ready(request: Request):
     return "I'm ready!"
