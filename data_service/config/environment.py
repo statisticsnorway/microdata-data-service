@@ -6,6 +6,7 @@ def _initialize_environment() -> dict:
         "PORT": int(os.environ["PORT"]),
         "DATASTORE_DIR": os.environ["DATASTORE_DIR"],
         "DOCKER_HOST_NAME": os.environ["DOCKER_HOST_NAME"],
+        "COMMIT_ID": os.environ["COMMIT_ID"],
     }
 
 

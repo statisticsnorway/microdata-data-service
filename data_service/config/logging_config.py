@@ -7,17 +7,10 @@ import datetime
 from time import perf_counter_ns
 from typing import Callable
 
-import tomlkit
 from fastapi import Request
 from contextvars import ContextVar
 
 from data_service.config import environment
-
-
-def _get_project_meta():
-    with open("pyproject.toml", encoding="utf-8") as pyproject:
-        file_contents = pyproject.read()
-    return tomlkit.parse(file_contents)["tool"]["poetry"]
 
 
 request_start_time: ContextVar[int] = ContextVar("request_start_time")
@@ -31,9 +24,9 @@ response_time_ms: ContextVar[int] = ContextVar("response_time_ms")
 
 class MicrodataJSONFormatter(logging.Formatter):
     def __init__(self):
-        self.pkg_meta = _get_project_meta()
         self.host = environment.get("DOCKER_HOST_NAME")
         self.command = json.dumps(sys.argv)
+        self.commit_id = environment.get("COMMIT_ID")
 
     def format(self, record: logging.LogRecord) -> str:
         return json.dumps(
@@ -54,7 +47,7 @@ class MicrodataJSONFormatter(logging.Formatter):
                 "responseTime": response_time_ms.get(""),
                 "schemaVersion": "v3",
                 "serviceName": "data-service",
-                "serviceVersion": str(self.pkg_meta["version"]),
+                "serviceVersion": self.commit_id,
                 "source_host": remote_host.get(""),
                 "statusCode": response_status.get(""),
                 "thread": record.threadName,
