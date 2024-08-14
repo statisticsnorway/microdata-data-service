@@ -84,7 +84,7 @@ async def redoc_html():
 
 @data_service_app.exception_handler(NotFoundException)
 async def not_found_exception_handler(exc):
-    logger.exception(exc)
+    logger.warning(exc, exc_info=True)
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content=jsonable_encoder({"detail": "No such datastructure"}),
