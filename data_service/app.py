@@ -12,6 +12,7 @@ from fastapi.openapi.docs import (
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import PlainTextResponse
+from h11._util import LocalProtocolError
 
 from data_service.config import environment
 from data_service.api.data_api import data_router
@@ -88,6 +89,15 @@ async def not_found_exception_handler(exc):
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content=jsonable_encoder({"detail": "No such datastructure"}),
+    )
+
+
+@data_service_app.exception_handler(LocalProtocolError)
+async def local_protocol_error_handler(exc: LocalProtocolError):
+    logger.warning(exc, exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content=jsonable_encoder({"detail": "Protocol violation"}),
     )
 
 
