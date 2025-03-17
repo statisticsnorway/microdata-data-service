@@ -15,14 +15,14 @@ numpy = "1.26.4"
 python-dotenv = "^1.0.1"
 PyJWT = "^2.4.0"
 aiofiles = "^23.2.1"
-cryptography = "^43.0.1"
+cryptography = "^44.0.1"
 PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0.1"
 pytest-cov = "^4.1.0"
 pytest-dotenv = "^0.5.2"
-cryptography = "^43.0.1"
+cryptography = "^44.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.0"
