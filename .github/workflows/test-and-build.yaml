@@ -101,6 +101,7 @@ jobs:
               repo: '${{ secrets.INTEGRATION_TEST_REPO }}',
               workflow_id: '${{ secrets.INTEGRATION_TEST_WORKFLOW }}.yaml',
               ref: 'main'
+            })
 
   revoke:
     runs-on: ubuntu-latest
@@ -144,4 +145,3 @@ jobs:
                 service: "data-service"
               }
             })
-            }) 
