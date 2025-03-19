@@ -39,15 +39,14 @@ def get_parquet_file_path(dataset_name: str, version: str) -> str:
 
 def _get_file_name_from_data_versions(version: str, dataset_name: str) -> str:
     data_versions_file = (
-        f"{DATASTORE_DIR}/datastore/" f"data_versions__{version}.json"
+        f"{DATASTORE_DIR}/datastore/data_versions__{version}.json"
     )
     with open(data_versions_file, encoding="utf-8") as f:
         data_versions = json.load(f)
 
     if dataset_name not in data_versions:
         raise NotFoundException(
-            f"No {dataset_name} in data_versions file "
-            f"for version {version}"
+            f"No {dataset_name} in data_versions file for version {version}"
         )
     return data_versions[dataset_name]
 
