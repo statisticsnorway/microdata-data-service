@@ -3,7 +3,7 @@ FROM python:3.12-bookworm AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    POETRY_VERSION=1.7.1 \
+    POETRY_VERSION=2.1.1 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1
@@ -28,7 +28,8 @@ COPY poetry.lock pyproject.toml /app/
 # Install poetry and export dependencies to requirements yaml
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl --proto '=https' --tlsv1.2 -sSL https://install.python-poetry.org | python3 - --version "$POETRY_VERSION"
-RUN poetry export > requirements.txt
+RUN poetry self add poetry-plugin-export
+RUN poetry export --output requirements.txt
 RUN pip install -r requirements.txt --target=/app/dependencies
 
 # Create user
