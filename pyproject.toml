@@ -6,17 +6,16 @@ authors = ["Team Microdata"]
 license = "Apache"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.13"
 fastapi = "^0.115.2"
-pyarrow = "^15.0.0"
+pyarrow = "^20.0.0"
 uvicorn = {version = "^0.34.2", extras = ["h11==0.16.0"]}
-pandas = "^2.2.0"
-numpy = "1.26.4"
 python-dotenv = "^1.0.1"
 PyJWT = "^2.4.0"
 aiofiles = "^24.0.0"
 cryptography = "^44.0.1"
 PyYAML = "^6.0"
+pandas = "^2.2.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.1"
@@ -32,4 +31,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 79
-target-version = "py312"
+target-version = "py313"
