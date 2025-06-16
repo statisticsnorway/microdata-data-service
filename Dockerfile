@@ -1,5 +1,5 @@
 # Export Poetry Packages
-FROM python:3.13-bookworm AS builder
+FROM python:3.12-bookworm AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -39,7 +39,7 @@ RUN groupadd --gid 180291 microdata \
 # Creating Production image
 
 # Production image
-FROM ghcr.io/statisticsnorway/distroless-python3.13
+FROM ghcr.io/statisticsnorway/distroless-python3.12
 ARG COMMIT_ID
 ENV COMMIT_ID=$COMMIT_ID
 
