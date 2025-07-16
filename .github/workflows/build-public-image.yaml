@@ -28,4 +28,5 @@ jobs:
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t ghcr.io/statisticsnorway/microdata-data-service:latest \
-            -t ghcr.io/statisticsnorway/microdata-data-service:${{ github.sha }}
+            -t ghcr.io/statisticsnorway/microdata-data-service:${{ github.sha }} \
+            . --push
