@@ -6,9 +6,9 @@ authors = ["Team Microdata"]
 license = "Apache"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.13"
 fastapi = "^0.115.2"
-pyarrow = "^17.0.0"
+pyarrow = "^21.0.0"
 uvicorn = {version = "^0.34.2", extras = ["h11==0.16.0"]}
 python-dotenv = "^1.0.1"
 PyJWT = "^2.4.0"
